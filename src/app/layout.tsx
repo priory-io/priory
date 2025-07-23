@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { League_Spartan, Fira_Mono } from "next/font/google";
 import "./globals.css";
 import { config } from "~/lib/config";
+import Navbar from "~/components/navbar";
 
 const leagueSpartan = League_Spartan({
   variable: "--font-sans",
@@ -33,7 +34,10 @@ export default function RootLayout({
       <body
         className={`${leagueSpartan.variable} ${firaMono.variable} antialiased`}
       >
-        {children}
+        <div className="min-h-screen px-4 text-foreground bg-background pt-20">
+          <Navbar />
+          {children}
+        </div>
       </body>
     </html>
   );

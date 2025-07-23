@@ -3,51 +3,25 @@ import { config } from "~/lib/config";
 
 export default function Home() {
   return (
-    <>
-      <div className="min-h-screen px-4 text-foreground bg-background">
-        <nav className="max-w-4xl mx-auto border border-border shadow rounded bg-card my-4 p-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center">
-              <Link
-                className="text-foreground text-2xl font-medium hover:text-foreground/80 transition-colors"
-                href="/"
-              >
-                {config.site.name}
-              </Link>
-              <div className="h-6 w-px bg-muted-foreground/30 ml-6 mr-4" />
-              <div className="flex items-center gap-x-4">
-                <Link
-                  className="hover:bg-primary/15 transition-colors rounded hover:shadow px-3 py-1 text-lg"
-                  href={config.social.github}
-                  target="_blank"
-                >
-                  GitHub
-                </Link>
-                <Link
-                  className="hover:bg-primary/15 transition-colors rounded hover:shadow px-3 py-1 text-lg"
-                  href={config.social.discord}
-                  target="_blank"
-                >
-                  Discord
-                </Link>
-              </div>
-            </div>
-            <Link
-              className="hover:bg-primary/15 transition-colors rounded hover:shadow px-3 py-1 text-lg"
-              href={`${config.social.github}/www.git`}
-              target="_blank"
-            >
-              Source
-            </Link>
-          </div>
-        </nav>
-        <div className="flex flex-col items-center justify-center">
-          <h1 className="text-4xl text-primary">Hello, {config.site.name}!</h1>
-          <p className="text-xl text-muted-foreground">
-            {config.site.description}
-          </p>
-        </div>
+    <div className="flex flex-col items-center justify-center gap-y-8 px-4 md:px-6 lg:px-8 min-h-[70vh]">
+      <div className="text-center space-y-4">
+        <span className="text-6xl text-primary font-mono font-medium">{config.site.name}<span className="text-muted-foreground text-4xl">.io</span></span>
+        <p className="text-lg mt-4 text-muted-foreground/70">
+          {config.site.description} <Link href="https://github.com/keircn" target="_blank" className="text-primary hover:text-primary/80 hover:underline transition-all focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background rounded" aria-label="Visit Keiran's GitHub profile">Keiran</Link>
+        </p>
       </div>
-    </>
+
+      <p className="text-xl md:text-2xl text-foreground text-center max-w-3xl leading-relaxed tracking-wide text-justify font-medium">
+        Priory is passionate about its mission to make open source the vibrant,
+        indiscriminately collaborative haven it once was. We write genuinely
+        useful software and not only maintain it but encourage the users to
+        contribute in order to build a decentralised organisation of projects and
+        libraries by the community for the community.
+      </p>
+
+      <code className="bg-muted/30 p-4 py-3 rounded border border-muted">
+        Coming Soon...
+      </code>
+    </div>
   );
 }

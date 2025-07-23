@@ -158,4 +158,28 @@
   code, pre, kbd, samp {
     font-family: var(--font-mono), ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", Menlo, monospace;
   }
+
+  /* Enhanced focus styles for accessibility */
+  *:focus-visible {
+    outline: 2px solid oklch(var(--primary));
+    outline-offset: 2px;
+  }
+
+  /* Custom scrollbar for better UX */
+  ::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: oklch(var(--muted));
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: oklch(var(--muted-foreground));
+    border-radius: 4px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: oklch(var(--primary));
+  }
 }
