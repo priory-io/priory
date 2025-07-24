@@ -11,12 +11,19 @@
     "check": "tsc --noEmit"
   },
   "dependencies": {
+    "@mdx-js/loader": "^3.1.0",
+    "@mdx-js/react": "^3.1.0",
+    "@next/mdx": "^15.4.3",
+    "@types/mdx": "^2.0.13",
     "babel-plugin-react-compiler": "^19.1.0-rc.2",
     "framer-motion": "^12.23.9",
+    "gray-matter": "^4.0.3",
     "lucide-react": "^0.525.0",
     "next": "15.4.3",
+    "next-mdx-remote": "^5.0.0",
     "react": "19.1.0",
-    "react-dom": "19.1.0"
+    "react-dom": "19.1.0",
+    "sugar-high": "^0.9.3"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4.1.11",

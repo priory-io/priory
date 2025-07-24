@@ -89,16 +89,8 @@ export default function BlogCard({ post, featured = false }: BlogCardProps) {
                 </div>
 
                 <div className="flex items-center gap-3 pt-3 border-t border-border/50">
-                  <div className="w-8 h-8 bg-gradient-to-br from-primary to-accent rounded-full flex items-center justify-center text-primary-foreground text-sm font-bold flex-shrink-0">
-                    {post.author.name[0]}
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    <div className="font-medium text-sm truncate">
-                      {post.author.name}
-                    </div>
-                    <div className="text-xs text-muted-foreground">
-                      {formatDate(post.publishedAt)}
-                    </div>
+                  <div className="text-xs text-muted-foreground">
+                    Published {formatDate(post.publishedAt)}
                   </div>
                 </div>
               </div>

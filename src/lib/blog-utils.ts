@@ -1,5 +1,9 @@
-export function formatDate(date: string | Date): string {
+export function formatDate(date: string | Date | undefined): string {
+  if (!date) return "Unknown date";
+
   const d = typeof date === "string" ? new Date(date) : date;
+  if (isNaN(d.getTime())) return "Invalid date";
+
   return d.toLocaleDateString("en-US", {
     year: "numeric",
     month: "long",
@@ -7,8 +11,12 @@ export function formatDate(date: string | Date): string {
   });
 }
 
-export function formatRelativeDate(date: string | Date): string {
+export function formatRelativeDate(date: string | Date | undefined): string {
+  if (!date) return "Unknown date";
+
   const d = typeof date === "string" ? new Date(date) : date;
+  if (isNaN(d.getTime())) return "Invalid date";
+
   const now = new Date();
   const diffInMs = now.getTime() - d.getTime();
   const diffInDays = Math.floor(diffInMs / (1000 * 60 * 60 * 24));

@@ -3,11 +3,6 @@ export interface BlogPost {
   title: string;
   excerpt: string;
   content: string;
-  author: {
-    name: string;
-    avatar?: string;
-    bio?: string;
-  };
   publishedAt: string;
   updatedAt?: string;
   tags: string[];
