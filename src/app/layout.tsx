@@ -30,13 +30,15 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="dark">
+    <html lang="en" className="dark scroll-smooth">
       <body
         className={`${leagueSpartan.variable} ${firaMono.variable} antialiased`}
       >
-        <div className="min-h-screen px-4 text-foreground bg-background pt-20">
+        <div className="min-h-screen text-foreground bg-gradient-to-br from-background via-background to-primary/5">
           <Navbar />
-          {children}
+          <main>
+            {children}
+          </main>
         </div>
       </body>
     </html>
