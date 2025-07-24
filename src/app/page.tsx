@@ -85,7 +85,7 @@ export default function Home() {
 
           <motion.div
             variants={fadeInUp}
-            className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-12"
+            className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-12 hidden" // disabling this for now :p
           >
             <Link
               href="https://github.com/keircn"
