@@ -1,25 +1,34 @@
-"use client"
+"use client";
 
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { Github, Code, Users, Zap, Mail, ArrowRight } from "lucide-react";
+import { Github, Mail, ArrowRight, BookOpen } from "lucide-react";
 import { config } from "~/lib/config";
+import { useBlogPosts } from "~/hooks/useBlogPosts";
+import BlogCard from "~/components/blog/blog-card";
+import Button from "~/components/ui/button";
+import Container from "~/components/ui/container";
+import Typography from "~/components/ui/typography";
+import Grid from "~/components/ui/grid";
 
 const fadeInUp = {
   initial: { opacity: 0, y: 20 },
   animate: { opacity: 1, y: 0 },
-  transition: { duration: 0.6 }
+  transition: { duration: 0.6 },
 };
 
 const staggerContainer = {
   animate: {
     transition: {
-      staggerChildren: 0.1
-    }
-  }
+      staggerChildren: 0.1,
+    },
+  },
 };
 
 export default function Home() {
+  const { posts, loading } = useBlogPosts({ featured: true });
+  const featuredPosts = posts.slice(0, 2);
+
   return (
     <>
       <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
@@ -51,17 +60,18 @@ export default function Home() {
             variants={fadeInUp}
             className="text-6xl md:text-8xl lg:text-9xl font-mono font-bold mb-6 mt-8"
           >
-            <span className="text-primary">
-              {config.site.name}
+            <span className="text-primary">{config.site.name}</span>
+            <span className="text-muted-foreground text-4xl md:text-6xl lg:text-7xl">
+              .io
             </span>
-            <span className="text-muted-foreground text-4xl md:text-6xl lg:text-7xl">.io</span>
           </motion.h1>
 
           <motion.p
             variants={fadeInUp}
             className="text-xl md:text-2xl text-muted-foreground mb-8 max-w-3xl mx-auto leading-relaxed"
           >
-            Building the future of collaborative open source software (Coming Soon!!)
+            Building the future of collaborative open source software (Coming
+            Soon!!)
           </motion.p>
 
           <motion.p
@@ -82,9 +92,9 @@ export default function Home() {
               target="_blank"
               className="group inline-flex items-center gap-2 bg-primary text-primary-foreground px-8 py-4 rounded-xl font-semibold hover:bg-primary/90 transition-all hover:shadow-lg hover:shadow-primary/25 hover:-translate-y-0.5"
             >
-              <Github className="w-5 h-5 -mt-0.5" />
-              My Stuff
-              <ArrowRight className="w-4 h-4 -mt-0.5 transition-transform group-hover:translate-x-1" />
+              <Github className="w-5 h-5" />
+              <span>My Stuff</span>
+              <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
             </Link>
 
             <Link
@@ -92,68 +102,47 @@ export default function Home() {
               target="_blank"
               className="group inline-flex items-center gap-2 bg-card/50 backdrop-blur-sm text-foreground px-8 py-4 rounded-xl font-semibold hover:bg-card/70 transition-all border border-border hover:shadow-lg hover:-translate-y-0.5"
             >
-              <Mail className="w-5 h-5 -mt-0.5" />
-              Email Me
+              <Mail className="w-5 h-5" />
+              <span>Email Me</span>
             </Link>
           </motion.div>
         </motion.div>
       </section>
 
-      <section className="py-24 px-4 hidden">
-        <motion.div
-          className="max-w-7xl mx-auto"
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          transition={{ duration: 0.8 }}
-          viewport={{ once: true }}
-        >
-          <div className="text-center mb-16">
-            <h2 className="text-4xl md:text-5xl font-bold mb-6 bg-gradient-to-r from-foreground to-foreground/60 bg-clip-text text-transparent">
-              Why Open Source Matters
-            </h2>
-            <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-              Building a decentralized organization of projects and libraries by the community, for the community
-            </p>
-          </div>
+      {!loading && featuredPosts.length > 0 && (
+        <section className="py-24 px-4">
+          <Container>
+            <div className="space-y-12">
+              <div className="text-center space-y-6">
+                <Typography
+                  variant="h2"
+                  className="bg-gradient-to-r from-foreground to-foreground/60 bg-clip-text text-transparent"
+                >
+                  Latest from the Blog
+                </Typography>
+                <Typography variant="lead" className="max-w-3xl mx-auto">
+                  Insights and tutorials on open source development, modern web
+                  technologies, and building better software.
+                </Typography>
+              </div>
 
-          <div className="grid md:grid-cols-3 gap-8">
-            {[
-              {
-                icon: Code,
-                title: "Quality Software",
-                description: "We write genuinely useful software that solves real problems and stands the test of time."
-              },
-              {
-                icon: Users,
-                title: "Community Driven",
-                description: "Every project encourages contribution, fostering a collaborative environment for growth."
-              },
-              {
-                icon: Zap,
-                title: "Innovation First",
-                description: "Pushing boundaries and exploring new technologies to advance the open source ecosystem."
-              }
-            ].map((feature, index) => (
-              <motion.div
-                key={feature.title}
-                className="group relative"
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: index * 0.1 }}
-                viewport={{ once: true }}
-                whileHover={{ y: -5 }}
-              >
-                <div className="absolute inset-0 bg-gradient-to-r from-primary/20 to-accent/20 rounded-2xl blur-xl group-hover:blur-2xl transition-all opacity-0 group-hover:opacity-100" />
-                <div className="relative bg-card/50 backdrop-blur-sm border border-border rounded-2xl p-8 hover:border-primary/50 transition-all">
-                  <feature.icon className="w-12 h-12 text-primary mb-6" />
-                  <h3 className="text-2xl font-semibold mb-4">{feature.title}</h3>
-                  <p className="text-muted-foreground leading-relaxed">{feature.description}</p>
-                </div>
-              </motion.div>
-            ))}
-          </div>
-        </motion.div>
-      </section>
+              <Grid cols={1} responsive={{ md: 2 }} gap="lg">
+                {featuredPosts.map((post) => (
+                  <BlogCard key={post.id} post={post} featured />
+                ))}
+              </Grid>
+
+              <div className="text-center">
+                <Button href="/blog" variant="outline" size="lg">
+                  <BookOpen className="w-5 h-5" />
+                  <span>View All Posts</span>
+                  <ArrowRight className="w-4 h-4" />
+                </Button>
+              </div>
+            </div>
+          </Container>
+        </section>
+      )}
     </>
   );
 }

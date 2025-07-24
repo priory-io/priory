@@ -11,7 +11,9 @@ interface ScrollBehavior {
 
 export function useScrollBehavior(threshold: number = 10): ScrollBehavior {
   const [scrollY, setScrollY] = useState(0);
-  const [scrollDirection, setScrollDirection] = useState<"up" | "down" | null>(null);
+  const [scrollDirection, setScrollDirection] = useState<"up" | "down" | null>(
+    null,
+  );
   const [isScrolled, setIsScrolled] = useState(false);
   const [isVisible, setIsVisible] = useState(true);
 
