@@ -44,7 +44,7 @@ export default function BlogPostPage({ params }: BlogPostPageProps) {
   const [post, setPost] = useState<BlogPost | null>(null);
   const [relatedPosts, setRelatedPosts] = useState<BlogPost[]>([]);
   const [loading, setLoading] = useState(true);
-  const [slug, setSlug] = useState<string>("");
+  const [, setSlug] = useState<string>("");
 
   useEffect(() => {
     async function loadData() {
