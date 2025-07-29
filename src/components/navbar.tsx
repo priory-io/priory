@@ -16,9 +16,9 @@ export default function Navbar() {
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
         isVisible ? "translate-y-0" : "-translate-y-full"
       }`}
-      initial={{ opacity: 0, y: -20 }}
+      initial={{ opacity: 0, y: -100 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.6 }}
+      transition={{ duration: 0.4 }}
     >
       <div className="max-w-6xl mx-auto p-4">
         <motion.div
@@ -27,7 +27,6 @@ export default function Navbar() {
               ? "bg-card/90 backdrop-blur-xl border border-border/60 shadow-2xl shadow-black/10"
               : "bg-transparent"
           }`}
-          layout
         >
           <div className="flex items-center justify-between px-6 py-4">
             <div className="flex items-center">

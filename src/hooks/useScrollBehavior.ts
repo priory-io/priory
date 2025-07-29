@@ -16,8 +16,10 @@ export function useScrollBehavior(threshold: number = 10): ScrollBehavior {
   );
   const [isScrolled, setIsScrolled] = useState(false);
   const [isVisible, setIsVisible] = useState(true);
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
+    setMounted(true);
     let previousScrollY = 0;
     let ticking = false;
 
@@ -48,6 +50,7 @@ export function useScrollBehavior(threshold: number = 10): ScrollBehavior {
 
     window.addEventListener("scroll", handleScroll, { passive: true });
 
+    // Initialize scroll state after mount to prevent hydration mismatch
     updateScrollInfo();
 
     return () => {
@@ -58,7 +61,7 @@ export function useScrollBehavior(threshold: number = 10): ScrollBehavior {
   return {
     scrollY,
     scrollDirection,
-    isScrolled,
+    isScrolled: mounted ? isScrolled : false,
     isVisible,
   };
 }
