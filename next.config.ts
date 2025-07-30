@@ -7,6 +7,10 @@ const nextConfig: NextConfig = {
   pageExtensions: ["js", "jsx", "mdx", "ts", "tsx"],
   output: "standalone",
 
+  async rewrites() {
+    return [];
+  },
+
   poweredByHeader: false,
 
   reactStrictMode: true,
