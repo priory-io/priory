@@ -10,17 +10,28 @@ function CodeBlock({ children, className }: CodeBlockProps) {
   const codeHTML = highlight(children);
 
   return (
-    <pre className="p-4 bg-secondary/50 rounded-lg overflow-x-auto">
-      <code
-        className={`text-sm ${className}`}
-        dangerouslySetInnerHTML={{ __html: codeHTML }}
-      />
-    </pre>
+    <div className="mb-4">
+      <pre className="p-4 bg-secondary/50 rounded-lg overflow-x-auto">
+        <code
+          className={`text-sm ${className || ""}`}
+          dangerouslySetInnerHTML={{ __html: codeHTML }}
+        />
+      </pre>
+    </div>
   );
 }
 
 const components = {
-  code: CodeBlock,
+  code: ({ children, className }: { children: string; className?: string }) => {
+    if (className?.includes("language-")) {
+      return <CodeBlock className={className}>{children}</CodeBlock>;
+    }
+    return (
+      <code className="px-1.5 py-0.5 text-sm bg-secondary/50 rounded">
+        {children}
+      </code>
+    );
+  },
   pre: ({ children }: { children: React.ReactNode }) => children,
   h1: ({ children }: { children: React.ReactNode }) => (
     <h1 className="text-4xl font-bold tracking-tight mb-6">{children}</h1>
