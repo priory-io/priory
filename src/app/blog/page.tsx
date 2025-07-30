@@ -5,7 +5,8 @@ import Container from "~/components/ui/container";
 import Typography from "~/components/ui/typography";
 import Grid from "~/components/ui/grid";
 import BlogCard from "~/components/blog/blog-card";
-import { useBlogPosts } from "~/hooks/useBlogPosts";
+import { getBlogPosts } from "~/lib/blog-data";
+import { BlogPost } from "~/types/blog";
 
 const fadeInUp = {
   initial: { opacity: 0, y: 20 },
@@ -27,19 +28,24 @@ const cardVariants = {
   transition: { duration: 0.5 },
 };
 
-export default function BlogPage() {
-  const { posts: allPosts, loading } = useBlogPosts();
+async function getStaticBlogData() {
+  const allPosts = getBlogPosts();
   const featuredPosts = allPosts.filter((post) => post.featured);
   const recentPosts = allPosts.filter((post) => !post.featured);
+  return { allPosts, featuredPosts, recentPosts };
+}
 
-  if (loading) {
-    return (
-      <div className="min-h-screen pt-32 pb-24 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-      </div>
-    );
-  }
+interface BlogPageProps {
+  allPosts: BlogPost[];
+  featuredPosts: BlogPost[];
+  recentPosts: BlogPost[];
+}
 
+function BlogPageClient({
+  allPosts,
+  featuredPosts,
+  recentPosts,
+}: BlogPageProps) {
   return (
     <div className="min-h-screen pt-32 pb-24">
       <Container>
@@ -129,5 +135,17 @@ export default function BlogPage() {
         </motion.div>
       </Container>
     </div>
+  );
+}
+
+export default async function BlogPage() {
+  const { allPosts, featuredPosts, recentPosts } = await getStaticBlogData();
+
+  return (
+    <BlogPageClient
+      allPosts={allPosts}
+      featuredPosts={featuredPosts}
+      recentPosts={recentPosts}
+    />
   );
 }

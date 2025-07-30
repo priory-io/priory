@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import { getBlogPostAction, getRelatedPostsAction } from "~/lib/blog-actions";
+import { getBlogPost, getBlogPosts, getRelatedPosts } from "~/lib/blog-data";
 import Container from "~/components/ui/container";
 import BlogPostClient from "~/components/blog/blog-post-client";
 import MDXRenderer from "~/components/ui/mdx-renderer";
@@ -9,17 +9,23 @@ interface BlogPostPageProps {
   params: Promise<{ slug: string }>;
 }
 
+export async function generateStaticParams() {
+  const posts = getBlogPosts();
+  return posts.map((post) => ({
+    slug: post.slug,
+  }));
+}
+
 export default async function BlogPostPage({ params }: BlogPostPageProps) {
   const resolvedParams = await params;
 
-  const [post, relatedPosts] = await Promise.all([
-    getBlogPostAction(resolvedParams.slug),
-    getRelatedPostsAction(resolvedParams.slug),
-  ]);
+  const post = getBlogPost(resolvedParams.slug);
 
   if (!post) {
     notFound();
   }
+
+  const relatedPosts = getRelatedPosts(resolvedParams.slug);
 
   return (
     <div className="min-h-screen pt-32 pb-24">
