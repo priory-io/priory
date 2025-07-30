@@ -1,0 +1,139 @@
+---
+title: "Karu: Watching/Downloading anime on Linux has never been this easy"
+date: "2025-07-30"
+tags: ["anime", "linux", "entertainment", "ani-cli"]
+---
+
+When I first discovered [ani-cli](https://github.com/pystardust/ani-cli), I was impressed by its simplicity and effectiveness. A bash script that could search for anime and stream it directly to your video player? Brilliant. But as I used it more, I started thinking about how it could be improved with modern tooling and a more robust architecture.
+
+That's how **Karu** was born - a complete rewrite of the ani-cli concept in Go, featuring interactive terminal UIs, better error handling, and a more maintainable codebase.
+
+## Why Go Over Bash?
+
+While ani-cli's bash implementation is elegant in its simplicity, I encountered several limitations that made me want to rebuild it:
+
+### Type Safety and Error Handling
+Bash scripts can become fragile when dealing with complex API responses and user input. Go's static typing and explicit error handling make the application much more robust when parsing JSON responses from anime APIs or handling network failures.
+
+### Better User Experience
+The original ani-cli relied heavily on external tools like `fzf` for selection menus. While functional, I wanted to create a more integrated experience with custom interactive UIs that could provide better visual feedback and smoother navigation.
+
+### Cross-Platform Compatibility
+Bash scripts often require different approaches for different operating systems. Go's cross-compilation makes it trivial to build native binaries for Windows, macOS, and Linux without worrying about shell compatibility or external dependencies.
+
+### Maintainability
+As the feature set grows, a structured codebase with proper separation of concerns becomes invaluable. Go's package system allowed me to organize the code into logical modules.
+
+## Architecture Deep Dive
+
+Karu is built around several key packages that each handle specific responsibilities:
+
+### Command Structure (`cmd/`)
+The application uses [Cobra](https://github.com/spf13/cobra) for CLI command management. The main commands are:
+- `search` - Interactive anime search and selection
+- `browse` - Browse trending and popular anime
+- `download` - Download episodes for offline viewing
+
+### Scraping Engine (`internal/scraper/`)
+The heart of Karu is its scraping system that interfaces with anime streaming APIs. Rather than screen-scraping HTML (which is brittle), Karu uses GraphQL queries against the allanime.day API:
+
+```go
+type GraphQLQuery struct {
+    Query     string         `json:"query"`
+    Variables map[string]any `json:"variables"`
+}
+```
+
+This approach is much more reliable than parsing HTML and provides structured data that's easy to work with.
+
+### Interactive UI (`internal/ui/`)
+Built with [Bubble Tea](https://github.com/charmbracelet/bubbletea), the UI system provides rich terminal interfaces:
+- Search prompts with real-time input
+- Selectable lists for anime and episodes  
+- Progress indicators for downloads
+- Styled text with colors and formatting
+
+The Bubble Tea framework uses the Elm architecture pattern, making the UI code predictable and easy to reason about.
+
+### Player Integration (`internal/player/`)
+Karu automatically detects available video players on the system:
+- mpv (recommended)
+- iina (macOS)
+- vlc
+- flatpak mpv
+
+The player system is configurable through a config file, allowing users to specify custom arguments and preferences.
+
+### Workflow Management (`internal/workflow/`)
+The workflow package orchestrates the entire user journey from search to playback, handling validation and error states at each step.
+
+## Challenges Encountered
+
+### API Reliability
+One of the biggest challenges was dealing with the ever-changing landscape of anime streaming sites. APIs can be unstable, change their structure, or implement anti-bot measures. I addressed this by:
+
+- Implementing proper error handling and fallbacks
+- Using realistic browser headers to avoid detection
+- Planning for source failover in future versions
+
+### Video Source Extraction
+Extracting actual video URLs from streaming sites often involves dealing with obfuscated JavaScript and complex anti-bot measures. The current implementation handles basic deobfuscation, but this remains an ongoing challenge as sites evolve their protection mechanisms.
+
+### Cross-Platform Player Detection
+Different operating systems have different video players installed in different locations. I implemented a detection system that checks common installation paths and the system PATH, but improving this remains an active area of development.
+
+### Terminal UI Responsiveness
+Creating smooth, responsive terminal UIs that work well across different terminal emulators and window sizes required careful consideration of rendering and state management. Bubble Tea helped a lot here, but there were still edge cases to handle.
+
+## Performance Improvements
+
+Moving from bash to Go provided several performance benefits:
+
+### Concurrent Operations
+Go's goroutines make it easy to perform operations concurrently. For example, when searching for anime, Karu can fetch multiple pages of results simultaneously.
+
+### Compiled Binary
+Unlike bash scripts that need to spawn external processes for many operations, Karu is a single compiled binary that starts instantly and has predictable performance characteristics.
+
+### Memory Efficiency
+Go's garbage collector and efficient string handling make Karu much more memory-efficient when processing large amounts of data from API responses.
+
+## Future Directions
+
+The roadmap for Karu includes several exciting features:
+
+### Enhanced Discovery
+- Genre-based browsing
+- Advanced search filters (year, rating, status)
+- Personalized recommendations
+
+### Quality of Life Improvements  
+- Watch history and resume functionality
+- Favorites/watchlist management
+- Auto-play next episode
+- Subtitle support
+
+### Technical Improvements
+- Better caching for faster responses
+- Source failover for reliability
+- Update checker for new versions
+
+## Lessons Learned
+
+Building Karu taught me several valuable lessons:
+
+1. **Start with the User Experience**: The most important aspect is how the tool feels to use. Technical elegance doesn't matter if the UX is poor.
+
+2. **Embrace Modern Tooling**: While there's beauty in simple bash scripts, modern languages like Go provide tools that make building robust applications much easier.
+
+3. **Plan for Failure**: When dealing with external APIs and web scraping, things will break. Building comprehensive error handling and fallbacks from the start is crucial.
+
+4. **Community Matters**: Having good documentation, a clear installation process, and responsive issue handling makes the difference between a tool that gets used and one that gets forgotten.
+
+## Conclusion
+
+Karu represents my vision of what a modern anime streaming CLI should be: fast, reliable, and pleasant to use. While it draws inspiration from ani-cli's simplicity, it leverages Go's strengths to provide a more robust and maintainable foundation.
+
+The project has been a great learning experience in CLI design, terminal UIs, and dealing with the challenges of web scraping. If you're interested in checking it out, Karu is available on [GitHub](https://github.com/keircn/karu) and can be installed via the AUR for Arch Linux users.
+
+Whether you're a fellow developer looking to build CLI tools or just someone who wants a better way to watch anime from the terminal, I hope Karu provides some value and inspiration.
