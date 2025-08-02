@@ -1,7 +1,7 @@
 "use client";
 
-import { User, Settings, LogOut, Shield, Moon, Sun } from "lucide-react";
-import { UserAvatar } from "./user-avatar";
+import { LogOut } from "lucide-react";
+import { UserAvatar } from "~/components/navbar/user-avatar";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -9,9 +9,10 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "./dropdown-menu";
+} from "~/components/ui/dropdown-menu";
 import { authClient } from "~/lib/auth-client";
-import { useTheme } from "next-themes";
+import { UserMenuItems } from "~/components/navbar/user-menu-items";
+import { ThemeToggle } from "~/components/navbar/theme-toggle";
 
 interface UserAvatarDropdownProps {
   user: {
@@ -23,14 +24,8 @@ interface UserAvatarDropdownProps {
 }
 
 export function UserAvatarDropdown({ user }: UserAvatarDropdownProps) {
-  const { theme, setTheme } = useTheme();
-
   const handleSignOut = () => {
     authClient.signOut();
-  };
-
-  const toggleTheme = () => {
-    setTheme(theme === "dark" ? "light" : "dark");
   };
 
   return (
@@ -50,27 +45,9 @@ export function UserAvatarDropdown({ user }: UserAvatarDropdownProps) {
           </div>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
-        <DropdownMenuItem className="cursor-pointer">
-          <User className="mr-2 h-4 w-4" />
-          <span>Profile</span>
-        </DropdownMenuItem>
-        <DropdownMenuItem className="cursor-pointer">
-          <Settings className="mr-2 h-4 w-4" />
-          <span>Settings</span>
-        </DropdownMenuItem>
-        <DropdownMenuItem className="cursor-pointer">
-          <Shield className="mr-2 h-4 w-4" />
-          <span>Security</span>
-        </DropdownMenuItem>
+        <UserMenuItems />
         <DropdownMenuSeparator />
-        <DropdownMenuItem onClick={toggleTheme} className="cursor-pointer">
-          {theme === "dark" ? (
-            <Sun className="mr-2 h-4 w-4" />
-          ) : (
-            <Moon className="mr-2 h-4 w-4" />
-          )}
-          <span>{theme === "dark" ? "Light mode" : "Dark mode"}</span>
-        </DropdownMenuItem>
+        <ThemeToggle />
         <DropdownMenuSeparator />
         <DropdownMenuItem onClick={handleSignOut} className="cursor-pointer">
           <LogOut className="mr-2 h-4 w-4" />
