@@ -2,13 +2,16 @@
 
 import { User, Settings, Shield } from "lucide-react";
 import { DropdownMenuItem } from "~/components/ui/dropdown-menu";
+import Link from "next/link";
 
 export function UserMenuItems() {
   return (
     <>
-      <DropdownMenuItem className="cursor-pointer">
-        <User className="mr-2 h-4 w-4" />
-        <span>Profile</span>
+      <DropdownMenuItem asChild className="cursor-pointer">
+        <Link href="/dashboard">
+          <User className="mr-2 h-4 w-4" />
+          <span>Profile</span>
+        </Link>
       </DropdownMenuItem>
       <DropdownMenuItem className="cursor-pointer">
         <Settings className="mr-2 h-4 w-4" />

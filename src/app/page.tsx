@@ -5,6 +5,7 @@ import { Heart } from "lucide-react";
 import { config } from "~/lib/config";
 import Container from "~/components/ui/container";
 import { animationVariants } from "~/lib/animations";
+import Link from "next/link";
 
 export default function Home() {
   return (
@@ -58,7 +59,14 @@ export default function Home() {
             variants={animationVariants.fadeInUp}
             className="text-lg md:text-xl font-mono font-semibold mb-6 text-primary"
           >
-            by Keiran
+            by{" "}
+            <Link
+              href="https://github.com/keircn"
+              target="_blank"
+              className="text-foreground hover:text-muted-foreground transition-all duration-150"
+            >
+              Keiran
+            </Link>
           </motion.div>
 
           <motion.p

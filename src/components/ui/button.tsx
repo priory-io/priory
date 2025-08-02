@@ -18,16 +18,17 @@ export default function Button({
   target,
 }: ButtonProps) {
   const baseClasses =
-    "inline-flex items-center justify-center font-semibold transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-background disabled:opacity-50 disabled:cursor-not-allowed select-none whitespace-nowrap";
+    "inline-flex items-center justify-center font-semibold transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-background disabled:opacity-50 disabled:cursor-not-allowed select-none whitespace-nowrap cursor-pointer";
 
   const variantClasses = {
     primary:
-      "bg-primary text-primary-foreground hover:bg-primary/90 focus:ring-primary hover:shadow-lg hover:shadow-primary/25 hover:-translate-y-0.5",
+      "bg-primary text-primary-foreground hover:bg-primary/90 focus:ring-primary hover:shadow-lg hover:shadow-primary/25 hover:-translate-y-0.5 cursor-pointer",
     secondary:
-      "bg-secondary text-secondary-foreground hover:bg-secondary/80 focus:ring-secondary",
+      "bg-secondary text-secondary-foreground hover:bg-secondary/80 focus:ring-secondary cursor-pointer",
     outline:
-      "border border-border bg-card/50 backdrop-blur-sm text-foreground hover:bg-card/70 focus:ring-primary hover:shadow-lg hover:-translate-y-0.5",
-    ghost: "text-foreground hover:bg-primary/5 focus:ring-primary",
+      "border border-border bg-card/50 backdrop-blur-sm text-foreground hover:bg-card/70 focus:ring-primary hover:shadow-lg hover:-translate-y-0.5 cursor-pointer",
+    ghost:
+      "text-foreground hover:bg-primary/5 focus:ring-primary cursor-pointer",
   };
 
   const sizeClasses = {

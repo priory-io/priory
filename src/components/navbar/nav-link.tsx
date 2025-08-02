@@ -22,7 +22,7 @@ export function NavLink({ href, children, external = false }: NavLinkProps) {
       whileTap={{ scale: 0.98 }}
     >
       <div className="flex items-center gap-2">{children}</div>
-      <span className="absolute inset-x-3 -bottom-1 h-0.5 bg-gradient-to-r from-primary to-accent scale-x-0 group-hover:scale-x-100 transition-transform origin-left rounded-full" />
+      <span className="absolute inset-x-3 -bottom-1 h-0.5 bg-accent scale-x-0 group-hover:scale-x-100 transition-transform origin-left rounded-full" />
     </motion.a>
   );
 }

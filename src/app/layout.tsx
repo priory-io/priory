@@ -4,6 +4,7 @@ import "./globals.css";
 import { config } from "~/lib/config";
 import Navbar from "~/components/navbar";
 import { ThemeProvider } from "~/components/theme-provider";
+import { headers } from "next/headers";
 
 const leagueSpartan = League_Spartan({
   variable: "--font-sans",
@@ -65,11 +66,16 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const headersList = await headers();
+  const pathname = headersList.get("x-pathname") || "";
+  const isDashboard =
+    pathname === "/dashboard" || pathname.startsWith("/dashboard/");
+
   return (
     <html lang="en" suppressHydrationWarning>
       <body
@@ -77,7 +83,7 @@ export default function RootLayout({
       >
         <ThemeProvider>
           <div className="min-h-screen text-foreground bg-gradient-to-br from-background via-background to-primary/5">
-            <Navbar />
+            {!isDashboard && <Navbar />}
             <main>{children}</main>
           </div>
         </ThemeProvider>
