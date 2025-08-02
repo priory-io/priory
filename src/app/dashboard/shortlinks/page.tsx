@@ -12,6 +12,13 @@ import { CreateShortlinkForm } from "~/components/shortlinks/create-shortlink-fo
 import { EmptyState } from "~/components/ui/empty-state";
 import { LoadingPage, LoadingSpinner } from "~/components/ui/loading";
 import { useToast } from "~/components/ui/toast";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "~/components/ui/dialog";
 import { Shortlink, CreateShortlinkData } from "~/types/shortlink";
 
 export default function ShortlinksPage() {
@@ -165,22 +172,25 @@ export default function ShortlinksPage() {
               Manage your shortened URLs and view analytics.
             </p>
           </div>
-          <Button
-            onClick={() => setShowCreateForm(true)}
-            className="w-full sm:w-auto"
-          >
-            <Plus className="w-4 h-4" />
-            <span className="translate-y-px">Create Shortlink</span>
-          </Button>
+          <Dialog open={showCreateForm} onOpenChange={setShowCreateForm}>
+            <DialogTrigger asChild>
+              <Button className="w-full sm:w-auto">
+                <Plus className="w-4 h-4" />
+                <span className="translate-y-px">Create Shortlink</span>
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="max-w-6xl max-h-[90vh] overflow-y-auto">
+              <DialogHeader>
+                <DialogTitle>Create New Shortlink</DialogTitle>
+              </DialogHeader>
+              <CreateShortlinkForm
+                onSubmit={createShortlink}
+                onCancel={() => setShowCreateForm(false)}
+                loading={submitLoading}
+              />
+            </DialogContent>
+          </Dialog>
         </div>
-
-        {showCreateForm && (
-          <CreateShortlinkForm
-            onSubmit={createShortlink}
-            onCancel={() => setShowCreateForm(false)}
-            loading={submitLoading}
-          />
-        )}
 
         <AnalyticsDashboard refreshTrigger={analyticsRefreshTrigger} />
 

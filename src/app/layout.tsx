@@ -2,10 +2,9 @@ import type { Metadata } from "next";
 import { League_Spartan, Fira_Mono } from "next/font/google";
 import "./globals.css";
 import { config } from "~/lib/config";
-import Navbar from "~/components/navbar";
 import { ThemeProvider } from "~/components/theme-provider";
 import { ToastProvider } from "~/components/ui/toast";
-import { headers } from "next/headers";
+import { NavbarWrapper } from "~/components/navbar-wrapper";
 
 const leagueSpartan = League_Spartan({
   variable: "--font-sans",
@@ -72,11 +71,6 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const headersList = await headers();
-  const pathname = headersList.get("x-pathname") || "";
-  const isDashboard =
-    pathname === "/dashboard" || pathname.startsWith("/dashboard/");
-
   return (
     <html lang="en" suppressHydrationWarning>
       <body
@@ -85,7 +79,7 @@ export default async function RootLayout({
         <ThemeProvider>
           <ToastProvider>
             <div className="min-h-screen text-foreground bg-gradient-to-br from-background via-background to-primary/5">
-              {!isDashboard && <Navbar />}
+              <NavbarWrapper />
               <main>{children}</main>
             </div>
           </ToastProvider>

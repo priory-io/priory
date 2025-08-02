@@ -206,7 +206,7 @@ export function AnalyticsDashboard({
                 className="flex items-center justify-between p-3 bg-background/50 rounded-lg"
               >
                 <div className="flex items-center gap-3">
-                  <span className="flex items-center justify-center w-6 h-6 rounded-full bg-primary/20 text-primary text-sm font-medium">
+                  <span className="flex items-center justify-center w-6 h-6 rounded-full bg-primary/20 text-primary text-sm font-medium pt-0.5">
                     {index + 1}
                   </span>{" "}
                   <div>

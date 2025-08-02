@@ -18,17 +18,74 @@ export async function GET(
       .limit(1);
 
     if (link.length === 0) {
-      return new NextResponse("Shortlink not found", { status: 404 });
+      return new NextResponse(
+        `<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>404 - Shortlink Not Found</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body>
+  <script>window.location.href = '/not-found-shortlink';</script>
+  <noscript>
+    <meta http-equiv="refresh" content="0; url=/not-found-shortlink">
+  </noscript>
+</body>
+</html>`,
+        {
+          status: 404,
+          headers: { "Content-Type": "text/html" },
+        },
+      );
     }
 
     const linkData = link[0]!;
 
     if (!linkData.isActive) {
-      return new NextResponse("Shortlink is disabled", { status: 410 });
+      return new NextResponse(
+        `<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>410 - Shortlink Disabled</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body>
+  <script>window.location.href = '/not-found-shortlink';</script>
+  <noscript>
+    <meta http-equiv="refresh" content="0; url=/not-found-shortlink">
+  </noscript>
+</body>
+</html>`,
+        {
+          status: 410,
+          headers: { "Content-Type": "text/html" },
+        },
+      );
     }
 
     if (linkData.expiresAt && new Date() > linkData.expiresAt) {
-      return new NextResponse("Shortlink has expired", { status: 410 });
+      return new NextResponse(
+        `<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>410 - Shortlink Expired</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body>
+  <script>window.location.href = '/not-found-shortlink';</script>
+  <noscript>
+    <meta http-equiv="refresh" content="0; url=/not-found-shortlink">
+  </noscript>
+</body>
+</html>`,
+        {
+          status: 410,
+          headers: { "Content-Type": "text/html" },
+        },
+      );
     }
 
     if (linkData.password) {
@@ -70,6 +127,25 @@ export async function GET(
     return NextResponse.redirect(linkData.originalUrl, 302);
   } catch (error) {
     console.error("Error handling redirect:", error);
-    return new NextResponse("Internal server error", { status: 500 });
+    return new NextResponse(
+      `<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>500 - Server Error</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body>
+  <script>window.location.href = '/not-found-shortlink';</script>
+  <noscript>
+    <meta http-equiv="refresh" content="0; url=/not-found-shortlink">
+  </noscript>
+</body>
+</html>`,
+      {
+        status: 500,
+        headers: { "Content-Type": "text/html" },
+      },
+    );
   }
 }

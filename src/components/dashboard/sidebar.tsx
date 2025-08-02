@@ -1,11 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import {
-  User,
-  LogOut,
-  Link as LinkIcon,
-} from "lucide-react";
+import { User, LogOut, Link as LinkIcon } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { authClient } from "~/lib/auth-client";
@@ -50,10 +46,11 @@ export function DashboardSidebar() {
               <Link
                 key={item.name}
                 href={item.href}
-                className={`flex items-center gap-3 px-4 pt-2 pb-2 rounded-lg transition-all duration-200 group ${isActive
-                  ? "bg-primary/10 text-primary border border-primary/20"
-                  : "text-muted-foreground hover:text-foreground hover:bg-primary/5"
-                  }`}
+                className={`flex items-center gap-3 px-4 pt-2 pb-2 rounded-lg transition-all duration-200 group ${
+                  isActive
+                    ? "bg-primary/10 text-primary border border-primary/20"
+                    : "text-muted-foreground hover:text-foreground hover:bg-primary/5"
+                }`}
               >
                 <Icon className="w-4 h-4" />
                 <span className="font-medium mt-1">{item.name}</span>

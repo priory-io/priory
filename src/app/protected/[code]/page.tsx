@@ -19,7 +19,7 @@ export default function ProtectedLinkPage({
 
     try {
       window.location.href = `/${params.code}?password=${encodeURIComponent(password)}`;
-    } catch (err) {
+    } catch {
       setError("Invalid password");
       setLoading(false);
     }

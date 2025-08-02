@@ -61,7 +61,7 @@ export function ShortlinkCard({
             className="flex-1 sm:flex-none max-w-24 w-full"
           >
             <Copy className="w-4 h-4" />
-            <span className="hidden sm:inline">Copy</span>
+            <span className="hidden sm:inline mt-1">Copy</span>
           </Button>
           <Button
             variant="outline"
@@ -70,7 +70,7 @@ export function ShortlinkCard({
             className="text-destructive hover:text-destructive/85 flex-1 sm:flex-none max-w-24 w-full"
           >
             <Trash2 className="w-4 h-4" />
-            <span className="hidden sm:inline">Delete</span>
+            <span className="hidden sm:inline mt-1">Delete</span>
           </Button>
         </div>
       </div>
