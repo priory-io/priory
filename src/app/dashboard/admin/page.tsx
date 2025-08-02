@@ -8,7 +8,14 @@ import { UserManagement } from "~/components/admin/user-management";
 import { ShortlinkManagement } from "~/components/admin/shortlink-management";
 import { SiteStats } from "~/components/admin/site-stats";
 import { SiteManagement } from "~/components/admin/site-management";
-import { Users, Link as LinkIcon, BarChart3, Settings } from "lucide-react";
+import { InviteManagement } from "~/components/admin/invite-management";
+import {
+  Users,
+  Link as LinkIcon,
+  BarChart3,
+  Settings,
+  UserPlus,
+} from "lucide-react";
 
 const adminSections = [
   {
@@ -28,6 +35,12 @@ const adminSections = [
     name: "Shortlinks",
     icon: LinkIcon,
     component: ShortlinkManagement,
+  },
+  {
+    id: "invites",
+    name: "Invites",
+    icon: UserPlus,
+    component: InviteManagement,
   },
   {
     id: "settings",
@@ -101,7 +114,7 @@ export default function AdminDashboardPage() {
           </p>
         </div>
 
-        <div className="flex gap-2 border-b border-border/60">
+        <div className="flex gap-2 border-b border-border/60 overflow-x-auto">
           {adminSections.map((section) => {
             const Icon = section.icon;
             const isActive = activeSection === section.id;
@@ -110,7 +123,7 @@ export default function AdminDashboardPage() {
               <button
                 key={section.id}
                 onClick={() => setActiveSection(section.id)}
-                className={`flex items-center gap-2 px-4 py-2 font-medium transition-colors border-b-2 ${
+                className={`flex items-center gap-2 px-4 py-2 font-medium transition-colors border-b-2 whitespace-nowrap ${
                   isActive
                     ? "text-primary border-primary"
                     : "text-muted-foreground border-transparent hover:text-foreground"

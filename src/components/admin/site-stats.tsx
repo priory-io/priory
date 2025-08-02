@@ -15,6 +15,8 @@ interface SiteStats {
   activeShortlinks: number;
   verifiedUsers: number;
   adminUsers: number;
+  totalInvites: number;
+  activeInvites: number;
   recentActivity: {
     newUsersToday: number;
     newShortlinksToday: number;

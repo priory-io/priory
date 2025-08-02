@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "~/lib/db";
-import { user, shortlink, shortlinkClick } from "~/lib/db/schema";
+import { user, shortlink, shortlinkClick, inviteCode } from "~/lib/db/schema";
 import { auth } from "~/lib/auth";
 import { requireAdmin } from "~/lib/admin";
 import { count, eq, gte, sql } from "drizzle-orm";
@@ -27,6 +27,8 @@ export async function GET(req: NextRequest) {
       totalShortlinksResult,
       activeShortlinksResult,
       totalClicksResult,
+      totalInvitesResult,
+      activeInvitesResult,
       newUsersTodayResult,
       newShortlinksTodayResult,
       clicksTodayResult,
@@ -47,6 +49,11 @@ export async function GET(req: NextRequest) {
           total: sql<number>`COALESCE(SUM(${shortlink.clickCount}), 0)`,
         })
         .from(shortlink),
+      db.select({ count: count() }).from(inviteCode),
+      db
+        .select({ count: count() })
+        .from(inviteCode)
+        .where(eq(inviteCode.isActive, true)),
       db
         .select({ count: count() })
         .from(user)
@@ -68,6 +75,8 @@ export async function GET(req: NextRequest) {
       totalShortlinks: totalShortlinksResult[0]?.count || 0,
       activeShortlinks: activeShortlinksResult[0]?.count || 0,
       totalClicks: totalClicksResult[0]?.total || 0,
+      totalInvites: totalInvitesResult[0]?.count || 0,
+      activeInvites: activeInvitesResult[0]?.count || 0,
       recentActivity: {
         newUsersToday: newUsersTodayResult[0]?.count || 0,
         newShortlinksToday: newShortlinksTodayResult[0]?.count || 0,

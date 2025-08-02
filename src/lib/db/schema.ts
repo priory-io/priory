@@ -6,6 +6,19 @@ import {
   integer,
 } from "drizzle-orm/pg-core";
 
+export const inviteCode = pgTable("invite_code", {
+  id: text("id").primaryKey(),
+  code: text("code").notNull().unique(),
+  createdById: text("created_by_id").notNull(),
+  maxUses: integer("max_uses"),
+  currentUses: integer("current_uses").notNull().default(0),
+  expiresAt: timestamp("expires_at"),
+  isActive: boolean("is_active").notNull().default(true),
+  description: text("description"),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+});
+
 export const user = pgTable("user", {
   id: text("id").primaryKey(),
   email: text("email").notNull().unique(),
@@ -13,6 +26,7 @@ export const user = pgTable("user", {
   name: text("name").notNull(),
   image: text("image"),
   isAdmin: boolean("is_admin").notNull().default(false),
+  inviteCodeId: text("invite_code_id").references(() => inviteCode.id),
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
 });

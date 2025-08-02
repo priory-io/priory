@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Database, Trash2, Download, AlertTriangle } from "lucide-react";
+import { Database, Download } from "lucide-react";
 
 export function SiteManagement() {
   const [isLoading, setIsLoading] = useState(false);

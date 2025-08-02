@@ -120,10 +120,11 @@ export function UserManagement() {
 
                 <button
                   onClick={() => toggleAdminStatus(u.id, u.isAdmin)}
-                  className={`px-4 py-2 rounded-lg font-medium transition-colors ${u.isAdmin
-                    ? "bg-yellow-500/10 text-yellow-500 hover:bg-yellow-500/20"
-                    : "bg-primary/10 text-primary hover:bg-primary/20"
-                    }`}
+                  className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+                    u.isAdmin
+                      ? "bg-yellow-500/10 text-yellow-500 hover:bg-yellow-500/20"
+                      : "bg-primary/10 text-primary hover:bg-primary/20"
+                  }`}
                 >
                   {u.isAdmin ? "Remove Admin" : "Make Admin"}
                 </button>
