@@ -50,7 +50,6 @@ export function useScrollBehavior(threshold: number = 10): ScrollBehavior {
 
     window.addEventListener("scroll", handleScroll, { passive: true });
 
-    // Initialize scroll state after mount to prevent hydration mismatch
     updateScrollInfo();
 
     return () => {

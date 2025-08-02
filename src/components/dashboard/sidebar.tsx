@@ -1,7 +1,11 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { User, Settings, Shield, Bell, CreditCard, LogOut } from "lucide-react";
+import {
+  User,
+  LogOut,
+  Link as LinkIcon,
+} from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { authClient } from "~/lib/auth-client";
@@ -13,24 +17,9 @@ const navigationItems = [
     icon: User,
   },
   {
-    name: "Settings",
-    href: "/dashboard/settings",
-    icon: Settings,
-  },
-  {
-    name: "Security",
-    href: "/dashboard/security",
-    icon: Shield,
-  },
-  {
-    name: "Notifications",
-    href: "/dashboard/notifications",
-    icon: Bell,
-  },
-  {
-    name: "Billing",
-    href: "/dashboard/billing",
-    icon: CreditCard,
+    name: "Shortlinks",
+    href: "/dashboard/shortlinks",
+    icon: LinkIcon,
   },
 ];
 
@@ -61,11 +50,10 @@ export function DashboardSidebar() {
               <Link
                 key={item.name}
                 href={item.href}
-                className={`flex items-center gap-3 px-4 pt-2 pb-2 rounded-lg transition-all duration-200 group ${
-                  isActive
-                    ? "bg-primary/10 text-primary border border-primary/20"
-                    : "text-muted-foreground hover:text-foreground hover:bg-primary/5"
-                }`}
+                className={`flex items-center gap-3 px-4 pt-2 pb-2 rounded-lg transition-all duration-200 group ${isActive
+                  ? "bg-primary/10 text-primary border border-primary/20"
+                  : "text-muted-foreground hover:text-foreground hover:bg-primary/5"
+                  }`}
               >
                 <Icon className="w-4 h-4" />
                 <span className="font-medium mt-1">{item.name}</span>
@@ -80,7 +68,7 @@ export function DashboardSidebar() {
           })}
         </nav>
 
-        <div className="mt-8 pt-6 border-t border-border/60">
+        <div className="mt-6 pt-6 border-t border-border/60">
           <button
             onClick={handleSignOut}
             className="flex items-center gap-3 px-4 pb-2 pt-2.5 rounded-xl transition-all duration-200 text-muted-foreground hover:text-foreground hover:bg-destructive/5 w-full cursor-pointer"
