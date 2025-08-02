@@ -91,14 +91,17 @@ export function AnalyticsDashboard() {
   return (
     <div className="space-y-6">
       <div className="bg-card/50 backdrop-blur-xl border border-border/60 rounded-2xl p-6">
-        <div className="flex justify-between items-center mb-6">
+        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-6">
           <h3 className="text-lg font-semibold text-foreground flex items-center gap-2">
             <BarChart3 className="w-5 h-5" />
             Analytics Overview
           </h3>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="outline" className="flex items-center gap-2">
+              <Button
+                variant="outline"
+                className="flex items-center gap-2 w-full sm:w-auto"
+              >
                 {getTimeRangeLabel(timeRange)}
                 <ChevronDown className="w-4 h-4" />
               </Button>
@@ -117,8 +120,8 @@ export function AnalyticsDashboard() {
           </DropdownMenu>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="bg-primary-foreground border border-border rounded-xl p-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+          <div className="bg-primary-foreground border border-border rounded-xl p-4 sm:p-6">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-muted-foreground">Total Clicks</p>
@@ -128,7 +131,7 @@ export function AnalyticsDashboard() {
             </div>
           </div>
 
-          <div className="bg-primary-foreground border border-border rounded-xl p-4">
+          <div className="bg-primary-foreground border border-border rounded-xl p-4 sm:p-6">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-muted-foreground">Active Links</p>
@@ -138,7 +141,7 @@ export function AnalyticsDashboard() {
             </div>
           </div>
 
-          <div className="bg-primary-foreground border border-border rounded-xl p-4">
+          <div className="bg-primary-foreground border border-border rounded-xl p-4 sm:p-6 sm:col-span-2 lg:col-span-1">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-muted-foreground">Avg per Link</p>

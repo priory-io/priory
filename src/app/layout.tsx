@@ -4,6 +4,7 @@ import "./globals.css";
 import { config } from "~/lib/config";
 import Navbar from "~/components/navbar";
 import { ThemeProvider } from "~/components/theme-provider";
+import { ToastProvider } from "~/components/ui/toast";
 import { headers } from "next/headers";
 
 const leagueSpartan = League_Spartan({
@@ -82,10 +83,12 @@ export default async function RootLayout({
         className={`${leagueSpartan.variable} ${firaMono.variable} antialiased`}
       >
         <ThemeProvider>
-          <div className="min-h-screen text-foreground bg-gradient-to-br from-background via-background to-primary/5">
-            {!isDashboard && <Navbar />}
-            <main>{children}</main>
-          </div>
+          <ToastProvider>
+            <div className="min-h-screen text-foreground bg-gradient-to-br from-background via-background to-primary/5">
+              {!isDashboard && <Navbar />}
+              <main>{children}</main>
+            </div>
+          </ToastProvider>
         </ThemeProvider>
       </body>
     </html>
