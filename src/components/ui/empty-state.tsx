@@ -24,7 +24,7 @@ export function EmptyState({
         </p>
 
         {actionText && onAction && (
-          <Button onClick={onAction} className="inline-flex items-center gap-2">
+          <Button onClick={onAction}>
             <Plus className="w-4 h-4" />
             {actionText}
           </Button>

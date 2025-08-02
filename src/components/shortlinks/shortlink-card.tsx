@@ -60,7 +60,7 @@ export function ShortlinkCard({
             onClick={() => onCopy(shortlink.shortCode)}
             className="flex-1 sm:flex-none max-w-24 w-full"
           >
-            <Copy className="w-4 h-4 sm:mr-2" />
+            <Copy className="w-4 h-4" />
             <span className="hidden sm:inline">Copy</span>
           </Button>
           <Button
@@ -69,7 +69,7 @@ export function ShortlinkCard({
             onClick={() => onDelete(shortlink.id)}
             className="text-destructive hover:text-destructive/85 flex-1 sm:flex-none max-w-24 w-full"
           >
-            <Trash2 className="w-4 h-4 sm:mr-2" />
+            <Trash2 className="w-4 h-4" />
             <span className="hidden sm:inline">Delete</span>
           </Button>
         </div>

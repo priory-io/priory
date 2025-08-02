@@ -48,7 +48,7 @@ export default function Button({
     <>
       {loading && (
         <motion.div
-          className="w-4 h-4 border-2 border-current border-t-transparent rounded-full"
+          className="w-4 h-4 border-2 border-current border-t-transparent rounded-full flex-shrink-0"
           animate={{ rotate: 360 }}
           transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
         />

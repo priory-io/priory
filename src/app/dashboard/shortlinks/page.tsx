@@ -167,10 +167,10 @@ export default function ShortlinksPage() {
           </div>
           <Button
             onClick={() => setShowCreateForm(true)}
-            className="flex items-center gap-2 w-full sm:w-auto"
+            className="w-full sm:w-auto"
           >
             <Plus className="w-4 h-4" />
-            Create Shortlink
+            <span className="translate-y-px">Create Shortlink</span>
           </Button>
         </div>
 

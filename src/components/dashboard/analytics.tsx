@@ -49,7 +49,7 @@ export function AnalyticsDashboard({
     const startInterval = () => {
       intervalRef.current = setInterval(() => {
         fetchAnalytics(false);
-      }, 10000);
+      }, 30000);
     };
 
     const stopInterval = () => {
@@ -140,22 +140,19 @@ export function AnalyticsDashboard({
           </h3>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button
-                variant="outline"
-                className="flex items-center gap-2 w-full sm:w-auto"
-              >
+              <Button variant="outline" className="w-full sm:w-auto">
                 {getTimeRangeLabel(timeRange)}
                 <ChevronDown className="w-4 h-4" />
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent>
-              <DropdownMenuItem onClick={() => setTimeRange(7)}>
+              <DropdownMenuItem onSelect={() => setTimeRange(7)}>
                 Last 7 days
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => setTimeRange(30)}>
+              <DropdownMenuItem onSelect={() => setTimeRange(30)}>
                 Last 30 days
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => setTimeRange(90)}>
+              <DropdownMenuItem onSelect={() => setTimeRange(90)}>
                 Last 90 days
               </DropdownMenuItem>
             </DropdownMenuContent>
@@ -209,9 +206,9 @@ export function AnalyticsDashboard({
                 className="flex items-center justify-between p-3 bg-background/50 rounded-lg"
               >
                 <div className="flex items-center gap-3">
-                  <span className="flex items-center justify-center w-6 h-6 pt-1 rounded-full bg-primary/20 text-primary text-sm font-medium">
+                  <span className="flex items-center justify-center w-6 h-6 rounded-full bg-primary/20 text-primary text-sm font-medium">
                     {index + 1}
-                  </span>
+                  </span>{" "}
                   <div>
                     <p className="font-mono text-sm text-primary">
                       /{item.shortCode}
