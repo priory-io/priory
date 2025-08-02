@@ -9,8 +9,9 @@ export function NavbarWrapper() {
   const isDashboard =
     pathname === "/dashboard" || pathname.startsWith("/dashboard/");
   const isProtected = pathname.startsWith("/protected/");
+  const isAuth = pathname.startsWith("/auth/");
 
-  if (isDashboard || isProtected) {
+  if (isDashboard || isProtected || isAuth) {
     return null;
   }
 

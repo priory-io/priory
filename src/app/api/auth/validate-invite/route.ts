@@ -5,7 +5,7 @@ import { eq, and } from "drizzle-orm";
 
 export async function POST(req: NextRequest) {
   try {
-    const { code } = await req.json();
+    const { inviteCode: code } = await req.json();
 
     if (!code) {
       return NextResponse.json(
