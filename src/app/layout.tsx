@@ -3,6 +3,7 @@ import { League_Spartan, Fira_Mono } from "next/font/google";
 import "./globals.css";
 import { config } from "~/lib/config";
 import Navbar from "~/components/navbar";
+import { ThemeProvider } from "~/components/theme-provider";
 
 const leagueSpartan = League_Spartan({
   variable: "--font-sans",
@@ -70,14 +71,16 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="dark scroll-smooth">
+    <html lang="en" suppressHydrationWarning>
       <body
         className={`${leagueSpartan.variable} ${firaMono.variable} antialiased`}
       >
-        <div className="min-h-screen text-foreground bg-gradient-to-br from-background via-background to-primary/5">
-          <Navbar />
-          <main>{children}</main>
-        </div>
+        <ThemeProvider>
+          <div className="min-h-screen text-foreground bg-gradient-to-br from-background via-background to-primary/5">
+            <Navbar />
+            <main>{children}</main>
+          </div>
+        </ThemeProvider>
       </body>
     </html>
   );

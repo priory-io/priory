@@ -6,9 +6,10 @@ import { config } from "~/lib/config";
 import logo from "~/assets/priory-logo.png";
 import Image from "next/image";
 import { useScrollBehavior } from "~/hooks/useScrollBehavior";
-import { Github, LogIn, LogOut } from "lucide-react";
+import { GitHubLogoIcon } from "@radix-ui/react-icons";
+import { LogIn } from "lucide-react";
 import { authClient } from "~/lib/auth-client";
-import { UserAvatar } from "./ui/user-avatar";
+import { UserAvatarDropdown } from "./ui/user-avatar-dropdown";
 
 export default function Navbar() {
   const { isScrolled, isVisible } = useScrollBehavior();
@@ -18,10 +19,6 @@ export default function Navbar() {
     authClient.signIn.social({
       provider: "github",
     });
-  };
-
-  const handleSignOut = () => {
-    authClient.signOut();
   };
 
   return (
@@ -76,7 +73,7 @@ export default function Navbar() {
                   target="_blank"
                 >
                   <div className="flex items-center gap-2">
-                    <Github className="w-4 h-4" />
+                    <GitHubLogoIcon className="w-4 h-4" />
                     <span className="translate-y-[2px]">GitHub</span>
                   </div>
                   <span className="absolute inset-x-3 -bottom-1 h-0.5 bg-gradient-to-r from-primary to-accent scale-x-0 group-hover:scale-x-100 transition-transform origin-left rounded-full" />
@@ -104,18 +101,7 @@ export default function Navbar() {
 
             <div className="flex items-center gap-4">
               {session?.user ? (
-                <div className="flex items-center gap-3">
-                  <UserAvatar user={session.user} size={32} />
-                  <button
-                    onClick={handleSignOut}
-                    className="group relative text-muted-foreground hover:text-foreground transition-colors px-3 py-2 rounded-lg hover:bg-primary/5 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-card cursor-pointer"
-                  >
-                    <div className="flex items-center gap-2">
-                      <LogOut className="w-4 h-4" />
-                      <span className="translate-y-[2px]">Sign Out</span>
-                    </div>
-                  </button>
-                </div>
+                <UserAvatarDropdown user={session.user} />
               ) : (
                 <button
                   onClick={handleSignIn}
