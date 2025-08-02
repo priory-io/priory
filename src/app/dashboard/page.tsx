@@ -10,7 +10,7 @@ export default function DashboardPage() {
 
   if (isPending) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5 flex items-center justify-center">
+      <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="animate-spin rounded-full h-8 w-8 border-2 border-primary border-t-transparent"></div>
       </div>
     );
