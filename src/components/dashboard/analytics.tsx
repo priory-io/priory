@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import {
   BarChart3,
   TrendingUp,
@@ -29,13 +29,54 @@ interface AnalyticsData {
   }>;
 }
 
-export function AnalyticsDashboard() {
+interface AnalyticsDashboardProps {
+  refreshTrigger?: number;
+}
+
+export function AnalyticsDashboard({
+  refreshTrigger,
+}: AnalyticsDashboardProps) {
   const [analytics, setAnalytics] = useState<AnalyticsData | null>(null);
   const [loading, setLoading] = useState(true);
   const [timeRange, setTimeRange] = useState(30);
+  const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
     fetchAnalytics();
+  }, [timeRange, refreshTrigger]);
+
+  useEffect(() => {
+    const startInterval = () => {
+      intervalRef.current = setInterval(() => {
+        fetchAnalytics(false);
+      }, 10000);
+    };
+
+    const stopInterval = () => {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+        intervalRef.current = null;
+      }
+    };
+
+    startInterval();
+
+    const handleVisibilityChange = () => {
+      if (document.hidden) {
+        stopInterval();
+      } else {
+        stopInterval();
+        startInterval();
+        fetchAnalytics(false);
+      }
+    };
+
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+
+    return () => {
+      stopInterval();
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+    };
   }, [timeRange]);
 
   const getTimeRangeLabel = (days: number) => {
@@ -51,8 +92,9 @@ export function AnalyticsDashboard() {
     }
   };
 
-  const fetchAnalytics = async () => {
+  const fetchAnalytics = async (showLoading = true) => {
     try {
+      if (showLoading) setLoading(true);
       const response = await fetch(`/api/analytics?days=${timeRange}`);
       if (response.ok) {
         const data = await response.json();
@@ -61,7 +103,7 @@ export function AnalyticsDashboard() {
     } catch (error) {
       console.error("Error fetching analytics:", error);
     } finally {
-      setLoading(false);
+      if (showLoading) setLoading(false);
     }
   };
 

@@ -20,6 +20,7 @@ export default function ShortlinksPage() {
   const [loading, setLoading] = useState(true);
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [submitLoading, setSubmitLoading] = useState(false);
+  const [analyticsRefreshTrigger, setAnalyticsRefreshTrigger] = useState(0);
   const { addToast } = useToast();
 
   useEffect(() => {
@@ -27,6 +28,10 @@ export default function ShortlinksPage() {
       fetchShortlinks();
     }
   }, [session]);
+
+  const triggerAnalyticsRefresh = () => {
+    setAnalyticsRefreshTrigger((prev) => prev + 1);
+  };
 
   const fetchShortlinks = async () => {
     try {
@@ -66,6 +71,7 @@ export default function ShortlinksPage() {
       if (response.ok) {
         setShowCreateForm(false);
         await fetchShortlinks();
+        triggerAnalyticsRefresh();
         addToast({
           type: "success",
           title: "Shortlink created successfully",
@@ -97,6 +103,7 @@ export default function ShortlinksPage() {
       });
       if (response.ok) {
         await fetchShortlinks();
+        triggerAnalyticsRefresh();
         addToast({
           type: "success",
           title: "Shortlink deleted",
@@ -175,7 +182,7 @@ export default function ShortlinksPage() {
           />
         )}
 
-        <AnalyticsDashboard />
+        <AnalyticsDashboard refreshTrigger={analyticsRefreshTrigger} />
 
         <div className="bg-card/50 backdrop-blur-xl border border-border/60 rounded-2xl p-6">
           <h3 className="text-lg font-semibold text-foreground mb-6">
