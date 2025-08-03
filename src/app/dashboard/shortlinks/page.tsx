@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useMemo, useCallback, useRef } from "react";
+import useSWR, { mutate } from "swr";
 import { authClient } from "~/lib/auth-client";
 import { DashboardLayout } from "~/components/dashboard/layout";
 import { redirect } from "next/navigation";
@@ -21,149 +22,152 @@ import {
 } from "~/components/ui/dialog";
 import { Shortlink, CreateShortlinkData } from "~/types/shortlink";
 
+const fetcher = (url: string, signal?: AbortSignal) =>
+  fetch(url, { signal }).then(async (r) => {
+    if (!r.ok) {
+      const data = await r.json().catch(() => ({}));
+      const msg = data?.error || `Request failed: ${r.status}`;
+      throw new Error(msg);
+    }
+    return r.json();
+  });
+
 export default function ShortlinksPage() {
   const { data: session, isPending } = authClient.useSession();
-  const [shortlinks, setShortlinks] = useState<Shortlink[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [showCreateForm, setShowCreateForm] = useState(false);
-  const [submitLoading, setSubmitLoading] = useState(false);
-  const [analyticsRefreshTrigger, setAnalyticsRefreshTrigger] = useState(0);
   const { addToast } = useToast();
+  const createDialogRef = useRef<HTMLButtonElement | null>(null);
 
-  useEffect(() => {
-    if (session?.user) {
-      fetchShortlinks();
+  const aborter = useRef<AbortController | null>(null);
+  const swrKey = session?.user ? "/api/shortlinks" : null;
+
+  const { data, error, isLoading } = useSWR<{
+    shortlinks: Shortlink[];
+  }>(
+    swrKey,
+    async (key: string) => {
+      aborter.current?.abort();
+      aborter.current = new AbortController();
+      return fetcher(key, aborter.current.signal);
+    },
+    {
+      revalidateOnFocus: true,
+      shouldRetryOnError: false,
     }
-  }, [session]);
+  );
 
-  const triggerAnalyticsRefresh = () => {
-    setAnalyticsRefreshTrigger((prev) => prev + 1);
-  };
+  const shortlinks = useMemo(() => data?.shortlinks ?? [], [data]);
 
-  const fetchShortlinks = async () => {
-    try {
-      const response = await fetch("/api/shortlinks");
-      if (response.ok) {
-        const data = await response.json();
-        setShortlinks(data.shortlinks);
-      } else {
-        addToast({
-          type: "error",
-          title: "Failed to fetch shortlinks",
-          description: "Please try refreshing the page.",
+  const closeCreateDialog = useCallback(() => {
+    createDialogRef.current?.click();
+  }, []);
+
+  const createShortlink = useCallback(
+    async (formData: CreateShortlinkData) => {
+      try {
+        const res = await fetch("/api/shortlinks", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(formData),
         });
-      }
-    } catch (error) {
-      console.error("Error fetching shortlinks:", error);
-      addToast({
-        type: "error",
-        title: "Failed to fetch shortlinks",
-        description: "Please check your connection and try again.",
-      });
-    } finally {
-      setLoading(false);
-    }
-  };
 
-  const createShortlink = async (formData: CreateShortlinkData) => {
-    setSubmitLoading(true);
+        if (!res.ok) {
+          const err = await res.json().catch(() => ({}));
+          throw new Error(err?.error || "Failed to create shortlink");
+        }
 
-    try {
-      const response = await fetch("/api/shortlinks", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
-      });
-
-      if (response.ok) {
-        setShowCreateForm(false);
-        await fetchShortlinks();
-        triggerAnalyticsRefresh();
         addToast({
           type: "success",
-          title: "Shortlink created successfully",
-          description: "Your new shortlink is ready to use.",
+          title: "Shortlink created",
+          description: "Your new shortlink is ready.",
         });
-      } else {
-        const errorData = await response.json();
+
+        await mutate(swrKey);
+        closeCreateDialog();
+      } catch (e) {
         addToast({
           type: "error",
           title: "Failed to create shortlink",
-          description: errorData.error || "Please try again.",
+          description:
+            e instanceof Error ? e.message : "Please try again shortly.",
         });
       }
-    } catch (error) {
-      console.error("Error creating shortlink:", error);
-      addToast({
-        type: "error",
-        title: "Failed to create shortlink",
-        description: "Please check your connection and try again.",
-      });
-    } finally {
-      setSubmitLoading(false);
-    }
-  };
-  const deleteShortlink = async (id: string) => {
-    try {
-      const response = await fetch(`/api/shortlinks?id=${id}`, {
-        method: "DELETE",
-      });
-      if (response.ok) {
-        await fetchShortlinks();
-        triggerAnalyticsRefresh();
+    },
+    [addToast, closeCreateDialog, swrKey]
+  );
+
+  const deleteShortlink = useCallback(
+    async (id: string) => {
+      if (!swrKey) return;
+
+      const prev = data;
+
+      mutate(
+        swrKey,
+        (current: { shortlinks: Shortlink[] } | undefined) => {
+          if (!current) return current;
+          return {
+            shortlinks: current.shortlinks.filter((l) => l.id !== id),
+          };
+        },
+        false
+      );
+
+      try {
+        const res = await fetch(`/api/shortlinks?id=${id}`, {
+          method: "DELETE",
+        });
+
+        if (!res.ok) {
+          throw new Error("Delete failed");
+        }
+
         addToast({
           type: "success",
           title: "Shortlink deleted",
-          description: "The shortlink has been removed successfully.",
+          description: "The shortlink has been removed.",
         });
-      } else {
+
+        await mutate(swrKey);
+      } catch {
+        mutate(swrKey, prev, false);
         addToast({
           type: "error",
-          title: "Failed to delete shortlink",
+          title: "Failed to delete",
           description: "Please try again.",
         });
       }
-    } catch (error) {
-      console.error("Error deleting shortlink:", error);
-      addToast({
-        type: "error",
-        title: "Failed to delete shortlink",
-        description: "Please check your connection and try again.",
-      });
-    }
-  };
+    },
+    [addToast, data, swrKey]
+  );
 
-  const copyToClipboard = async (shortCode: string) => {
-    try {
-      const url = `${window.location.origin}/${shortCode}`;
-      await navigator.clipboard.writeText(url);
-      addToast({
-        type: "success",
-        title: "Link copied to clipboard",
-        description: "You can now paste it anywhere.",
-      });
-    } catch (error) {
-      console.error("Failed to copy to clipboard:", error);
-      addToast({
-        type: "error",
-        title: "Failed to copy link",
-        description: "Please try copying manually.",
-      });
-    }
-  };
+  const copyToClipboard = useCallback(
+    async (shortCode: string) => {
+      try {
+        const url = new URL(shortCode, window.location.origin).toString();
+        await navigator.clipboard.writeText(url);
+        addToast({
+          type: "success",
+          title: "Copied",
+          description: "Link copied to clipboard.",
+        });
+      } catch {
+        addToast({
+          type: "error",
+          title: "Copy failed",
+          description: "Please copy it manually.",
+        });
+      }
+    },
+    [addToast]
+  );
 
-  if (isPending) {
-    return <LoadingPage />;
-  }
-
-  if (!session?.user) {
-    redirect("/");
-  }
+  if (isPending) return <LoadingPage />;
+  if (!session?.user) redirect("/");
 
   return (
     <DashboardLayout>
       <div className="space-y-8">
-        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-4">
+        <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
           <div className="space-y-2">
             <h1 className="text-2xl sm:text-3xl font-bold text-foreground">
               Shortlinks
@@ -172,9 +176,14 @@ export default function ShortlinksPage() {
               Manage your shortened URLs and view analytics.
             </p>
           </div>
-          <Dialog open={showCreateForm} onOpenChange={setShowCreateForm}>
+
+          <Dialog>
             <DialogTrigger asChild>
-              <Button className="w-full sm:w-auto">
+              <Button
+                className="w-full sm:w-auto"
+                ref={createDialogRef as any}
+                aria-label="Create shortlink"
+              >
                 <Plus className="w-4 h-4" />
                 <span className="translate-y-px">Create Shortlink</span>
               </Button>
@@ -185,30 +194,38 @@ export default function ShortlinksPage() {
               </DialogHeader>
               <CreateShortlinkForm
                 onSubmit={createShortlink}
-                onCancel={() => setShowCreateForm(false)}
-                loading={submitLoading}
+                onCancel={closeCreateDialog}
               />
             </DialogContent>
           </Dialog>
         </div>
 
-        <AnalyticsDashboard refreshTrigger={analyticsRefreshTrigger} />
+        <AnalyticsDashboard
+          refreshTrigger={shortlinks.length}
+        />
 
         <div className="bg-card/50 backdrop-blur-xl border border-border/60 rounded-2xl p-6">
           <h3 className="text-lg font-semibold text-foreground mb-6">
             Your Shortlinks
           </h3>
 
-          {loading ? (
+          {isLoading ? (
             <div className="text-center py-8">
               <LoadingSpinner size="lg" className="mx-auto" />
             </div>
+          ) : error ? (
+            <EmptyState
+              title="Failed to load"
+              description="We couldn't load your shortlinks. Try again."
+              actionText="Retry"
+              onAction={() => mutate(swrKey)}
+            />
           ) : shortlinks.length === 0 ? (
             <EmptyState
               title="No shortlinks yet"
-              description="Create your first shortlink to get started with link management and analytics."
+              description="Create your first shortlink to get started."
               actionText="Create Shortlink"
-              onAction={() => setShowCreateForm(true)}
+              onAction={() => createDialogRef.current?.click()}
             />
           ) : (
             <div className="space-y-4">
