@@ -76,7 +76,7 @@ export default function SignInPage() {
         });
 
         if (error) {
-          setError(error.message);
+          setError(error.message || "An unexpected error occurred");
           return;
         }
 
@@ -85,6 +85,7 @@ export default function SignInPage() {
         }
       }
     } catch (err) {
+      console.error(`Auth error: ${err}`);
       setError("An unexpected error occurred");
     } finally {
       setIsEmailLoading(false);
@@ -126,7 +127,7 @@ export default function SignInPage() {
         );
       }
 
-      const { data, error } = await authClient.signIn.social({
+      const { error } = await authClient.signIn.social({
         provider: "github",
         callbackURL: "/dashboard",
       });
@@ -135,7 +136,7 @@ export default function SignInPage() {
         setError(error.message || "An unexpected error occurred");
         setIsOauthLoading(false);
       }
-    } catch (err) {
+    } catch {
       setError("An unexpected error occurred");
       setIsOauthLoading(false);
     }

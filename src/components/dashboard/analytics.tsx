@@ -42,7 +42,7 @@ const fetcher = async (url: string) => {
     const msg = data?.error || `Request failed: ${res.status}`;
     throw new Error(msg);
   }
-  return (res.json() as Promise<AnalyticsData>);
+  return res.json() as Promise<AnalyticsData>;
 };
 
 export function AnalyticsDashboard({
@@ -58,13 +58,17 @@ export function AnalyticsDashboard({
     return `/api/analytics?${params.toString()}`;
   }, [timeRange, refreshTrigger]);
 
-  const { data, error, isLoading, mutate } = useSWR<AnalyticsData>(key, fetcher, {
-    revalidateOnFocus: true,
-    shouldRetryOnError: false,
-    refreshWhenHidden: false,
-    refreshInterval: () =>
-      typeof document !== "undefined" && !document.hidden ? 30000 : 0,
-  });
+  const { data, error, isLoading, mutate } = useSWR<AnalyticsData>(
+    key,
+    fetcher,
+    {
+      revalidateOnFocus: true,
+      shouldRetryOnError: false,
+      refreshWhenHidden: false,
+      refreshInterval: () =>
+        typeof document !== "undefined" && !document.hidden ? 30000 : 0,
+    },
+  );
 
   const getTimeRangeLabel = useCallback((days: number) => {
     if (days === 7) return "Last 7 days";

@@ -12,6 +12,7 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({ inviteCode: null });
   } catch (error) {
+    console.error(`OAuth callback error: ${error}`);
     return NextResponse.json(
       { error: "Internal server error" },
       { status: 500 },

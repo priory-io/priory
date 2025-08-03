@@ -52,7 +52,7 @@ export default function ShortlinksPage() {
     {
       revalidateOnFocus: true,
       shouldRetryOnError: false,
-    }
+    },
   );
 
   const shortlinks = useMemo(() => data?.shortlinks ?? [], [data]);
@@ -92,7 +92,7 @@ export default function ShortlinksPage() {
         });
       }
     },
-    [addToast, closeCreateDialog, swrKey]
+    [addToast, closeCreateDialog, swrKey],
   );
 
   const deleteShortlink = useCallback(
@@ -109,7 +109,7 @@ export default function ShortlinksPage() {
             shortlinks: current.shortlinks.filter((l) => l.id !== id),
           };
         },
-        false
+        false,
       );
 
       try {
@@ -137,7 +137,7 @@ export default function ShortlinksPage() {
         });
       }
     },
-    [addToast, data, swrKey]
+    [addToast, data, swrKey],
   );
 
   const copyToClipboard = useCallback(
@@ -158,7 +158,7 @@ export default function ShortlinksPage() {
         });
       }
     },
-    [addToast]
+    [addToast],
   );
 
   if (isPending) return <LoadingPage />;
@@ -200,9 +200,7 @@ export default function ShortlinksPage() {
           </Dialog>
         </div>
 
-        <AnalyticsDashboard
-          refreshTrigger={shortlinks.length}
-        />
+        <AnalyticsDashboard refreshTrigger={shortlinks.length} />
 
         <div className="bg-card/50 backdrop-blur-xl border border-border/60 rounded-2xl p-6">
           <h3 className="text-lg font-semibold text-foreground mb-6">
