@@ -23,7 +23,7 @@ import {
 import { Shortlink, CreateShortlinkData } from "~/types/shortlink";
 
 const fetcher = (url: string, signal?: AbortSignal) =>
-  fetch(url, { signal }).then(async (r) => {
+  fetch(url, signal ? { signal } : {}).then(async (r) => {
     if (!r.ok) {
       const data = await r.json().catch(() => ({}));
       const msg = data?.error || `Request failed: ${r.status}`;
@@ -181,7 +181,7 @@ export default function ShortlinksPage() {
             <DialogTrigger asChild>
               <Button
                 className="w-full sm:w-auto"
-                ref={createDialogRef as any}
+                ref={createDialogRef}
                 aria-label="Create shortlink"
               >
                 <Plus className="w-4 h-4" />

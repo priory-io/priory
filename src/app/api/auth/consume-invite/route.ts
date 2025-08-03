@@ -28,6 +28,12 @@ export async function POST(req: NextRequest) {
     }
 
     const inviteRecord = invite[0];
+    if (!inviteRecord) {
+      return NextResponse.json(
+        { error: "Invalid invite code" },
+        { status: 400 },
+      );
+    }
 
     if (inviteRecord.expiresAt && new Date() > inviteRecord.expiresAt) {
       return NextResponse.json(

@@ -53,7 +53,7 @@ export default function SignInPage() {
         });
 
         if (error) {
-          setError(error.message);
+          setError(error.message || "An unexpected error occurred");
           return;
         }
 
