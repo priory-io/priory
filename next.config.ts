@@ -21,14 +21,6 @@ const nextConfig: NextConfig = {
     ignoreBuildErrors: true,
   },
 
-  webpack: (config) => {
-    config.watchOptions = {
-      ...config.watchOptions,
-      ignored: ["**/scripts/**"],
-    };
-    return config;
-  },
-
   experimental: {
     reactCompiler: true,
     cssChunking: "strict",
