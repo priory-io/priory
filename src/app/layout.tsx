@@ -1,21 +1,10 @@
 import type { Metadata } from "next";
-import { League_Spartan, Fira_Mono } from "next/font/google";
+import { GeistSans, GeistMono } from "geist/font";
 import "./globals.css";
 import { config } from "~/lib/config";
 import { ThemeProvider } from "~/components/theme-provider";
 import { ToastProvider } from "~/components/ui/toast";
 import { NavbarWrapper } from "~/components/navbar-wrapper";
-
-const leagueSpartan = League_Spartan({
-  variable: "--font-sans",
-  subsets: ["latin"],
-});
-
-const firaMono = Fira_Mono({
-  variable: "--font-mono",
-  weight: "500",
-  subsets: ["latin"],
-});
 
 export const metadata: Metadata = {
   title: {
@@ -74,7 +63,7 @@ export default async function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body
-        className={`${leagueSpartan.variable} ${firaMono.variable} antialiased`}
+        className={`${GeistSans.variable} ${GeistMono.variable} antialiased`}
       >
         <ThemeProvider>
           <ToastProvider>
