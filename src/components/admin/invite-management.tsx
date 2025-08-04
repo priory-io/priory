@@ -24,7 +24,7 @@ interface InviteCode {
   createdBy: {
     name: string;
     email: string;
-  };
+  } | null;
 }
 
 interface CreateInviteForm {
@@ -298,7 +298,7 @@ export function InviteManagement() {
                         {new Date(invite.createdAt).toLocaleDateString()}
                       </div>
 
-                      <span>by {invite.createdBy.name}</span>
+                      <span>by {invite.createdBy?.name || "Anonymous"}</span>
                     </div>
                   </div>
 
