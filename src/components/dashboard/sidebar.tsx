@@ -1,7 +1,13 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { User, LogOut, Link as LinkIcon, Shield } from "lucide-react";
+import {
+  User,
+  LogOut,
+  Link as LinkIcon,
+  Shield,
+  FolderOpen,
+} from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { authClient } from "~/lib/auth-client";
@@ -12,6 +18,11 @@ const navigationItems = [
     name: "Account",
     href: "/dashboard",
     icon: User,
+  },
+  {
+    name: "Files",
+    href: "/dashboard/files",
+    icon: FolderOpen,
   },
   {
     name: "Shortlinks",

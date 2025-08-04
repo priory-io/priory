@@ -7,7 +7,7 @@ export interface ButtonProps {
   className?: string;
   disabled?: boolean;
   loading?: boolean;
-  onClick?: () => void;
+  onClick?: (e?: React.MouseEvent) => void;
   type?: "button" | "submit" | "reset";
   href?: string;
   target?: string;

@@ -4,6 +4,7 @@ import {
   timestamp,
   boolean,
   integer,
+  bigint,
 } from "drizzle-orm/pg-core";
 
 export const inviteCode = pgTable("invite_code", {
@@ -99,4 +100,18 @@ export const shortlinkClick = pgTable("shortlink_click", {
   country: text("country"),
   city: text("city"),
   clickedAt: timestamp("clicked_at").notNull().defaultNow(),
+});
+
+export const file = pgTable("file", {
+  id: text("id").primaryKey(),
+  userId: text("user_id")
+    .notNull()
+    .references(() => user.id, { onDelete: "cascade" }),
+  filename: text("filename").notNull(),
+  originalFilename: text("original_filename").notNull(),
+  mimeType: text("mime_type").notNull(),
+  size: bigint("size", { mode: "number" }).notNull(),
+  isActive: boolean("is_active").notNull().default(true),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
 });
