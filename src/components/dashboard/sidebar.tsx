@@ -11,7 +11,7 @@ import {
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { authClient } from "~/lib/auth-client";
-import { useEffect, useState } from "react";
+import { useSidebar } from "./sidebar-context";
 
 const navigationItems = [
   {
@@ -33,26 +33,7 @@ const navigationItems = [
 
 export function DashboardSidebar() {
   const pathname = usePathname();
-  const { data: session } = authClient.useSession();
-  const [isAdmin, setIsAdmin] = useState(false);
-
-  useEffect(() => {
-    const checkAdminStatus = async () => {
-      if (session?.user?.id) {
-        try {
-          const response = await fetch("/api/auth/admin-check");
-          if (response.ok) {
-            const data = await response.json();
-            setIsAdmin(data.isAdmin);
-          }
-        } catch (error) {
-          console.error("Failed to check admin status:", error);
-        }
-      }
-    };
-
-    checkAdminStatus();
-  }, [session?.user?.id]);
+  const { shouldAnimate, isAdmin } = useSidebar();
 
   const handleSignOut = () => {
     authClient.signOut();
@@ -61,9 +42,9 @@ export function DashboardSidebar() {
   return (
     <motion.aside
       className="w-64 bg-card/50 backdrop-blur-xl border-r border-border/60 h-full"
-      initial={{ x: -20, opacity: 0 }}
+      initial={shouldAnimate ? { x: -20, opacity: 0 } : false}
       animate={{ x: 0, opacity: 1 }}
-      transition={{ duration: 0.3 }}
+      transition={shouldAnimate ? { duration: 0.3 } : { duration: 0 }}
     >
       <div className="p-6">
         <h2 className="text-lg font-semibold text-foreground mb-6">
