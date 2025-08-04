@@ -5,6 +5,7 @@ import { config } from "~/lib/config";
 import { ThemeProvider } from "~/components/theme-provider";
 import { ToastProvider } from "~/components/ui/toast";
 import { NavbarWrapper } from "~/components/navbar-wrapper";
+import { SidebarProvider } from "~/components/dashboard/sidebar-context";
 
 export const metadata: Metadata = {
   title: {
@@ -66,12 +67,14 @@ export default async function RootLayout({
         className={`${GeistSans.variable} ${GeistMono.variable} antialiased`}
       >
         <ThemeProvider>
-          <ToastProvider>
-            <div className="min-h-screen text-foreground bg-gradient-to-br from-background via-background to-primary/5">
-              <NavbarWrapper />
-              <main>{children}</main>
-            </div>
-          </ToastProvider>
+          <SidebarProvider>
+            <ToastProvider>
+              <div className="min-h-screen text-foreground bg-gradient-to-br from-background via-background to-primary/5">
+                <NavbarWrapper />
+                <main>{children}</main>
+              </div>
+            </ToastProvider>
+          </SidebarProvider>
         </ThemeProvider>
       </body>
     </html>
