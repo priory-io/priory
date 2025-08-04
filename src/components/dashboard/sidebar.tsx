@@ -66,7 +66,7 @@ export function DashboardSidebar() {
                 }`}
               >
                 <Icon className="w-4 h-4" />
-                <span className="font-medium mt-1">{item.name}</span>
+                <span className="font-medium">{item.name}</span>
                 {isActive && (
                   <motion.div
                     className="ml-auto w-1 h-1 bg-primary rounded-full"
@@ -87,7 +87,7 @@ export function DashboardSidebar() {
               }`}
             >
               <Shield className="w-4 h-4" />
-              <span className="font-medium mt-1">Admin</span>
+              <span className="font-medium">Admin</span>
               {pathname === "/dashboard/admin" && (
                 <motion.div
                   className="ml-auto w-1 h-1 bg-primary rounded-full"
@@ -104,7 +104,7 @@ export function DashboardSidebar() {
             className="flex items-center gap-3 px-4 pb-2 pt-2.5 rounded-xl transition-all duration-200 text-muted-foreground hover:text-foreground hover:bg-destructive/5 w-full cursor-pointer"
           >
             <LogOut className="w-4 h-4" />
-            <span className="font-medium mt-1">Sign Out</span>
+            <span className="font-medium">Sign Out</span>
           </button>
         </div>
       </div>

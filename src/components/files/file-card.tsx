@@ -203,7 +203,7 @@ export function FileCard({ file, onCopy, onDelete, onRename }: FileCardProps) {
           <div className="flex items-center gap-4 text-xs text-muted-foreground">
             <span>{formatFileSize(file.size)}</span>
             <span className="flex items-center gap-1">
-              <Calendar className="w-3 h-3" />
+              <Calendar className="w-3 h-3 mb-0.5" />
               {new Date(file.createdAt).toLocaleDateString()}
             </span>
             <span className="capitalize">{getFileCategory(file.mimeType)}</span>

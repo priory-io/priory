@@ -20,7 +20,7 @@ export function AuthSection({ session }: AuthSectionProps) {
     >
       <div className="flex items-center gap-2">
         <LogIn className="w-4 h-4" />
-        <span className="translate-y-[2px]">Sign In</span>
+        <span>Sign In</span>
       </div>
     </Link>
   );

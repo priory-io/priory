@@ -185,7 +185,7 @@ export default function ShortlinksPage() {
                 aria-label="Create shortlink"
               >
                 <Plus className="w-4 h-4" />
-                <span className="translate-y-px">Create Shortlink</span>
+                Create Shortlink
               </Button>
             </DialogTrigger>
             <DialogContent className="max-w-6xl max-h-[90vh] overflow-y-auto">

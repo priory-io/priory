@@ -236,7 +236,7 @@ export default function FilesPage() {
                 aria-label="Upload files"
               >
                 <Plus className="w-4 h-4" />
-                <span className="translate-y-px">Upload Files</span>
+                Upload Files
               </Button>
             </DialogTrigger>
             <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">

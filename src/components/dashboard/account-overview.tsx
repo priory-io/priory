@@ -44,11 +44,11 @@ export function AccountOverview({ user }: AccountOverviewProps) {
             </h2>
             <div className="space-y-2">
               <div className="flex items-center gap-2 text-muted-foreground">
-                <Mail className="w-4 h-4 mb-1.5" />
+                <Mail className="w-4 h-4" />
                 <span>{user.email}</span>
               </div>
               <div className="flex items-center gap-2 text-muted-foreground">
-                <Calendar className="w-4 h-4 mb-1.5" />
+                <Calendar className="w-4 h-4" />
                 <span>
                   Member since {new Date(user.createdAt).toLocaleDateString()}
                 </span>

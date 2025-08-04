@@ -91,26 +91,26 @@ export function UserManagement() {
                     <div className="flex items-center gap-2">
                       <h3 className="font-medium text-foreground">{u.name}</h3>
                       {u.isAdmin && (
-                        <Crown className="w-4 h-4 mb-1.5 text-yellow-500" />
+                        <Crown className="w-4 h-4 text-yellow-500" />
                       )}
                     </div>
 
                     <div className="flex items-center gap-4 text-sm text-muted-foreground">
                       <div className="flex items-center gap-1">
-                        <Mail className="w-3 h-3 mb-1" />
+                        <Mail className="w-3 h-3" />
                         {u.email}
                       </div>
 
                       <div className="flex items-center gap-1">
-                        <Calendar className="w-3 h-3 mb-1" />
+                        <Calendar className="w-3 h-3" />
                         {new Date(u.createdAt).toLocaleDateString()}
                       </div>
 
                       <div className="flex items-center gap-1">
                         {u.emailVerified ? (
-                          <UserCheck className="w-3 h-3 mb-1 text-green-500" />
+                          <UserCheck className="w-3 h-3 text-green-500" />
                         ) : (
-                          <UserX className="w-3 h-3 mb-1 text-red-500" />
+                          <UserX className="w-3 h-3 text-red-500" />
                         )}
                         {u.emailVerified ? "Verified" : "Unverified"}
                       </div>

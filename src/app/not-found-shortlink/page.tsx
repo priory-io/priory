@@ -21,7 +21,7 @@ export default function NotFoundShortlink() {
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
           <Button href="/" className="flex items-center gap-2">
             <Home className="w-4 h-4" />
-            <span className="translate-y-px">Go Home</span>
+            Go Home
           </Button>
           <Button
             variant="outline"
@@ -29,7 +29,7 @@ export default function NotFoundShortlink() {
             className="flex items-center gap-2"
           >
             <ArrowLeft className="w-4 h-4" />
-            <span className="translate-y-px">Go Back</span>
+            Go Back
           </Button>
         </div>
       </div>

@@ -38,9 +38,9 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
     };
 
     const sizeClasses = {
-      sm: "px-3 py-1.5 text-sm rounded-lg h-8 gap-1.5",
-      md: "px-4 py-2 text-base rounded-xl h-10 gap-2",
-      lg: "px-6 py-3 text-lg rounded-xl h-12 gap-2",
+      sm: "px-3 py-1.5 text-sm rounded-lg h-8 gap-1.5 leading-none",
+      md: "px-4 py-2 text-base rounded-xl h-10 gap-2 leading-none",
+      lg: "px-6 py-3 text-lg rounded-xl h-12 gap-2 leading-none",
     };
 
     const combinedClasses = cn(
