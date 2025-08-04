@@ -47,8 +47,8 @@ export function DashboardSidebar() {
       transition={shouldAnimate ? { duration: 0.3 } : { duration: 0 }}
     >
       <div className="p-6">
-        <h2 className="text-lg font-semibold text-foreground mb-6">
-          Dashboard
+        <h2 className="text-3xl font-semibold text-foreground mb-6">
+          Priory
         </h2>
         <nav className="space-y-2">
           {navigationItems.map((item) => {
@@ -59,11 +59,10 @@ export function DashboardSidebar() {
               <Link
                 key={item.name}
                 href={item.href}
-                className={`flex items-center gap-3 px-4 pt-2 pb-2 rounded-lg transition-all duration-200 group ${
-                  isActive
-                    ? "bg-primary/10 text-primary border border-primary/20"
-                    : "text-muted-foreground hover:text-foreground hover:bg-primary/5"
-                }`}
+                className={`flex items-center gap-3 px-4 pt-2 pb-2 rounded-lg transition-all duration-200 group ${isActive
+                  ? "bg-primary/10 text-primary border border-primary/20"
+                  : "text-muted-foreground hover:text-foreground hover:bg-primary/5"
+                  }`}
               >
                 <Icon className="w-4 h-4" />
                 <span className="font-medium">{item.name}</span>
@@ -80,11 +79,10 @@ export function DashboardSidebar() {
           {isAdmin && (
             <Link
               href="/dashboard/admin"
-              className={`flex items-center gap-3 px-4 pt-2 pb-2 rounded-lg transition-all duration-200 group ${
-                pathname === "/dashboard/admin"
-                  ? "bg-primary/10 text-primary border border-primary/20"
-                  : "text-muted-foreground hover:text-foreground hover:bg-primary/5"
-              }`}
+              className={`flex items-center gap-3 px-4 pt-2 pb-2 rounded-lg transition-all duration-200 group ${pathname === "/dashboard/admin"
+                ? "bg-primary/10 text-primary border border-primary/20"
+                : "text-muted-foreground hover:text-foreground hover:bg-primary/5"
+                }`}
             >
               <Shield className="w-4 h-4" />
               <span className="font-medium">Admin</span>
