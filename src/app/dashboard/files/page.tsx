@@ -269,7 +269,7 @@ export default function FilesPage() {
                     {selectedFilter === "all"
                       ? "All Files"
                       : selectedFilter.charAt(0).toUpperCase() +
-                      selectedFilter.slice(1)}
+                        selectedFilter.slice(1)}
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
