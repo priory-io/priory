@@ -47,9 +47,11 @@ export function DashboardSidebar() {
       transition={shouldAnimate ? { duration: 0.3 } : { duration: 0 }}
     >
       <div className="p-6">
-        <h2 className="text-3xl font-semibold text-foreground mb-6">
-          Priory
-        </h2>
+        <div className="mb-4 ml-4">
+          <Link href="/" className="text-3xl font-semibold text-foreground">
+            Priory
+          </Link>
+        </div>
         <nav className="space-y-2">
           {navigationItems.map((item) => {
             const isActive = pathname === item.href;
