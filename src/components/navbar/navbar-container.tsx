@@ -24,7 +24,7 @@ export function NavbarContainer({ children }: NavbarContainerProps) {
         <motion.div
           className={`transition-all duration-300 rounded-2xl ${
             isScrolled
-              ? "bg-card/90 backdrop-blur-xl border border-border/60 shadow-2xl shadow-black/10"
+              ? "bg-card/30 backdrop-blur-xl border border-border/50 shadow"
               : "bg-transparent"
           }`}
         >

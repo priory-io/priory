@@ -1,15 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import {
-  Heart,
-  Github,
-  Upload,
-  Link2,
-  Shield,
-  Zap,
-  SeparatorHorizontal,
-} from "lucide-react";
+import { Heart, Github, Upload, Link2, Shield, Zap } from "lucide-react";
 import { config } from "~/lib/config";
 import Container from "~/components/ui/container";
 import { animationVariants } from "~/lib/animations";
