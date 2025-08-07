@@ -17,7 +17,7 @@ export default function DashboardPage() {
   }
 
   if (!session?.user) {
-    redirect("/");
+    redirect("/auth/signin");
   }
 
   return (

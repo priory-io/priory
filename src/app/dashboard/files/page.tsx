@@ -213,7 +213,7 @@ export default function FilesPage() {
   );
 
   if (isPending) return <LoadingPage />;
-  if (!session?.user) redirect("/");
+  if (!session?.user) redirect("/auth/signin");
 
   return (
     <DashboardLayout>
