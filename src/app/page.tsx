@@ -50,7 +50,7 @@ export default function Home() {
 
         <Container maxWidth="2xl">
           <motion.div
-            className="relative z-10 text-center"
+            className="relative z-10 text-center mt-[25vh]"
             variants={animationVariants.staggerContainer}
             initial="initial"
             animate="animate"
@@ -80,11 +80,7 @@ export default function Home() {
               variants={animationVariants.fadeInUp}
               className="text-lg md:text-xl text-muted-foreground mb-12 max-w-3xl mx-auto justify-center"
             >
-              Secure file sharing and URL shortening platform designed for
-              developers and teams.
-              <br /> Share files privately, create branded short links, and
-              track analytics. <br />
-              All with privacy-first design.
+              Upload files, share links and more with Priory
             </motion.p>
 
             <motion.div
