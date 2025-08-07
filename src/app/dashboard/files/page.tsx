@@ -248,67 +248,63 @@ export default function FilesPage() {
           </Dialog>
         </div>
 
-        <div className="bg-card/50 backdrop-blur-xl border border-border/60 rounded-2xl p-4">
-          <div className="flex flex-col sm:flex-row gap-4">
-            <div className="flex-1 relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-              <input
-                type="text"
-                placeholder="Search files..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 border border-border rounded-lg bg-background focus:outline-none focus:ring-2 focus:ring-primary text-foreground placeholder:text-muted-foreground"
-              />
-            </div>
+        <div className="flex flex-col sm:flex-row gap-4">
+          <div className="flex-1 relative">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+            <input
+              type="text"
+              placeholder="Search files..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full pl-10 pr-4 py-2 border border-border rounded-lg bg-background focus:outline-none focus:ring-2 focus:ring-primary text-foreground placeholder:text-muted-foreground"
+            />
+          </div>
 
-            <div className="flex gap-2">
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="outline" className="gap-2">
-                    <Filter className="w-4 h-4" />
-                    {selectedFilter === "all"
-                      ? "All Files"
-                      : selectedFilter.charAt(0).toUpperCase() +
-                        selectedFilter.slice(1)}
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                  <DropdownMenuItem onClick={() => setSelectedFilter("all")}>
-                    All Files
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => setSelectedFilter("image")}>
-                    Images
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => setSelectedFilter("video")}>
-                    Videos
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => setSelectedFilter("audio")}>
-                    Audio
-                  </DropdownMenuItem>
-                  <DropdownMenuItem
-                    onClick={() => setSelectedFilter("application")}
-                  >
-                    Documents
-                  </DropdownMenuItem>
-                  <DropdownMenuItem
-                    onClick={() => setSelectedFilter("archive")}
-                  >
-                    Archives
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-
-              {hasActiveFilters && (
-                <Button
-                  variant="outline"
-                  onClick={clearFilters}
-                  className="gap-2"
-                >
-                  <X className="w-4 h-4" />
-                  Clear
+          <div className="flex gap-2">
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" className="gap-2">
+                  <Filter className="w-4 h-4" />
+                  {selectedFilter === "all"
+                    ? "All Files"
+                    : selectedFilter.charAt(0).toUpperCase() +
+                      selectedFilter.slice(1)}
                 </Button>
-              )}
-            </div>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem onClick={() => setSelectedFilter("all")}>
+                  All Files
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setSelectedFilter("image")}>
+                  Images
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setSelectedFilter("video")}>
+                  Videos
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setSelectedFilter("audio")}>
+                  Audio
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  onClick={() => setSelectedFilter("application")}
+                >
+                  Documents
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setSelectedFilter("archive")}>
+                  Archives
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+
+            {hasActiveFilters && (
+              <Button
+                variant="outline"
+                onClick={clearFilters}
+                className="gap-2"
+              >
+                <X className="w-4 h-4" />
+                Clear
+              </Button>
+            )}
           </div>
         </div>
 
