@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion";
 import {
+  LayoutDashboard,
   User,
   LogOut,
   Link as LinkIcon,
@@ -15,9 +16,9 @@ import { useSidebar } from "./sidebar-context";
 
 const navigationItems = [
   {
-    name: "Account",
+    name: "Overview",
     href: "/dashboard",
-    icon: User,
+    icon: LayoutDashboard,
   },
   {
     name: "Files",
@@ -28,6 +29,11 @@ const navigationItems = [
     name: "Shortlinks",
     href: "/dashboard/shortlinks",
     icon: LinkIcon,
+  },
+  {
+    name: "Account",
+    href: "/dashboard/account",
+    icon: User,
   },
 ];
 
