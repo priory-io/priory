@@ -98,6 +98,10 @@ Examples:
         i -= 1;
         break;
       case "--max-uses":
+        if (!value) {
+          console.error("Missing value for --max-uses");
+          process.exit(1);
+        }
         options.maxUses = parseInt(value);
         if (isNaN(options.maxUses)) {
           console.error("Invalid max-uses value");
@@ -105,6 +109,10 @@ Examples:
         }
         break;
       case "--expires-in":
+        if (!value) {
+          console.error("Missing value for --expires-in");
+          process.exit(1);
+        }
         options.expiresInDays = parseInt(value);
         if (isNaN(options.expiresInDays)) {
           console.error("Invalid expires-in value");
@@ -112,6 +120,10 @@ Examples:
         }
         break;
       case "--description":
+        if (!value) {
+          console.error("Missing value for --description");
+          process.exit(1);
+        }
         options.description = value;
         break;
       default:
