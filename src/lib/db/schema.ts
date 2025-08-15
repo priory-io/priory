@@ -115,3 +115,19 @@ export const file = pgTable("file", {
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
 });
+
+export const userPreferences = pgTable("user_preferences", {
+  id: text("id").primaryKey(),
+  userId: text("user_id")
+    .notNull()
+    .unique()
+    .references(() => user.id, { onDelete: "cascade" }),
+  theme: text("theme").default("system"),
+  language: text("language").default("en"),
+  timezone: text("timezone").default("UTC"),
+  compactMode: boolean("compact_mode").default(false),
+  autoSave: boolean("auto_save").default(true),
+  showAnalytics: boolean("show_analytics").default(true),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+});

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { authClient } from "~/lib/auth-client";
 import { DashboardLayout } from "~/components/dashboard/layout";
@@ -53,6 +53,43 @@ export default function AccountPage() {
     showAnalytics: true,
   });
 
+  const loadUserData = async () => {
+    try {
+      const response = await fetch("/api/account");
+      if (response.ok) {
+        const userData = await response.json();
+        // Update the local form data if we get fresh data
+        setProfileForm({
+          name: userData.name || "",
+          email: userData.email || "",
+        });
+        return userData;
+      }
+    } catch (error) {
+      console.error("Failed to load user data:", error);
+    }
+    return null;
+  };
+
+  const loadPreferences = async () => {
+    try {
+      const response = await fetch("/api/account/preferences");
+      if (response.ok) {
+        const prefs = await response.json();
+        setPreferences(prefs);
+      }
+    } catch (error) {
+      console.error("Failed to load preferences:", error);
+    }
+  };
+
+  useEffect(() => {
+    if (session?.user) {
+      loadUserData();
+      loadPreferences();
+    }
+  }, [session?.user]);
+
   if (isPending) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
@@ -76,12 +113,36 @@ export default function AccountPage() {
   };
 
   const handleSaveProfile = async () => {
-    addToast({
-      type: "success",
-      title: "Profile updated",
-      description: "Your profile information has been saved.",
-    });
-    setIsEditingProfile(false);
+    try {
+      const response = await fetch("/api/account", {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(profileForm),
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || "Failed to update profile");
+      }
+
+      addToast({
+        type: "success",
+        title: "Profile updated",
+        description: "Your profile information has been saved.",
+      });
+      setIsEditingProfile(false);
+
+      await loadUserData();
+    } catch (error) {
+      addToast({
+        type: "error",
+        title: "Update failed",
+        description:
+          error instanceof Error ? error.message : "Failed to update profile",
+      });
+    }
   };
 
   const handleCancelEdit = () => {
@@ -108,25 +169,76 @@ export default function AccountPage() {
       return;
     }
 
-    addToast({
-      type: "success",
-      title: "Password changed",
-      description: "Your password has been updated successfully.",
-    });
-    setPasswordForm({
-      currentPassword: "",
-      newPassword: "",
-      confirmPassword: "",
-    });
-    setIsChangingPassword(false);
+    try {
+      const response = await fetch("/api/account/password", {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          currentPassword: passwordForm.currentPassword,
+          newPassword: passwordForm.newPassword,
+        }),
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || "Failed to change password");
+      }
+
+      addToast({
+        type: "success",
+        title: "Password changed",
+        description: "Your password has been updated successfully.",
+      });
+      setPasswordForm({
+        currentPassword: "",
+        newPassword: "",
+        confirmPassword: "",
+      });
+      setIsChangingPassword(false);
+    } catch (error) {
+      addToast({
+        type: "error",
+        title: "Password change failed",
+        description:
+          error instanceof Error ? error.message : "Failed to change password",
+      });
+    }
   };
 
   const handleUpdatePreferences = async () => {
-    addToast({
-      type: "success",
-      title: "Preferences saved",
-      description: "Your preferences have been updated.",
-    });
+    try {
+      const response = await fetch("/api/account/preferences", {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(preferences),
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || "Failed to update preferences");
+      }
+
+      addToast({
+        type: "success",
+        title: "Preferences saved",
+        description: "Your preferences have been updated.",
+      });
+
+      await loadPreferences();
+    } catch (error) {
+      addToast({
+        type: "error",
+        title: "Update failed",
+        description:
+          error instanceof Error
+            ? error.message
+            : "Failed to update preferences",
+      });
+    }
   };
 
   const handleDeleteAccount = async () => {
@@ -135,11 +247,32 @@ export default function AccountPage() {
         "Are you sure you want to delete your account? This action cannot be undone.",
       )
     ) {
-      addToast({
-        type: "error",
-        title: "Account deletion",
-        description: "Account deletion is not yet implemented.",
-      });
+      try {
+        const response = await fetch("/api/account/delete", {
+          method: "DELETE",
+        });
+
+        if (!response.ok) {
+          const error = await response.json();
+          throw new Error(error.error || "Failed to delete account");
+        }
+
+        addToast({
+          type: "success",
+          title: "Account deleted",
+          description: "Your account has been successfully deleted.",
+        });
+
+        await authClient.signOut();
+        redirect("/");
+      } catch (error) {
+        addToast({
+          type: "error",
+          title: "Deletion failed",
+          description:
+            error instanceof Error ? error.message : "Failed to delete account",
+        });
+      }
     }
   };
 
