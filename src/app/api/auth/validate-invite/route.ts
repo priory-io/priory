@@ -2,10 +2,19 @@ import { NextRequest, NextResponse } from "next/server";
 import { db } from "~/lib/db";
 import { inviteCode } from "~/lib/db/schema";
 import { eq, and } from "drizzle-orm";
+import { config } from "~/lib/config";
 
 export async function POST(req: NextRequest) {
   try {
     const { inviteCode: code } = await req.json();
+
+    if (config.features.bypassInvitesInDev) {
+      return NextResponse.json({
+        valid: true,
+        inviteId: "dev-bypass",
+        description: "Development mode - invite validation bypassed",
+      });
+    }
 
     if (!code) {
       return NextResponse.json(

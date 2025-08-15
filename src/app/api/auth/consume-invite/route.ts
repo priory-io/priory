@@ -2,12 +2,32 @@ import { NextRequest, NextResponse } from "next/server";
 import { db } from "~/lib/db";
 import { inviteCode, user } from "~/lib/db/schema";
 import { eq, and } from "drizzle-orm";
+import { config } from "~/lib/config";
 
 export async function POST(req: NextRequest) {
   try {
     const { inviteCode: code, userId } = await req.json();
 
-    if (!code || !userId) {
+    if (!userId) {
+      return NextResponse.json(
+        { error: "User ID is required" },
+        { status: 400 },
+      );
+    }
+
+    if (config.features.bypassInvitesInDev) {
+      await db
+        .update(user)
+        .set({
+          emailVerified: true,
+          updatedAt: new Date(),
+        })
+        .where(eq(user.id, userId));
+
+      return NextResponse.json({ success: true });
+    }
+
+    if (!code) {
       return NextResponse.json(
         { error: "Invite code and user ID are required" },
         { status: 400 },

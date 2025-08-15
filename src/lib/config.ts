@@ -17,6 +17,7 @@ export const config = {
   },
   features: {
     enableAnalaytics: process.env["ANALYTICS_ENABLE"],
+    bypassInvitesInDev: process.env["NODE_ENV"] === "development",
   },
   api: {
     baseUrl: process.env["NEXT_PUBLIC_API_URL"] || "http://localhost:2009/api",
