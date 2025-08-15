@@ -57,6 +57,7 @@ export async function PATCH(req: NextRequest) {
       throw authError;
     }
   } catch (error) {
+    console.error(error);
     return NextResponse.json(
       { error: "Internal server error" },
       { status: 500 },
