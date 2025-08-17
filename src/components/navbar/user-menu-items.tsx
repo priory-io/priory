@@ -1,6 +1,6 @@
 "use client";
 
-import { User, Settings, Shield } from "lucide-react";
+import { User, Settings } from "lucide-react";
 import { DropdownMenuItem } from "~/components/ui/dropdown-menu";
 import Link from "next/link";
 
@@ -13,13 +13,11 @@ export function UserMenuItems() {
           <span>Profile</span>
         </Link>
       </DropdownMenuItem>
-      <DropdownMenuItem className="cursor-pointer">
-        <Settings className="mr-2 h-4 w-4" />
-        <span>Settings</span>
-      </DropdownMenuItem>
-      <DropdownMenuItem className="cursor-pointer">
-        <Shield className="mr-2 h-4 w-4" />
-        <span>Security</span>
+      <DropdownMenuItem asChild className="cursor-pointer">
+        <Link href="/dashboard/account">
+          <Settings className="mr-2 h-4 w-4" />
+          <span>Settings</span>
+        </Link>
       </DropdownMenuItem>
     </>
   );

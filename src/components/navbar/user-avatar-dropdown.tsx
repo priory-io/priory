@@ -29,13 +29,18 @@ export function UserAvatarDropdown({ user }: UserAvatarDropdownProps) {
   };
 
   return (
-    <DropdownMenu>
+    <DropdownMenu modal={false}>
       <DropdownMenuTrigger asChild>
         <button className="rounded-full focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background transition-all hover:ring-2 hover:ring-primary/50">
           <UserAvatar user={user} size={32} />
         </button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent className="w-56" align="end" sideOffset={8}>
+      <DropdownMenuContent
+        className="w-36 -translate-x-4 translate-y-2"
+        align="end"
+        side="bottom"
+        sideOffset={8}
+      >
         <DropdownMenuLabel>
           <div className="flex flex-col space-y-1">
             <p className="text-sm font-medium leading-none">{user.name}</p>
