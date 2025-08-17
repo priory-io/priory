@@ -136,7 +136,7 @@ export function FileUpload({
                   ),
                 );
                 resolve(result);
-              } catch (error) {
+              } catch {
                 reject(new Error("Invalid response"));
               }
             } else {
