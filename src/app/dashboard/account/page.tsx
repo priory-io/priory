@@ -58,7 +58,6 @@ export default function AccountPage() {
       const response = await fetch("/api/account");
       if (response.ok) {
         const userData = await response.json();
-        // Update the local form data if we get fresh data
         setProfileForm({
           name: userData.name || "",
           email: userData.email || "",
