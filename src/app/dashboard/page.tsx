@@ -152,7 +152,8 @@ export default function DashboardOverviewPage() {
       title: "Global CDN",
       description: "Fast worldwide access to your content",
       icon: Globe,
-      href: "#",
+      href: "https://www.cloudflare.com/developer-platform/products/r2",
+      target: "_blank",
     },
     {
       title: "Usage Analytics",
