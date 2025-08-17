@@ -3,7 +3,6 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { authClient } from "~/lib/auth-client";
-import { DashboardLayout } from "~/components/dashboard/layout";
 import { redirect } from "next/navigation";
 import Card from "~/components/ui/card";
 import Button from "~/components/ui/button";
@@ -276,556 +275,550 @@ export default function AccountPage() {
   };
 
   return (
-    <DashboardLayout>
-      <div className="space-y-8">
-        <motion.div
-          className="space-y-2"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4 }}
-        >
-          <h1 className="text-2xl sm:text-3xl font-bold text-foreground">
-            Account Settings
-          </h1>
-          <p className="text-muted-foreground text-sm sm:text-base">
-            Manage your account information and preferences.
-          </p>
-        </motion.div>
+    <div className="space-y-8">
+      <motion.div
+        className="space-y-2"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4 }}
+      >
+        <h1 className="text-2xl sm:text-3xl font-bold text-foreground">
+          Account Settings
+        </h1>
+        <p className="text-muted-foreground text-sm sm:text-base">
+          Manage your account information and preferences.
+        </p>
+      </motion.div>
 
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4, delay: 0.1 }}
-        >
-          <Card>
-            <div className="flex items-start justify-between mb-6">
-              <div className="flex items-center gap-3">
-                <div className="w-12 h-12 rounded-xl bg-primary flex items-center justify-center">
-                  <User className="w-6 h-6 text-primary-foreground" />
-                </div>
-                <div>
-                  <h3 className="text-lg font-semibold text-foreground">
-                    Profile Information
-                  </h3>
-                  <p className="text-sm text-muted-foreground">
-                    Update your account details
-                  </p>
-                </div>
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4, delay: 0.1 }}
+      >
+        <Card>
+          <div className="flex items-start justify-between mb-6">
+            <div className="flex items-center gap-3">
+              <div className="w-12 h-12 rounded-xl bg-primary flex items-center justify-center">
+                <User className="w-6 h-6 text-primary-foreground" />
               </div>
-              <AnimatePresence>
-                {!isEditingProfile && (
-                  <motion.div
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
-                    transition={{ duration: 0.2 }}
+              <div>
+                <h3 className="text-lg font-semibold text-foreground">
+                  Profile Information
+                </h3>
+                <p className="text-sm text-muted-foreground">
+                  Update your account details
+                </p>
+              </div>
+            </div>
+            <AnimatePresence>
+              {!isEditingProfile && (
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={handleEditProfile}
                   >
+                    <Edit className="w-4 h-4" />
+                    Edit
+                  </Button>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+
+          <AnimatePresence mode="wait">
+            {isEditingProfile ? (
+              <motion.div
+                key="editing"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.3 }}
+              >
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-medium text-foreground mb-2">
+                      Full Name
+                    </label>
+                    <input
+                      type="text"
+                      value={profileForm.name}
+                      onChange={(e) =>
+                        setProfileForm({
+                          ...profileForm,
+                          name: e.target.value,
+                        })
+                      }
+                      className="w-full px-3 py-2 border border-border rounded-lg bg-background focus:outline-none focus:ring-2 focus:ring-primary text-foreground transition-all duration-200"
+                      placeholder="Enter your full name"
+                      autoFocus
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-foreground mb-2">
+                      Email Address
+                    </label>
+                    <input
+                      type="email"
+                      value={profileForm.email}
+                      onChange={(e) =>
+                        setProfileForm({
+                          ...profileForm,
+                          email: e.target.value,
+                        })
+                      }
+                      className="w-full px-3 py-2 border border-border rounded-lg bg-background focus:outline-none focus:ring-2 focus:ring-primary text-foreground transition-all duration-200"
+                      placeholder="Enter your email"
+                    />
+                  </div>
+                  <div className="flex gap-2">
+                    <Button onClick={handleSaveProfile} size="sm">
+                      <Save className="w-4 h-4" />
+                      Save Changes
+                    </Button>
                     <Button
                       variant="outline"
                       size="sm"
-                      onClick={handleEditProfile}
+                      onClick={handleCancelEdit}
                     >
-                      <Edit className="w-4 h-4" />
-                      Edit
+                      <X className="w-4 h-4" />
+                      Cancel
                     </Button>
-                  </motion.div>
-                )}
-              </AnimatePresence>
+                  </div>
+                </div>
+              </motion.div>
+            ) : (
+              <motion.div
+                key="viewing"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.3 }}
+              >
+                <div className="space-y-3">
+                  <div className="flex items-center gap-3">
+                    <User className="w-4 h-4 text-muted-foreground" />
+                    <span className="text-foreground">{user.name}</span>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <Mail className="w-4 h-4 text-muted-foreground" />
+                    <span className="text-foreground">{user.email}</span>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <Calendar className="w-4 h-4 text-muted-foreground" />
+                    <span className="text-foreground">
+                      Member since{" "}
+                      {new Date(user.createdAt).toLocaleDateString()}
+                    </span>
+                  </div>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </Card>
+      </motion.div>
+
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4, delay: 0.2 }}
+      >
+        <Card>
+          <div className="flex items-center gap-3 mb-6">
+            <div className="w-12 h-12 rounded-xl bg-secondary flex items-center justify-center">
+              <Shield className="w-6 h-6 text-secondary-foreground" />
+            </div>
+            <div>
+              <h3 className="text-lg font-semibold text-foreground">
+                Security
+              </h3>
+              <p className="text-sm text-muted-foreground">
+                Manage your account security settings
+              </p>
+            </div>
+          </div>
+
+          <div className="space-y-4">
+            <div className="flex items-center justify-between p-4 border border-border rounded-lg bg-card/30">
+              <div className="flex items-center gap-3">
+                <Key className="w-5 h-5 text-muted-foreground" />
+                <div>
+                  <p className="font-medium text-foreground">Password</p>
+                  <p className="text-sm text-muted-foreground">
+                    Last updated 30 days ago
+                  </p>
+                </div>
+              </div>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setIsChangingPassword(!isChangingPassword)}
+              >
+                {isChangingPassword ? "Cancel" : "Change Password"}
+              </Button>
             </div>
 
-            <AnimatePresence mode="wait">
-              {isEditingProfile ? (
+            <AnimatePresence>
+              {isChangingPassword && (
                 <motion.div
-                  key="editing"
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
                   transition={{ duration: 0.3 }}
                 >
-                  <div className="space-y-4">
+                  <div className="p-4 border border-border rounded-lg bg-card/30 space-y-4">
                     <div>
                       <label className="block text-sm font-medium text-foreground mb-2">
-                        Full Name
+                        Current Password
                       </label>
-                      <input
-                        type="text"
-                        value={profileForm.name}
-                        onChange={(e) =>
-                          setProfileForm({
-                            ...profileForm,
-                            name: e.target.value,
-                          })
-                        }
-                        className="w-full px-3 py-2 border border-border rounded-lg bg-background focus:outline-none focus:ring-2 focus:ring-primary text-foreground transition-all duration-200"
-                        placeholder="Enter your full name"
-                        autoFocus
-                      />
+                      <div className="relative">
+                        <input
+                          type={showCurrentPassword ? "text" : "password"}
+                          value={passwordForm.currentPassword}
+                          onChange={(e) =>
+                            setPasswordForm({
+                              ...passwordForm,
+                              currentPassword: e.target.value,
+                            })
+                          }
+                          className="w-full px-3 py-2 pr-10 border border-border rounded-lg bg-background focus:outline-none focus:ring-2 focus:ring-primary text-foreground transition-all duration-200"
+                          placeholder="Enter current password"
+                          autoFocus
+                        />
+                        <button
+                          type="button"
+                          onClick={() =>
+                            setShowCurrentPassword(!showCurrentPassword)
+                          }
+                          className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors duration-200"
+                        >
+                          {showCurrentPassword ? (
+                            <EyeOff className="w-4 h-4" />
+                          ) : (
+                            <Eye className="w-4 h-4" />
+                          )}
+                        </button>
+                      </div>
                     </div>
                     <div>
                       <label className="block text-sm font-medium text-foreground mb-2">
-                        Email Address
+                        New Password
                       </label>
-                      <input
-                        type="email"
-                        value={profileForm.email}
-                        onChange={(e) =>
-                          setProfileForm({
-                            ...profileForm,
-                            email: e.target.value,
-                          })
-                        }
-                        className="w-full px-3 py-2 border border-border rounded-lg bg-background focus:outline-none focus:ring-2 focus:ring-primary text-foreground transition-all duration-200"
-                        placeholder="Enter your email"
-                      />
+                      <div className="relative">
+                        <input
+                          type={showNewPassword ? "text" : "password"}
+                          value={passwordForm.newPassword}
+                          onChange={(e) =>
+                            setPasswordForm({
+                              ...passwordForm,
+                              newPassword: e.target.value,
+                            })
+                          }
+                          className="w-full px-3 py-2 pr-10 border border-border rounded-lg bg-background focus:outline-none focus:ring-2 focus:ring-primary text-foreground transition-all duration-200"
+                          placeholder="Enter new password"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => setShowNewPassword(!showNewPassword)}
+                          className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors duration-200"
+                        >
+                          {showNewPassword ? (
+                            <EyeOff className="w-4 h-4" />
+                          ) : (
+                            <Eye className="w-4 h-4" />
+                          )}
+                        </button>
+                      </div>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-foreground mb-2">
+                        Confirm New Password
+                      </label>
+                      <div className="relative">
+                        <input
+                          type={showConfirmPassword ? "text" : "password"}
+                          value={passwordForm.confirmPassword}
+                          onChange={(e) =>
+                            setPasswordForm({
+                              ...passwordForm,
+                              confirmPassword: e.target.value,
+                            })
+                          }
+                          className="w-full px-3 py-2 pr-10 border border-border rounded-lg bg-background focus:outline-none focus:ring-2 focus:ring-primary text-foreground transition-all duration-200"
+                          placeholder="Confirm new password"
+                        />
+                        <button
+                          type="button"
+                          onClick={() =>
+                            setShowConfirmPassword(!showConfirmPassword)
+                          }
+                          className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors duration-200"
+                        >
+                          {showConfirmPassword ? (
+                            <EyeOff className="w-4 h-4" />
+                          ) : (
+                            <Eye className="w-4 h-4" />
+                          )}
+                        </button>
+                      </div>
                     </div>
                     <div className="flex gap-2">
-                      <Button onClick={handleSaveProfile} size="sm">
-                        <Save className="w-4 h-4" />
-                        Save Changes
+                      <Button onClick={handleChangePassword} size="sm">
+                        Update Password
                       </Button>
                       <Button
                         variant="outline"
                         size="sm"
-                        onClick={handleCancelEdit}
+                        onClick={() => {
+                          setIsChangingPassword(false);
+                          setPasswordForm({
+                            currentPassword: "",
+                            newPassword: "",
+                            confirmPassword: "",
+                          });
+                        }}
                       >
-                        <X className="w-4 h-4" />
                         Cancel
                       </Button>
                     </div>
                   </div>
                 </motion.div>
-              ) : (
-                <motion.div
-                  key="viewing"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  transition={{ duration: 0.3 }}
-                >
-                  <div className="space-y-3">
-                    <div className="flex items-center gap-3">
-                      <User className="w-4 h-4 text-muted-foreground" />
-                      <span className="text-foreground">{user.name}</span>
-                    </div>
-                    <div className="flex items-center gap-3">
-                      <Mail className="w-4 h-4 text-muted-foreground" />
-                      <span className="text-foreground">{user.email}</span>
-                    </div>
-                    <div className="flex items-center gap-3">
-                      <Calendar className="w-4 h-4 text-muted-foreground" />
-                      <span className="text-foreground">
-                        Member since{" "}
-                        {new Date(user.createdAt).toLocaleDateString()}
-                      </span>
-                    </div>
-                  </div>
-                </motion.div>
               )}
             </AnimatePresence>
-          </Card>
-        </motion.div>
+          </div>
+        </Card>
+      </motion.div>
 
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4, delay: 0.2 }}
-        >
-          <Card>
-            <div className="flex items-center gap-3 mb-6">
-              <div className="w-12 h-12 rounded-xl bg-secondary flex items-center justify-center">
-                <Shield className="w-6 h-6 text-secondary-foreground" />
-              </div>
-              <div>
-                <h3 className="text-lg font-semibold text-foreground">
-                  Security
-                </h3>
-                <p className="text-sm text-muted-foreground">
-                  Manage your account security settings
-                </p>
-              </div>
-            </div>
-
-            <div className="space-y-4">
-              <div className="flex items-center justify-between p-4 border border-border rounded-lg bg-card/30">
-                <div className="flex items-center gap-3">
-                  <Key className="w-5 h-5 text-muted-foreground" />
-                  <div>
-                    <p className="font-medium text-foreground">Password</p>
-                    <p className="text-sm text-muted-foreground">
-                      Last updated 30 days ago
-                    </p>
-                  </div>
+      <AnimatePresence>
+        {config.features.dashboardAccountPreferences && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            transition={{ duration: 0.4, delay: 0.3 }}
+          >
+            <Card>
+              <div className="flex items-center gap-3 mb-6">
+                <div className="w-12 h-12 rounded-xl bg-accent flex items-center justify-center">
+                  <Settings className="w-6 h-6 text-accent-foreground" />
                 </div>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setIsChangingPassword(!isChangingPassword)}
-                >
-                  {isChangingPassword ? "Cancel" : "Change Password"}
-                </Button>
-              </div>
-
-              <AnimatePresence>
-                {isChangingPassword && (
-                  <motion.div
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
-                    transition={{ duration: 0.3 }}
-                  >
-                    <div className="p-4 border border-border rounded-lg bg-card/30 space-y-4">
-                      <div>
-                        <label className="block text-sm font-medium text-foreground mb-2">
-                          Current Password
-                        </label>
-                        <div className="relative">
-                          <input
-                            type={showCurrentPassword ? "text" : "password"}
-                            value={passwordForm.currentPassword}
-                            onChange={(e) =>
-                              setPasswordForm({
-                                ...passwordForm,
-                                currentPassword: e.target.value,
-                              })
-                            }
-                            className="w-full px-3 py-2 pr-10 border border-border rounded-lg bg-background focus:outline-none focus:ring-2 focus:ring-primary text-foreground transition-all duration-200"
-                            placeholder="Enter current password"
-                            autoFocus
-                          />
-                          <button
-                            type="button"
-                            onClick={() =>
-                              setShowCurrentPassword(!showCurrentPassword)
-                            }
-                            className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors duration-200"
-                          >
-                            {showCurrentPassword ? (
-                              <EyeOff className="w-4 h-4" />
-                            ) : (
-                              <Eye className="w-4 h-4" />
-                            )}
-                          </button>
-                        </div>
-                      </div>
-                      <div>
-                        <label className="block text-sm font-medium text-foreground mb-2">
-                          New Password
-                        </label>
-                        <div className="relative">
-                          <input
-                            type={showNewPassword ? "text" : "password"}
-                            value={passwordForm.newPassword}
-                            onChange={(e) =>
-                              setPasswordForm({
-                                ...passwordForm,
-                                newPassword: e.target.value,
-                              })
-                            }
-                            className="w-full px-3 py-2 pr-10 border border-border rounded-lg bg-background focus:outline-none focus:ring-2 focus:ring-primary text-foreground transition-all duration-200"
-                            placeholder="Enter new password"
-                          />
-                          <button
-                            type="button"
-                            onClick={() => setShowNewPassword(!showNewPassword)}
-                            className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors duration-200"
-                          >
-                            {showNewPassword ? (
-                              <EyeOff className="w-4 h-4" />
-                            ) : (
-                              <Eye className="w-4 h-4" />
-                            )}
-                          </button>
-                        </div>
-                      </div>
-                      <div>
-                        <label className="block text-sm font-medium text-foreground mb-2">
-                          Confirm New Password
-                        </label>
-                        <div className="relative">
-                          <input
-                            type={showConfirmPassword ? "text" : "password"}
-                            value={passwordForm.confirmPassword}
-                            onChange={(e) =>
-                              setPasswordForm({
-                                ...passwordForm,
-                                confirmPassword: e.target.value,
-                              })
-                            }
-                            className="w-full px-3 py-2 pr-10 border border-border rounded-lg bg-background focus:outline-none focus:ring-2 focus:ring-primary text-foreground transition-all duration-200"
-                            placeholder="Confirm new password"
-                          />
-                          <button
-                            type="button"
-                            onClick={() =>
-                              setShowConfirmPassword(!showConfirmPassword)
-                            }
-                            className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors duration-200"
-                          >
-                            {showConfirmPassword ? (
-                              <EyeOff className="w-4 h-4" />
-                            ) : (
-                              <Eye className="w-4 h-4" />
-                            )}
-                          </button>
-                        </div>
-                      </div>
-                      <div className="flex gap-2">
-                        <Button onClick={handleChangePassword} size="sm">
-                          Update Password
-                        </Button>
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => {
-                            setIsChangingPassword(false);
-                            setPasswordForm({
-                              currentPassword: "",
-                              newPassword: "",
-                              confirmPassword: "",
-                            });
-                          }}
-                        >
-                          Cancel
-                        </Button>
-                      </div>
-                    </div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </div>
-          </Card>
-        </motion.div>
-
-        <AnimatePresence>
-          {config.features.dashboardAccountPreferences && (
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              transition={{ duration: 0.4, delay: 0.3 }}
-            >
-              <Card>
-                <div className="flex items-center gap-3 mb-6">
-                  <div className="w-12 h-12 rounded-xl bg-accent flex items-center justify-center">
-                    <Settings className="w-6 h-6 text-accent-foreground" />
-                  </div>
-                  <div>
-                    <h3 className="text-lg font-semibold text-foreground">
-                      Preferences
-                    </h3>
-                    <p className="text-sm text-muted-foreground">
-                      Customize your experience
-                    </p>
-                  </div>
-                </div>
-
-                <div className="space-y-4">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="p-4 border border-border rounded-lg bg-card/30">
-                      <label className="block text-sm font-medium text-foreground mb-2">
-                        Theme
-                      </label>
-                      <select
-                        value={preferences.theme}
-                        onChange={(e) =>
-                          setPreferences({
-                            ...preferences,
-                            theme: e.target.value,
-                          })
-                        }
-                        className="w-full px-3 py-2 border border-border rounded-lg bg-background focus:outline-none focus:ring-2 focus:ring-primary text-foreground transition-all duration-200"
-                      >
-                        <option value="light">Light</option>
-                        <option value="dark">Dark</option>
-                        <option value="system">System</option>
-                      </select>
-                    </div>
-
-                    <div className="p-4 border border-border rounded-lg bg-card/30">
-                      <label className="block text-sm font-medium text-foreground mb-2">
-                        Language
-                      </label>
-                      <select
-                        value={preferences.language}
-                        onChange={(e) =>
-                          setPreferences({
-                            ...preferences,
-                            language: e.target.value,
-                          })
-                        }
-                        className="w-full px-3 py-2 border border-border rounded-lg bg-background focus:outline-none focus:ring-2 focus:ring-primary text-foreground transition-all duration-200"
-                      >
-                        <option value="en">English</option>
-                        <option value="es">Spanish</option>
-                        <option value="fr">French</option>
-                        <option value="de">German</option>
-                      </select>
-                    </div>
-
-                    <div className="p-4 border border-border rounded-lg bg-card/30">
-                      <label className="block text-sm font-medium text-foreground mb-2">
-                        Timezone
-                      </label>
-                      <select
-                        value={preferences.timezone}
-                        onChange={(e) =>
-                          setPreferences({
-                            ...preferences,
-                            timezone: e.target.value,
-                          })
-                        }
-                        className="w-full px-3 py-2 border border-border rounded-lg bg-background focus:outline-none focus:ring-2 focus:ring-primary text-foreground transition-all duration-200"
-                      >
-                        <option value="UTC">UTC</option>
-                        <option value="America/New_York">Eastern Time</option>
-                        <option value="America/Chicago">Central Time</option>
-                        <option value="America/Denver">Mountain Time</option>
-                        <option value="America/Los_Angeles">
-                          Pacific Time
-                        </option>
-                      </select>
-                    </div>
-
-                    <div className="p-4 border border-border rounded-lg bg-card/30">
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <p className="font-medium text-foreground">
-                            Compact Mode
-                          </p>
-                          <p className="text-sm text-muted-foreground">
-                            Use less spacing in the interface
-                          </p>
-                        </div>
-                        <label className="relative inline-flex items-center cursor-pointer">
-                          <input
-                            type="checkbox"
-                            className="sr-only peer"
-                            checked={preferences.compactMode}
-                            onChange={(e) =>
-                              setPreferences({
-                                ...preferences,
-                                compactMode: e.target.checked,
-                              })
-                            }
-                          />
-                          <div className="w-11 h-6 bg-muted peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary/20 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
-                        </label>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="p-4 border border-border rounded-lg bg-card/30">
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <p className="font-medium text-foreground">
-                            Auto Save
-                          </p>
-                          <p className="text-sm text-muted-foreground">
-                            Automatically save changes
-                          </p>
-                        </div>
-                        <label className="relative inline-flex items-center cursor-pointer">
-                          <input
-                            type="checkbox"
-                            className="sr-only peer"
-                            checked={preferences.autoSave}
-                            onChange={(e) =>
-                              setPreferences({
-                                ...preferences,
-                                autoSave: e.target.checked,
-                              })
-                            }
-                          />
-                          <div className="w-11 h-6 bg-muted peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary/20 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
-                        </label>
-                      </div>
-                    </div>
-
-                    <div className="p-4 border border-border rounded-lg bg-card/30">
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <p className="font-medium text-foreground">
-                            Show Analytics
-                          </p>
-                          <p className="text-sm text-muted-foreground">
-                            Display usage analytics
-                          </p>
-                        </div>
-                        <label className="relative inline-flex items-center cursor-pointer">
-                          <input
-                            type="checkbox"
-                            className="sr-only peer"
-                            checked={preferences.showAnalytics}
-                            onChange={(e) =>
-                              setPreferences({
-                                ...preferences,
-                                showAnalytics: e.target.checked,
-                              })
-                            }
-                          />
-                          <div className="w-11 h-6 bg-muted peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary/20 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
-                        </label>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="pt-2">
-                    <Button onClick={handleUpdatePreferences} size="sm">
-                      Save Preferences
-                    </Button>
-                  </div>
-                </div>
-              </Card>
-            </motion.div>
-          )}
-        </AnimatePresence>
-
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{
-            duration: 0.4,
-            delay: config.features.dashboardAccountPreferences ? 0.4 : 0.3,
-          }}
-        >
-          <Card>
-            <div className="flex items-center gap-3 mb-6">
-              <div className="w-12 h-12 rounded-xl bg-destructive flex items-center justify-center">
-                <Trash2 className="w-6 h-6 text-destructive-foreground" />
-              </div>
-              <div>
-                <h3 className="text-lg font-semibold text-foreground">
-                  Danger Zone
-                </h3>
-                <p className="text-sm text-muted-foreground">
-                  Irreversible and destructive actions
-                </p>
-              </div>
-            </div>
-
-            <div className="p-4 border border-destructive/20 bg-destructive/5 rounded-lg">
-              <div className="flex items-center justify-between">
                 <div>
-                  <p className="font-medium text-foreground">Delete Account</p>
+                  <h3 className="text-lg font-semibold text-foreground">
+                    Preferences
+                  </h3>
                   <p className="text-sm text-muted-foreground">
-                    Permanently delete your account and all associated data
+                    Customize your experience
                   </p>
                 </div>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={handleDeleteAccount}
-                  className="border-destructive/20 text-destructive hover:bg-destructive/10"
-                >
-                  <Trash2 className="w-4 h-4" />
-                  Delete Account
-                </Button>
               </div>
+
+              <div className="space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="p-4 border border-border rounded-lg bg-card/30">
+                    <label className="block text-sm font-medium text-foreground mb-2">
+                      Theme
+                    </label>
+                    <select
+                      value={preferences.theme}
+                      onChange={(e) =>
+                        setPreferences({
+                          ...preferences,
+                          theme: e.target.value,
+                        })
+                      }
+                      className="w-full px-3 py-2 border border-border rounded-lg bg-background focus:outline-none focus:ring-2 focus:ring-primary text-foreground transition-all duration-200"
+                    >
+                      <option value="light">Light</option>
+                      <option value="dark">Dark</option>
+                      <option value="system">System</option>
+                    </select>
+                  </div>
+
+                  <div className="p-4 border border-border rounded-lg bg-card/30">
+                    <label className="block text-sm font-medium text-foreground mb-2">
+                      Language
+                    </label>
+                    <select
+                      value={preferences.language}
+                      onChange={(e) =>
+                        setPreferences({
+                          ...preferences,
+                          language: e.target.value,
+                        })
+                      }
+                      className="w-full px-3 py-2 border border-border rounded-lg bg-background focus:outline-none focus:ring-2 focus:ring-primary text-foreground transition-all duration-200"
+                    >
+                      <option value="en">English</option>
+                      <option value="es">Spanish</option>
+                      <option value="fr">French</option>
+                      <option value="de">German</option>
+                    </select>
+                  </div>
+
+                  <div className="p-4 border border-border rounded-lg bg-card/30">
+                    <label className="block text-sm font-medium text-foreground mb-2">
+                      Timezone
+                    </label>
+                    <select
+                      value={preferences.timezone}
+                      onChange={(e) =>
+                        setPreferences({
+                          ...preferences,
+                          timezone: e.target.value,
+                        })
+                      }
+                      className="w-full px-3 py-2 border border-border rounded-lg bg-background focus:outline-none focus:ring-2 focus:ring-primary text-foreground transition-all duration-200"
+                    >
+                      <option value="UTC">UTC</option>
+                      <option value="America/New_York">Eastern Time</option>
+                      <option value="America/Chicago">Central Time</option>
+                      <option value="America/Denver">Mountain Time</option>
+                      <option value="America/Los_Angeles">Pacific Time</option>
+                    </select>
+                  </div>
+
+                  <div className="p-4 border border-border rounded-lg bg-card/30">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="font-medium text-foreground">
+                          Compact Mode
+                        </p>
+                        <p className="text-sm text-muted-foreground">
+                          Use less spacing in the interface
+                        </p>
+                      </div>
+                      <label className="relative inline-flex items-center cursor-pointer">
+                        <input
+                          type="checkbox"
+                          className="sr-only peer"
+                          checked={preferences.compactMode}
+                          onChange={(e) =>
+                            setPreferences({
+                              ...preferences,
+                              compactMode: e.target.checked,
+                            })
+                          }
+                        />
+                        <div className="w-11 h-6 bg-muted peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary/20 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+                      </label>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="p-4 border border-border rounded-lg bg-card/30">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="font-medium text-foreground">Auto Save</p>
+                        <p className="text-sm text-muted-foreground">
+                          Automatically save changes
+                        </p>
+                      </div>
+                      <label className="relative inline-flex items-center cursor-pointer">
+                        <input
+                          type="checkbox"
+                          className="sr-only peer"
+                          checked={preferences.autoSave}
+                          onChange={(e) =>
+                            setPreferences({
+                              ...preferences,
+                              autoSave: e.target.checked,
+                            })
+                          }
+                        />
+                        <div className="w-11 h-6 bg-muted peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary/20 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+                      </label>
+                    </div>
+                  </div>
+
+                  <div className="p-4 border border-border rounded-lg bg-card/30">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="font-medium text-foreground">
+                          Show Analytics
+                        </p>
+                        <p className="text-sm text-muted-foreground">
+                          Display usage analytics
+                        </p>
+                      </div>
+                      <label className="relative inline-flex items-center cursor-pointer">
+                        <input
+                          type="checkbox"
+                          className="sr-only peer"
+                          checked={preferences.showAnalytics}
+                          onChange={(e) =>
+                            setPreferences({
+                              ...preferences,
+                              showAnalytics: e.target.checked,
+                            })
+                          }
+                        />
+                        <div className="w-11 h-6 bg-muted peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary/20 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+                      </label>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="pt-2">
+                  <Button onClick={handleUpdatePreferences} size="sm">
+                    Save Preferences
+                  </Button>
+                </div>
+              </div>
+            </Card>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{
+          duration: 0.4,
+          delay: config.features.dashboardAccountPreferences ? 0.4 : 0.3,
+        }}
+      >
+        <Card>
+          <div className="flex items-center gap-3 mb-6">
+            <div className="w-12 h-12 rounded-xl bg-destructive flex items-center justify-center">
+              <Trash2 className="w-6 h-6 text-destructive-foreground" />
             </div>
-          </Card>
-        </motion.div>
-      </div>
-    </DashboardLayout>
+            <div>
+              <h3 className="text-lg font-semibold text-foreground">
+                Danger Zone
+              </h3>
+              <p className="text-sm text-muted-foreground">
+                Irreversible and destructive actions
+              </p>
+            </div>
+          </div>
+
+          <div className="p-4 border border-destructive/20 bg-destructive/5 rounded-lg">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="font-medium text-foreground">Delete Account</p>
+                <p className="text-sm text-muted-foreground">
+                  Permanently delete your account and all associated data
+                </p>
+              </div>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleDeleteAccount}
+                className="border-destructive/20 text-destructive hover:bg-destructive/10"
+              >
+                <Trash2 className="w-4 h-4" />
+                Delete Account
+              </Button>
+            </div>
+          </div>
+        </Card>
+      </motion.div>
+    </div>
   );
 }

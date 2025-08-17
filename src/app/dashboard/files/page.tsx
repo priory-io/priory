@@ -3,7 +3,6 @@
 import { useMemo, useCallback, useRef, useState } from "react";
 import useSWR, { mutate } from "swr";
 import { authClient } from "~/lib/auth-client";
-import { DashboardLayout } from "~/components/dashboard/layout";
 import { redirect } from "next/navigation";
 import Button from "~/components/ui/button";
 import { Plus, Search, Filter, X } from "lucide-react";
@@ -218,157 +217,151 @@ export default function FilesPage() {
   if (!session?.user) redirect("/auth/signin");
 
   return (
-    <DashboardLayout>
-      <div className="space-y-8">
-        <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
-          <div className="space-y-2">
-            <h1 className="text-2xl sm:text-3xl font-bold text-foreground">
-              Files
-            </h1>
-            <p className="text-muted-foreground text-sm sm:text-base">
-              Upload, manage, and organize your files in the cloud.
-            </p>
-          </div>
-
-          <Dialog>
-            <DialogTrigger asChild>
-              <Button
-                className="w-full sm:w-auto"
-                ref={uploadDialogRef}
-                aria-label="Upload files"
-              >
-                <Plus className="w-4 h-4" />
-                Upload Files
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
-              <DialogHeader>
-                <DialogTitle>Upload Files</DialogTitle>
-              </DialogHeader>
-              <FileUpload onUploadComplete={handleUploadComplete} />
-            </DialogContent>
-          </Dialog>
+    <div className="space-y-8">
+      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
+        <div className="space-y-2">
+          <h1 className="text-2xl sm:text-3xl font-bold text-foreground">
+            Files
+          </h1>
+          <p className="text-muted-foreground text-sm sm:text-base">
+            Upload, manage, and organize your files in the cloud.
+          </p>
         </div>
 
-        <div className="flex flex-col sm:flex-row gap-4">
-          <div className="flex-1 relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-            <input
-              type="text"
-              placeholder="Search files..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 border border-border rounded-lg bg-background focus:outline-none focus:ring-2 focus:ring-primary text-foreground placeholder:text-muted-foreground"
-            />
-          </div>
+        <Dialog>
+          <DialogTrigger asChild>
+            <Button
+              className="w-full sm:w-auto"
+              ref={uploadDialogRef}
+              aria-label="Upload files"
+            >
+              <Plus className="w-4 h-4" />
+              Upload Files
+            </Button>
+          </DialogTrigger>
+          <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle>Upload Files</DialogTitle>
+            </DialogHeader>
+            <FileUpload onUploadComplete={handleUploadComplete} />
+          </DialogContent>
+        </Dialog>
+      </div>
 
-          <div className="flex gap-2">
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="outline" className="gap-2">
-                  <Filter className="w-4 h-4" />
-                  {selectedFilter === "all"
-                    ? "All Files"
-                    : selectedFilter.charAt(0).toUpperCase() +
-                      selectedFilter.slice(1)}
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuItem onClick={() => setSelectedFilter("all")}>
-                  All Files
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setSelectedFilter("image")}>
-                  Images
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setSelectedFilter("video")}>
-                  Videos
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setSelectedFilter("audio")}>
-                  Audio
-                </DropdownMenuItem>
-                <DropdownMenuItem
-                  onClick={() => setSelectedFilter("application")}
-                >
-                  Documents
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setSelectedFilter("archive")}>
-                  Archives
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-
-            {hasActiveFilters && (
-              <Button
-                variant="outline"
-                onClick={clearFilters}
-                className="gap-2"
-              >
-                <X className="w-4 h-4" />
-                Clear
-              </Button>
-            )}
-          </div>
+      <div className="flex flex-col sm:flex-row gap-4">
+        <div className="flex-1 relative">
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+          <input
+            type="text"
+            placeholder="Search files..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="w-full pl-10 pr-4 py-2 border border-border rounded-lg bg-background focus:outline-none focus:ring-2 focus:ring-primary text-foreground placeholder:text-muted-foreground"
+          />
         </div>
 
-        <div className="bg-card/50 backdrop-blur-xl border border-border/60 rounded-2xl p-6">
-          <h3 className="text-lg font-semibold text-foreground mb-6">
-            Your Files
-          </h3>
+        <div className="flex gap-2">
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" className="gap-2">
+                <Filter className="w-4 h-4" />
+                {selectedFilter === "all"
+                  ? "All Files"
+                  : selectedFilter.charAt(0).toUpperCase() +
+                    selectedFilter.slice(1)}
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem onClick={() => setSelectedFilter("all")}>
+                All Files
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setSelectedFilter("image")}>
+                Images
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setSelectedFilter("video")}>
+                Videos
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setSelectedFilter("audio")}>
+                Audio
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={() => setSelectedFilter("application")}
+              >
+                Documents
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setSelectedFilter("archive")}>
+                Archives
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
 
-          {isLoading ? (
-            <div className="text-center py-8">
-              <LoadingSpinner size="lg" className="mx-auto" />
-            </div>
-          ) : error ? (
-            <EmptyState
-              title="Failed to load"
-              description="We couldn't load your files. Try again."
-              actionText="Retry"
-              onAction={() => mutate(swrKey)}
-            />
-          ) : filteredFiles.length === 0 && hasActiveFilters ? (
-            <EmptyState
-              title="No files found"
-              description="No files match your current search or filter criteria."
-              actionText="Clear Filters"
-              onAction={clearFilters}
-            />
-          ) : filteredFiles.length === 0 ? (
-            <EmptyState
-              title="No files yet"
-              description="Upload your first file to get started."
-              actionText="Upload Files"
-              onAction={() => uploadDialogRef.current?.click()}
-            />
-          ) : (
-            <div className="space-y-6">
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                {filteredFiles.map((file) => (
-                  <FileCard
-                    key={file.id}
-                    file={file}
-                    onCopy={copyToClipboard}
-                    onDelete={deleteFile}
-                    onRename={renameFile}
-                  />
-                ))}
-              </div>
-
-              {data?.hasMore && !hasActiveFilters && (
-                <div className="text-center pt-4">
-                  <Button
-                    variant="outline"
-                    onClick={() => setPage(page + 1)}
-                    disabled={isLoading}
-                  >
-                    Load More Files
-                  </Button>
-                </div>
-              )}
-            </div>
+          {hasActiveFilters && (
+            <Button variant="outline" onClick={clearFilters} className="gap-2">
+              <X className="w-4 h-4" />
+              Clear
+            </Button>
           )}
         </div>
       </div>
-    </DashboardLayout>
+
+      <div className="bg-card/50 backdrop-blur-xl border border-border/60 rounded-2xl p-6">
+        <h3 className="text-lg font-semibold text-foreground mb-6">
+          Your Files
+        </h3>
+
+        {isLoading ? (
+          <div className="text-center py-8">
+            <LoadingSpinner size="lg" className="mx-auto" />
+          </div>
+        ) : error ? (
+          <EmptyState
+            title="Failed to load"
+            description="We couldn't load your files. Try again."
+            actionText="Retry"
+            onAction={() => mutate(swrKey)}
+          />
+        ) : filteredFiles.length === 0 && hasActiveFilters ? (
+          <EmptyState
+            title="No files found"
+            description="No files match your current search or filter criteria."
+            actionText="Clear Filters"
+            onAction={clearFilters}
+          />
+        ) : filteredFiles.length === 0 ? (
+          <EmptyState
+            title="No files yet"
+            description="Upload your first file to get started."
+            actionText="Upload Files"
+            onAction={() => uploadDialogRef.current?.click()}
+          />
+        ) : (
+          <div className="space-y-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              {filteredFiles.map((file) => (
+                <FileCard
+                  key={file.id}
+                  file={file}
+                  onCopy={copyToClipboard}
+                  onDelete={deleteFile}
+                  onRename={renameFile}
+                />
+              ))}
+            </div>
+
+            {data?.hasMore && !hasActiveFilters && (
+              <div className="text-center pt-4">
+                <Button
+                  variant="outline"
+                  onClick={() => setPage(page + 1)}
+                  disabled={isLoading}
+                >
+                  Load More Files
+                </Button>
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+    </div>
   );
 }

@@ -1,7 +1,6 @@
 "use client";
 
 import { authClient } from "~/lib/auth-client";
-import { DashboardLayout } from "~/components/dashboard/layout";
 import { redirect } from "next/navigation";
 import { useEffect, useState } from "react";
 import { UserManagement } from "~/components/admin/user-management";
@@ -103,43 +102,41 @@ export default function AdminDashboardPage() {
   )?.component;
 
   return (
-    <DashboardLayout>
-      <div className="space-y-8">
-        <div>
-          <h1 className="text-3xl font-bold text-foreground mb-2">
-            Admin Dashboard
-          </h1>
-          <p className="text-muted-foreground">
-            Manage users, content, and site settings.
-          </p>
-        </div>
-
-        <div className="flex gap-2 border-b border-border/60 overflow-x-auto">
-          {adminSections.map((section) => {
-            const Icon = section.icon;
-            const isActive = activeSection === section.id;
-
-            return (
-              <button
-                key={section.id}
-                onClick={() => setActiveSection(section.id)}
-                className={`flex items-center gap-2 px-4 py-2 font-medium transition-colors border-b-2 whitespace-nowrap ${
-                  isActive
-                    ? "text-primary border-primary"
-                    : "text-muted-foreground border-transparent hover:text-foreground"
-                }`}
-              >
-                <Icon className="w-4 h-4" />
-                {section.name}
-              </button>
-            );
-          })}
-        </div>
-
-        <div className="min-h-[600px]">
-          {ActiveComponent && <ActiveComponent />}
-        </div>
+    <div className="space-y-8">
+      <div>
+        <h1 className="text-3xl font-bold text-foreground mb-2">
+          Admin Dashboard
+        </h1>
+        <p className="text-muted-foreground">
+          Manage users, content, and site settings.
+        </p>
       </div>
-    </DashboardLayout>
+
+      <div className="flex gap-2 border-b border-border/60 overflow-x-auto">
+        {adminSections.map((section) => {
+          const Icon = section.icon;
+          const isActive = activeSection === section.id;
+
+          return (
+            <button
+              key={section.id}
+              onClick={() => setActiveSection(section.id)}
+              className={`flex items-center gap-2 px-4 py-2 font-medium transition-colors border-b-2 whitespace-nowrap ${
+                isActive
+                  ? "text-primary border-primary"
+                  : "text-muted-foreground border-transparent hover:text-foreground"
+              }`}
+            >
+              <Icon className="w-4 h-4" />
+              {section.name}
+            </button>
+          );
+        })}
+      </div>
+
+      <div className="min-h-[600px]">
+        {ActiveComponent && <ActiveComponent />}
+      </div>
+    </div>
   );
 }
