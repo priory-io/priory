@@ -57,11 +57,32 @@ export default function DashboardOverviewPage() {
     }
   };
 
+  const refreshStats = async () => {
+    try {
+      const response = await fetch("/api/dashboard/stats");
+      if (response.ok) {
+        const data = await response.json();
+        setStats(data);
+      }
+    } catch (error) {
+      console.error("Failed to refresh dashboard stats:", error);
+    }
+  };
+
   useEffect(() => {
     if (session?.user) {
       loadDashboardStats();
     }
   }, [session?.user]);
+
+  useEffect(() => {
+    const handleFileUploaded = () => {
+      refreshStats();
+    };
+
+    window.addEventListener("fileUploaded", handleFileUploaded);
+    return () => window.removeEventListener("fileUploaded", handleFileUploaded);
+  }, []);
 
   if (isPending || loading) {
     return (
@@ -301,8 +322,9 @@ export default function DashboardOverviewPage() {
                 </div>
                 <div className="text-right">
                   <p className="text-sm font-medium text-foreground">
-                    {((stats.storageUsed ?? 0) / 1024 / 1024 / 1024).toFixed(1)}{" "}
-                    GB
+                    {stats.storageUsed >= 1073741824
+                      ? `${((stats.storageUsed ?? 0) / 1024 / 1024 / 1024).toFixed(1)} GB`
+                      : `${((stats.storageUsed ?? 0) / 1024 / 1024).toFixed(1)} MB`}
                   </p>
                   <p className="text-xs text-muted-foreground">
                     /{" "}
@@ -322,10 +344,9 @@ export default function DashboardOverviewPage() {
                   <div className="flex justify-between text-sm mb-2">
                     <span className="text-muted-foreground">Files</span>
                     <span className="text-foreground">
-                      {((stats.filesStorage ?? 0) / 1024 / 1024 / 1024).toFixed(
-                        1,
-                      )}{" "}
-                      GB
+                      {stats.filesStorage >= 1073741824
+                        ? `${((stats.filesStorage ?? 0) / 1024 / 1024 / 1024).toFixed(1)} GB`
+                        : `${((stats.filesStorage ?? 0) / 1024 / 1024).toFixed(1)} MB`}
                     </span>
                   </div>
                   <div className="w-full bg-muted rounded-full h-2">

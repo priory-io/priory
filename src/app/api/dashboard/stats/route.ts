@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { auth } from "~/lib/auth";
 import { db } from "~/lib/db";
 import { file, shortlink, shortlinkClick } from "~/lib/db/schema";
-import { eq, count, sum, sql, gte, and } from "drizzle-orm";
+import { eq, count, sql, gte, and } from "drizzle-orm";
 
 export async function GET(request: NextRequest) {
   try {
@@ -20,11 +20,10 @@ export async function GET(request: NextRequest) {
     const oneMonthAgo = new Date();
     oneMonthAgo.setDate(oneMonthAgo.getDate() - 30);
 
-    // Get file stats
     const fileStats = await db
       .select({
         count: count(),
-        totalSize: sum(file.size),
+        totalSize: sql<string>`COALESCE(SUM(${file.size}), 0)`,
       })
       .from(file)
       .where(eq(file.userId, userId));
@@ -36,7 +35,6 @@ export async function GET(request: NextRequest) {
       .from(file)
       .where(and(eq(file.userId, userId), gte(file.createdAt, oneWeekAgo)));
 
-    // Get shortlink stats
     const shortlinkStats = await db
       .select({
         count: count(),
@@ -53,7 +51,6 @@ export async function GET(request: NextRequest) {
         and(eq(shortlink.userId, userId), gte(shortlink.createdAt, oneWeekAgo)),
       );
 
-    // Get total views and active links
     const viewStats = await db
       .select({
         totalViews: sql<number>`COALESCE(COUNT(${shortlinkClick.id}), 0)`,
@@ -76,7 +73,6 @@ export async function GET(request: NextRequest) {
         ),
       );
 
-    // Extract values with proper null handling
     const filesCount = fileStats[0]?.count || 0;
     const weeklyFilesCount = weeklyFileStats[0]?.count || 0;
     const filesChange =
@@ -102,10 +98,10 @@ export async function GET(request: NextRequest) {
         ? Math.round((activeLinks / shortlinksCount) * 100)
         : 0;
 
-    // Storage calculations (in bytes)
-    const filesStorage = Number(fileStats[0]?.totalSize) || 0;
+    const rawTotalSize = fileStats[0]?.totalSize;
+    const filesStorage = Number(rawTotalSize || "0");
     const storageUsed = filesStorage;
-    const storageLimit = 10737418240; // 10GB default
+    const storageLimit = 10737418240;
 
     return NextResponse.json({
       filesCount,

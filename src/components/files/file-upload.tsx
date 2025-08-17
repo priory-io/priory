@@ -110,26 +110,47 @@ export function FileUpload({
         const formData = new FormData();
         formData.append("file", file);
 
-        const response = await fetch("/api/files", {
-          method: "POST",
-          body: formData,
+        const xhr = new XMLHttpRequest();
+
+        return new Promise<any>((resolve, reject) => {
+          xhr.upload.addEventListener("progress", (event) => {
+            if (event.lengthComputable) {
+              const progress = Math.round((event.loaded / event.total) * 100);
+              setUploads((prev) =>
+                prev.map((upload) =>
+                  upload.file === file ? { ...upload, progress } : upload,
+                ),
+              );
+            }
+          });
+
+          xhr.addEventListener("load", () => {
+            if (xhr.status >= 200 && xhr.status < 300) {
+              try {
+                const result = JSON.parse(xhr.responseText);
+                setUploads((prev) =>
+                  prev.map((upload) =>
+                    upload.file === file
+                      ? { ...upload, status: "completed", progress: 100 }
+                      : upload,
+                  ),
+                );
+                resolve(result);
+              } catch (error) {
+                reject(new Error("Invalid response"));
+              }
+            } else {
+              reject(new Error("Upload failed"));
+            }
+          });
+
+          xhr.addEventListener("error", () => {
+            reject(new Error("Upload failed"));
+          });
+
+          xhr.open("POST", "/api/files");
+          xhr.send(formData);
         });
-
-        if (!response.ok) {
-          throw new Error("Upload failed");
-        }
-
-        const result = await response.json();
-
-        setUploads((prev) =>
-          prev.map((upload) =>
-            upload.file === file
-              ? { ...upload, status: "completed", progress: 100 }
-              : upload,
-          ),
-        );
-
-        return result;
       } catch (error) {
         setUploads((prev) =>
           prev.map((upload) =>
@@ -154,6 +175,7 @@ export function FileUpload({
 
       if (successfulUploads.length > 0) {
         onUploadComplete?.(successfulUploads);
+        window.dispatchEvent(new CustomEvent("fileUploaded"));
       }
     } catch (error) {
       console.error("Upload error:", error);

@@ -146,6 +146,8 @@ export default function FilesPage() {
           description: "The file has been removed.",
         });
 
+        window.dispatchEvent(new CustomEvent("fileUploaded"));
+
         await mutate(swrKey);
       } catch {
         mutate(swrKey, prev, false);
