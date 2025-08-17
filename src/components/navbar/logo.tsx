@@ -17,7 +17,7 @@ export function Logo() {
         whileHover={{ rotate: 5 }}
         transition={{ type: "spring", stiffness: 400 }}
       >
-        <div className="w-10 h-10 rounded-xl overflow-hidden border-2 border-primary/20 group-hover:border-primary/50 transition-colors">
+        <div className="w-10 h-10 rounded-xl overflow-hidden border-2 border-primary/20 group-hover:border-primary/50 transition-colors hidden">
           <Image
             src={logo.src}
             alt="Priory Logo"
