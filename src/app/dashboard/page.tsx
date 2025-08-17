@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { authClient } from "~/lib/auth-client";
 import { DashboardLayout } from "~/components/dashboard/layout";
@@ -23,10 +24,46 @@ import {
   ExternalLink,
 } from "lucide-react";
 
+interface DashboardStats {
+  filesCount: number;
+  shortlinksCount: number;
+  totalViews: number;
+  activeLinks: number;
+  filesChange: string;
+  shortlinksChange: string;
+  viewsChange: string;
+  activePercentage: number;
+  storageUsed: number;
+  storageLimit: number;
+  filesStorage: number;
+}
+
 export default function DashboardOverviewPage() {
   const { data: session, isPending } = authClient.useSession();
+  const [stats, setStats] = useState<DashboardStats | null>(null);
+  const [loading, setLoading] = useState(true);
 
-  if (isPending) {
+  const loadDashboardStats = async () => {
+    try {
+      const response = await fetch("/api/dashboard/stats");
+      if (response.ok) {
+        const data = await response.json();
+        setStats(data);
+      }
+    } catch (error) {
+      console.error("Failed to load dashboard stats:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (session?.user) {
+      loadDashboardStats();
+    }
+  }, [session?.user]);
+
+  if (isPending || loading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="animate-spin rounded-full h-8 w-8 border-2 border-primary border-t-transparent"></div>
@@ -40,40 +77,42 @@ export default function DashboardOverviewPage() {
 
   const user = session.user;
 
-  const stats = [
-    {
-      title: "Files Uploaded",
-      value: "24",
-      change: "+3 this week",
-      icon: FolderOpen,
-      colorClass: "text-chart-1",
-      bgClass: "bg-chart-1/10",
-    },
-    {
-      title: "Shortlinks Created",
-      value: "12",
-      change: "+2 this week",
-      icon: LinkIcon,
-      colorClass: "text-chart-2",
-      bgClass: "bg-chart-2/10",
-    },
-    {
-      title: "Total Views",
-      value: "1,247",
-      change: "+18% this month",
-      icon: TrendingUp,
-      colorClass: "text-chart-3",
-      bgClass: "bg-chart-3/10",
-    },
-    {
-      title: "Active Links",
-      value: "8",
-      change: "67% active",
-      icon: Activity,
-      colorClass: "text-chart-4",
-      bgClass: "bg-chart-4/10",
-    },
-  ];
+  const statsData = stats
+    ? [
+        {
+          title: "Files Uploaded",
+          value: (stats.filesCount ?? 0).toString(),
+          change: stats.filesChange ?? "No change",
+          icon: FolderOpen,
+          colorClass: "text-chart-1",
+          bgClass: "bg-chart-1/10",
+        },
+        {
+          title: "Shortlinks Created",
+          value: (stats.shortlinksCount ?? 0).toString(),
+          change: stats.shortlinksChange ?? "No change",
+          icon: LinkIcon,
+          colorClass: "text-chart-2",
+          bgClass: "bg-chart-2/10",
+        },
+        {
+          title: "Total Views",
+          value: (stats.totalViews ?? 0).toLocaleString(),
+          change: stats.viewsChange ?? "No change",
+          icon: TrendingUp,
+          colorClass: "text-chart-3",
+          bgClass: "bg-chart-3/10",
+        },
+        {
+          title: "Active Links",
+          value: (stats.activeLinks ?? 0).toString(),
+          change: `${stats.activePercentage ?? 0}% active`,
+          icon: Activity,
+          colorClass: "text-chart-4",
+          bgClass: "bg-chart-4/10",
+        },
+      ]
+    : [];
 
   const features = [
     {
@@ -159,7 +198,7 @@ export default function DashboardOverviewPage() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4, delay: 0.2 }}
         >
-          {stats.map((stat, index) => (
+          {statsData.map((stat, index) => (
             <motion.div
               key={stat.title}
               initial={{ opacity: 0, y: 20 }}
@@ -239,71 +278,77 @@ export default function DashboardOverviewPage() {
           </Card>
         </motion.div>
 
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4, delay: 0.4 }}
-        >
-          <Card>
-            <div className="flex items-center justify-between mb-6">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-lg bg-chart-1/10 flex items-center justify-center">
-                  <FolderOpen className="w-5 h-5 text-chart-1" />
+        {stats && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, delay: 0.4 }}
+          >
+            <Card>
+              <div className="flex items-center justify-between mb-6">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-lg bg-chart-1/10 flex items-center justify-center">
+                    <FolderOpen className="w-5 h-5 text-chart-1" />
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-semibold text-foreground">
+                      Storage Usage
+                    </h3>
+                    <p className="text-sm text-muted-foreground">
+                      Monitor your storage consumption
+                    </p>
+                  </div>
                 </div>
-                <div>
-                  <h3 className="text-lg font-semibold text-foreground">
-                    Storage Usage
-                  </h3>
-                  <p className="text-sm text-muted-foreground">
-                    Monitor your storage consumption
+                <div className="text-right">
+                  <p className="text-sm font-medium text-foreground">
+                    {((stats.storageUsed ?? 0) / 1024 / 1024 / 1024).toFixed(1)}{" "}
+                    GB
+                  </p>
+                  <p className="text-xs text-muted-foreground">
+                    /{" "}
+                    {(
+                      (stats.storageLimit ?? 10737418240) /
+                      1024 /
+                      1024 /
+                      1024
+                    ).toFixed(0)}{" "}
+                    GB
                   </p>
                 </div>
               </div>
-              <div className="text-right">
-                <p className="text-sm font-medium text-foreground">2.4 GB</p>
-                <p className="text-xs text-muted-foreground">of 10 GB used</p>
-              </div>
-            </div>
 
-            <div className="space-y-4">
-              <div>
-                <div className="flex justify-between text-sm mb-2">
-                  <span className="text-muted-foreground">Files</span>
-                  <span className="text-foreground">1.8 GB</span>
+              <div className="space-y-4">
+                <div>
+                  <div className="flex justify-between text-sm mb-2">
+                    <span className="text-muted-foreground">Files</span>
+                    <span className="text-foreground">
+                      {((stats.filesStorage ?? 0) / 1024 / 1024 / 1024).toFixed(
+                        1,
+                      )}{" "}
+                      GB
+                    </span>
+                  </div>
+                  <div className="w-full bg-muted rounded-full h-2">
+                    <div
+                      className="bg-chart-1 h-2 rounded-full"
+                      style={{
+                        width: `${Math.min(100, ((stats.filesStorage ?? 0) / (stats.storageLimit ?? 10737418240)) * 100)}%`,
+                      }}
+                    ></div>
+                  </div>
                 </div>
-                <div className="w-full bg-muted rounded-full h-2">
-                  <div
-                    className="bg-chart-1 h-2 rounded-full"
-                    style={{ width: "18%" }}
-                  ></div>
-                </div>
-              </div>
 
-              <div>
-                <div className="flex justify-between text-sm mb-2">
-                  <span className="text-muted-foreground">
-                    Shortlink Analytics
-                  </span>
-                  <span className="text-foreground">0.6 GB</span>
-                </div>
-                <div className="w-full bg-muted rounded-full h-2">
-                  <div
-                    className="bg-chart-2 h-2 rounded-full"
-                    style={{ width: "6%" }}
-                  ></div>
+                <div className="pt-2">
+                  <Link href="/dashboard/files">
+                    <Button variant="outline" size="sm">
+                      Manage Files
+                    </Button>
+                  </Link>
                 </div>
               </div>
-
-              <div className="pt-2">
-                <Link href="/dashboard/files">
-                  <Button variant="outline" size="sm">
-                    Manage Files
-                  </Button>
-                </Link>
-              </div>
-            </div>
-          </Card>
-        </motion.div>
+            </Card>
+          </motion.div>
+        )}
 
         <motion.div
           initial={{ opacity: 0, y: 20 }}
