@@ -2,13 +2,14 @@
 
 ## Status
 
-The website is currently under development.
+Under development
 
 ## Getting Started
 
 ### Prerequisites
 
-- Node.js or Bun
+- Node.js
+- NPM (or other)
 - Git
 
 ### Installation
@@ -21,9 +22,7 @@ The website is currently under development.
 
 2. Install dependencies:
    ```bash
-   bun install
-   # or
-   npm install
+   bun install # or npm
    ```
 
 3. Copy environment variables:
@@ -31,7 +30,12 @@ The website is currently under development.
    cp .env.example .env
    ```
 
-4. Start the development server:
+4. Edit the variables
+   ```bash
+   vim .env
+   ```
+
+5. Start the development server:
    ```bash
    bun dev
    ```
@@ -45,12 +49,6 @@ bun run build
 bun run start
 ```
 
-## Deployment
-
-### Environment Variables
-
-See `.env.example` for all available environment variables.
-
 ## Contributing
 
 1. Fork the repository
@@ -60,4 +58,4 @@ See `.env.example` for all available environment variables.
 
 ## License
 
-We are licensed under MIT which includes any contributions and proposals
+The organisation `priory-io` and all its public projects are licensed under the terms of the [MIT License](./LICENSE) and any contributions or discussions underneath its name are considered to be beholden to this license.
