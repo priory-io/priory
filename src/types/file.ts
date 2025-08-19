@@ -1,3 +1,5 @@
+import { config } from "~/lib/config";
+
 export interface FileData {
   id: string;
   userId: string;
@@ -47,7 +49,7 @@ export const ALLOWED_MIME_TYPES = {
   ],
 } as const;
 
-export const MAX_FILE_SIZE = 100 * 1024 * 1024;
+export const MAX_FILE_SIZE = config.storage.maxFileSize;
 
 export function isAllowedMimeType(mimeType: string): boolean {
   return Object.values(ALLOWED_MIME_TYPES).some((types) =>

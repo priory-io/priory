@@ -1,26 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
 import { nanoid } from "nanoid";
-import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
 import { auth } from "~/lib/auth";
 import { db } from "~/lib/db";
 import { file } from "~/lib/db/schema";
-import { config } from "~/lib/config";
+import { createStorageProvider } from "~/lib/file-storage";
 import {
   isAllowedMimeType,
   sanitizeFilename,
   MAX_FILE_SIZE,
 } from "~/types/file";
-
-function createR2Client(): S3Client {
-  return new S3Client({
-    region: "auto",
-    endpoint: `https://${config.r2.accountId}.r2.cloudflarestorage.com`,
-    credentials: {
-      accessKeyId: config.r2.accessKeyId!,
-      secretAccessKey: config.r2.secretAccessKey!,
-    },
-  });
-}
 
 export async function POST(request: NextRequest) {
   try {
@@ -53,18 +41,14 @@ export async function POST(request: NextRequest) {
     const fileId = nanoid(8);
     const sanitizedFilename = sanitizeFilename(uploadedFile.name);
     const arrayBuffer = await uploadedFile.arrayBuffer();
-    const r2Key = `${session.user.id}/${fileId}`;
+    const fileKey = `${session.user.id}/${fileId}`;
 
-    const r2Client = createR2Client();
-
-    const putCommand = new PutObjectCommand({
-      Bucket: config.r2.bucketName!,
-      Key: r2Key,
-      Body: new Uint8Array(arrayBuffer),
-      ContentType: uploadedFile.type,
-    });
-
-    await r2Client.send(putCommand);
+    const storageProvider = createStorageProvider();
+    await storageProvider.uploadFile(
+      fileKey,
+      new Uint8Array(arrayBuffer),
+      uploadedFile.type,
+    );
 
     const newFiles = await db
       .insert(file)
@@ -86,7 +70,7 @@ export async function POST(request: NextRequest) {
       originalFilename: newFile.originalFilename,
       mimeType: newFile.mimeType,
       size: newFile.size,
-      url: `${config.r2.publicUrl}/${r2Key}`,
+      url: storageProvider.getFileUrl(fileKey),
       createdAt: newFile.createdAt,
     });
   } catch (error) {
@@ -121,9 +105,10 @@ export async function GET(request: NextRequest) {
       orderBy: (files, { desc }) => [desc(files.createdAt)],
     });
 
+    const storageProvider = createStorageProvider();
     const filesWithUrls = userFiles.map((file) => ({
       ...file,
-      url: `${config.r2.publicUrl}/${file.userId}/${file.id}`,
+      url: storageProvider.getFileUrl(`${file.userId}/${file.id}`),
     }));
 
     return NextResponse.json({

@@ -1,22 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
-import { S3Client, DeleteObjectCommand } from "@aws-sdk/client-s3";
 import { auth } from "~/lib/auth";
 import { db } from "~/lib/db";
 import { file } from "~/lib/db/schema";
-import { config } from "~/lib/config";
+import { createStorageProvider } from "~/lib/file-storage";
 import { eq, and } from "drizzle-orm";
 import { sanitizeFilename } from "~/types/file";
-
-function createR2Client(): S3Client {
-  return new S3Client({
-    region: "auto",
-    endpoint: `https://${config.r2.accountId}.r2.cloudflarestorage.com`,
-    credentials: {
-      accessKeyId: config.r2.accessKeyId!,
-      secretAccessKey: config.r2.secretAccessKey!,
-    },
-  });
-}
 
 export async function GET(
   request: NextRequest,
@@ -44,9 +32,11 @@ export async function GET(
       return NextResponse.json({ error: "File not found" }, { status: 404 });
     }
 
+    const storageProvider = createStorageProvider();
+
     return NextResponse.json({
       ...fileRecord,
-      url: `${config.r2.publicUrl}/${fileRecord.userId}/${fileRecord.id}`,
+      url: storageProvider.getFileUrl(`${fileRecord.userId}/${fileRecord.id}`),
     });
   } catch (error) {
     console.error("File fetch error:", error);
@@ -103,10 +93,13 @@ export async function PATCH(
     }
 
     const updatedFile = updatedFiles[0]!;
+    const storageProvider = createStorageProvider();
 
     return NextResponse.json({
       ...updatedFile,
-      url: `${config.r2.publicUrl}/${updatedFile.userId}/${updatedFile.id}`,
+      url: storageProvider.getFileUrl(
+        `${updatedFile.userId}/${updatedFile.id}`,
+      ),
     });
   } catch (error) {
     console.error("File update error:", error);
@@ -144,14 +137,10 @@ export async function DELETE(
     }
 
     try {
-      const r2Client = createR2Client();
-      const deleteCommand = new DeleteObjectCommand({
-        Bucket: config.r2.bucketName!,
-        Key: `${fileRecord.userId}/${fileId}`,
-      });
-      await r2Client.send(deleteCommand);
-    } catch (r2Error) {
-      console.error("R2 deletion error:", r2Error);
+      const storageProvider = createStorageProvider();
+      await storageProvider.deleteFile(`${fileRecord.userId}/${fileId}`);
+    } catch (storageError) {
+      console.error("Storage deletion error:", storageError);
     }
 
     await db
