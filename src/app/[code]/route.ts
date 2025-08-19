@@ -4,6 +4,7 @@ import { shortlink, shortlinkClick, file } from "~/lib/db/schema";
 import { eq, and } from "drizzle-orm";
 import { nanoid } from "nanoid";
 import { config } from "~/lib/config";
+import { createStorageProvider } from "~/lib/file-storage";
 
 export async function GET(
   request: NextRequest,
@@ -20,7 +21,10 @@ export async function GET(
 
     if (fileRecord.length > 0) {
       const fileData = fileRecord[0]!;
-      const fileUrl = `${config.r2.publicUrl}/${fileData.userId}/${fileData.id}`;
+      const storageProvider = createStorageProvider();
+      const fileUrl = storageProvider.getFileUrl(
+        `${fileData.userId}/${fileData.id}`,
+      );
 
       const getFileIcon = (mimeType: string) => {
         if (mimeType.startsWith("image/"))
@@ -47,14 +51,14 @@ export async function GET(
       const renderPreview = () => {
         if (fileData.mimeType.startsWith("image/")) {
           return `
-          <div class="glass overflow-hidden">
-            <img src="${fileUrl}" alt="${fileData.filename}" class="w-full max-w-[60vh] mx-auto rounded-2xl h-auto max-h-[60vh] object-contain" />
+          <div class="glass rounded-xl overflow-hidden shadow-lg">
+            <img src="${fileUrl}" alt="${fileData.filename}" class="w-full max-w-[60vh] mx-auto h-auto max-h-[60vh] object-contain" />
           </div>
         `;
         }
         if (fileData.mimeType.startsWith("video/")) {
           return `
-          <div class="glass rounded-2xl overflow-hidden">
+          <div class="glass rounded-xl overflow-hidden shadow-lg">
             <video src="${fileUrl}" controls class="w-full h-auto max-h-[60vh]">
               Your browser does not support the video tag.
             </video>
@@ -63,9 +67,9 @@ export async function GET(
         }
         if (fileData.mimeType.startsWith("audio/")) {
           return `
-          <div class="glass rounded-2xl p-8">
+          <div class="glass rounded-xl p-8 shadow-lg">
             <div class="flex flex-col items-center space-y-6">
-              <div class="w-24 h-24 bg-muted rounded-2xl flex items-center justify-center text-muted-foreground">
+              <div class="file-icon">
                 ${getFileIcon(fileData.mimeType)}
               </div>
               <audio src="${fileUrl}" controls class="w-full max-w-md">
@@ -76,13 +80,13 @@ export async function GET(
         `;
         }
         return `
-          <div class="glass rounded-2xl p-12">
+          <div class="glass rounded-xl p-12 shadow-lg">
             <div class="flex flex-col items-center space-y-6 text-center">
-              <div class="w-24 h-24 bg-muted rounded-2xl flex items-center justify-center text-muted-foreground">
+              <div class="file-icon">
                 ${getFileIcon(fileData.mimeType)}
               </div>
               <div>
-                <h3 class="text-lg font-semibold text-foreground mb-2">Preview not available</h3>
+                <h3 class="text-lg font-semibold mb-2">Preview not available</h3>
                 <p class="text-muted-foreground">This file type cannot be previewed in the browser</p>
               </div>
             </div>
@@ -131,58 +135,66 @@ export async function GET(
   ${fileData.mimeType.startsWith("image/") ? `<meta name="twitter:image" content="${fileUrl}">` : ""}
   
   <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'media',
+      theme: {
+        extend: {
+          colors: {
+            background: 'oklch(var(--background))',
+            foreground: 'oklch(var(--foreground))',
+            card: 'oklch(var(--card))',
+            'card-foreground': 'oklch(var(--card-foreground))',
+            primary: 'oklch(var(--primary))',
+            'primary-foreground': 'oklch(var(--primary-foreground))',
+            secondary: 'oklch(var(--secondary))',
+            'secondary-foreground': 'oklch(var(--secondary-foreground))',
+            muted: 'oklch(var(--muted))',
+            'muted-foreground': 'oklch(var(--muted-foreground))',
+            border: 'oklch(var(--border))',
+            ring: 'oklch(var(--ring))',
+          }
+        }
+      }
+    }
+  </script>
   <style>
     :root {
-  --background: oklch(0.1776 0 0);
-  --foreground: oklch(0.9491 0 0);
-  --card: oklch(0.2134 0 0);
-  --card-foreground: oklch(0.9491 0 0);
-  --popover: oklch(0.2134 0 0);
-  --popover-foreground: oklch(0.9491 0 0);
-  --primary: oklch(0.9247 0.0524 66.1732);
-  --primary-foreground: oklch(0.2029 0.0240 200.1962);
-  --secondary: oklch(0.3163 0.0190 63.6992);
-  --secondary-foreground: oklch(0.9247 0.0524 66.1732);
-  --muted: oklch(0.2520 0 0);
-  --muted-foreground: oklch(0.7699 0 0);
-  --accent: oklch(0.2850 0 0);
-  --accent-foreground: oklch(0.9491 0 0);
-  --destructive: oklch(0.6271 0.1936 33.3390);
-  --destructive-foreground: oklch(1.0000 0 0);
-  --border: oklch(0.2351 0.0115 91.7467);
-  --input: oklch(0.4017 0 0);
-  --ring: oklch(0.9247 0.0524 66.1732);
-  --chart-1: oklch(0.9247 0.0524 66.1732);
-  --chart-2: oklch(0.3163 0.0190 63.6992);
-  --chart-3: oklch(0.2850 0 0);
-  --chart-4: oklch(0.3481 0.0219 67.0001);
-  --chart-5: oklch(0.9245 0.0533 67.0855);
-  --sidebar: oklch(0.2103 0.0059 285.8852);
-  --sidebar-foreground: oklch(0.9674 0.0013 286.3752);
-  --sidebar-primary: oklch(0.4882 0.2172 264.3763);
-  --sidebar-primary-foreground: oklch(1.0000 0 0);
-  --sidebar-accent: oklch(0.2739 0.0055 286.0326);
-  --sidebar-accent-foreground: oklch(0.9674 0.0013 286.3752);
-  --sidebar-border: oklch(0.2739 0.0055 286.0326);
-  --sidebar-ring: oklch(0.8711 0.0055 286.2860);
-  --font-sans: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
-  --font-serif: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
-  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-  --radius: 0.5rem;
-  --shadow-2xs: 0 1px 3px 0px hsl(0 0% 0% / 0.05);
-  --shadow-xs: 0 1px 3px 0px hsl(0 0% 0% / 0.05);
-  --shadow-sm: 0 1px 3px 0px hsl(0 0% 0% / 0.10), 0 1px 2px -1px hsl(0 0% 0% / 0.10);
-  --shadow: 0 1px 3px 0px hsl(0 0% 0% / 0.10), 0 1px 2px -1px hsl(0 0% 0% / 0.10);
-  --shadow-md: 0 1px 3px 0px hsl(0 0% 0% / 0.10), 0 2px 4px -1px hsl(0 0% 0% / 0.10);
-  --shadow-lg: 0 1px 3px 0px hsl(0 0% 0% / 0.10), 0 4px 6px -1px hsl(0 0% 0% / 0.10);
-  --shadow-xl: 0 1px 3px 0px hsl(0 0% 0% / 0.10), 0 8px 10px -1px hsl(0 0% 0% / 0.10);
-  --shadow-2xl: 0 1px 3px 0px hsl(0 0% 0% / 0.25);
-}
+      --background: 1 0 0;
+      --foreground: 0.145 0 0;
+      --card: 1 0 0;
+      --card-foreground: 0.145 0 0;
+      --primary: 0.205 0 0;
+      --primary-foreground: 0.985 0 0;
+      --secondary: 0.97 0 0;
+      --secondary-foreground: 0.205 0 0;
+      --muted: 0.97 0 0;
+      --muted-foreground: 0.556 0 0;
+      --border: 0.922 0 0;
+      --ring: 0.708 0 0;
+    }
+    
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --background: 0.145 0 0;
+        --foreground: 0.985 0 0;
+        --card: 0.205 0 0;
+        --card-foreground: 0.985 0 0;
+        --primary: 0.922 0 0;
+        --primary-foreground: 0.205 0 0;
+        --secondary: 0.269 0 0;
+        --secondary-foreground: 0.985 0 0;
+        --muted: 0.269 0 0;
+        --muted-foreground: 0.708 0 0;
+        --border: 1 0 0 / 10%;
+        --ring: 0.556 0 0;
+      }
+    }
     
     body { 
-      font-family: 'League Spartan', ui-sans-serif, system-ui, sans-serif; 
-      background-color: var(--background);
-      color: var(--foreground);
+      font-family: 'Geist', ui-sans-serif, system-ui, sans-serif; 
+      background-color: oklch(var(--background));
+      color: oklch(var(--foreground));
     }
     
     .glass {
@@ -195,55 +207,79 @@ export async function GET(
     .btn {
       display: inline-flex;
       align-items: center;
+      justify-center: center;
       gap: 0.5rem;
-      padding: 0.75rem 1.5rem;
-      border-radius: var(--radius);
-      font-weight: 500;
+      padding: 0.5rem 1rem;
+      border-radius: 0.75rem;
+      font-weight: 600;
+      font-size: 0.875rem;
       transition: all 0.2s;
       text-decoration: none;
       cursor: pointer;
       border: none;
       font-family: inherit;
+      white-space: nowrap;
+      user-select: none;
+      height: 2.5rem;
+    }
+    
+    .btn:focus {
+      outline: 2px solid oklch(var(--ring));
+      outline-offset: 2px;
     }
     
     .btn-primary {
-      background: var(--primary);
-      color: var(--primary-foreground);
+      background: oklch(var(--primary));
+      color: oklch(var(--primary-foreground));
     }
     
     .btn-primary:hover {
-      background: var(--secondary);
-      color: var(--primary);
+      background: oklch(var(--primary) / 0.9);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px oklch(var(--primary) / 0.25);
     }
     
     .btn-secondary {
-      background: var(--secondary);
-      color: var(--secondary-foreground);
-      border: 1px solid var(--border);
+      background: oklch(var(--card) / 0.5);
+      color: oklch(var(--foreground));
+      border: 1px solid oklch(var(--border));
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
     }
     
     .btn-secondary:hover {
-      background: var(--primary);
-      color: var(--secondary);
+      background: oklch(var(--card) / 0.7);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px oklch(var(--border) / 0.25);
     }
     
     .copy-success {
       background: oklch(0.646 0.222 41.116) !important;
       color: white !important;
     }
+    
+    .file-icon {
+      width: 6rem;
+      height: 6rem;
+      background: oklch(var(--muted));
+      border-radius: 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: oklch(var(--muted-foreground));
+    }
   </style>
 </head>
-<body class="h-full">
-  <div class="min-h-full bg-background text-foreground">
+<body class="min-h-screen -mt-4">
+  <div class="min-h-screen bg-background/80 backdrop-blur-sm">
     <div class="container mx-auto px-4 py-12 max-w-4xl">
       <div class="space-y-8">
         <div class="text-center space-y-4">
-          <h1 class="text-3xl sm:text-4xl font-bold">
+          <h1 class="text-3xl sm:text-4xl font-bold bg-gradient-to-br from-foreground to-muted-foreground bg-clip-text text-transparent">
             ${fileData.filename}
           </h1>
           <div class="flex items-center justify-center gap-6 text-sm text-muted-foreground flex-wrap">
-            <span class="flex items-center gap-2">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M8 2v4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M16 2v4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><rect width="18" height="18" x="3" y="4" rx="2" stroke="currentColor" stroke-width="2"/><path d="M3 10h18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <span>
               ${new Date(fileData.createdAt).toLocaleDateString()}
             </span>
             <span>${formatFileSize(fileData.size)}</span>
@@ -271,7 +307,7 @@ export async function GET(
         </div>
 
         <div class="text-center">
-          <a href="/" class="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors">
+          <a href="/" class="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors text-sm">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><polyline points="9,22 9,12 15,12 15,22" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
             Visit Priory
           </a>
