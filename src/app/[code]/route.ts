@@ -113,8 +113,6 @@ export async function GET(
   <meta property="og:type" content="article">
   <meta property="og:image" content="${fileUrl}">
   <meta property="og:image:type" content="${fileData.mimeType}">
-  <meta property="og:image:width" content="1200">
-  <meta property="og:image:height" content="630">
   `
       : ""
   }
