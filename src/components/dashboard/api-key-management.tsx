@@ -183,7 +183,7 @@ export default function ApiKeyManagement() {
         title: "Copied!",
         description: "API key copied to clipboard",
       });
-    } catch (error) {
+    } catch {
       addToast({
         type: "error",
         title: "Copy failed",

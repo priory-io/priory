@@ -3,7 +3,6 @@ import { db } from "~/lib/db";
 import { shortlink, shortlinkClick, file } from "~/lib/db/schema";
 import { eq, and } from "drizzle-orm";
 import { nanoid } from "nanoid";
-import { config } from "~/lib/config";
 import { createStorageProvider } from "~/lib/file-storage";
 
 export async function GET(
