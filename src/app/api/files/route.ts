@@ -4,6 +4,7 @@ import { auth } from "~/lib/auth";
 import { db } from "~/lib/db";
 import { file } from "~/lib/db/schema";
 import { createStorageProvider } from "~/lib/file-storage";
+import { authenticateApiKey } from "~/lib/api-auth";
 import {
   isAllowedMimeType,
   sanitizeFilename,
@@ -12,12 +13,20 @@ import {
 
 export async function POST(request: NextRequest) {
   try {
+    let userId: string;
+
     const session = await auth.api.getSession({
       headers: request.headers,
     });
 
-    if (!session?.user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    if (session?.user) {
+      userId = session.user.id;
+    } else {
+      const apiKeyAuth = await authenticateApiKey(request, "files:upload");
+      if (!apiKeyAuth.success || !apiKeyAuth.user) {
+        return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      }
+      userId = apiKeyAuth.user.id;
     }
 
     const formData = await request.formData();
@@ -41,7 +50,7 @@ export async function POST(request: NextRequest) {
     const fileId = nanoid(8);
     const sanitizedFilename = sanitizeFilename(uploadedFile.name);
     const arrayBuffer = await uploadedFile.arrayBuffer();
-    const fileKey = `${session.user.id}/${fileId}`;
+    const fileKey = `${userId}/${fileId}`;
 
     const storageProvider = createStorageProvider();
     await storageProvider.uploadFile(
@@ -54,7 +63,7 @@ export async function POST(request: NextRequest) {
       .insert(file)
       .values({
         id: fileId,
-        userId: session.user.id,
+        userId: userId,
         filename: sanitizedFilename,
         originalFilename: uploadedFile.name,
         mimeType: uploadedFile.type,

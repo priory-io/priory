@@ -8,6 +8,7 @@ import Card from "~/components/ui/card";
 import Button from "~/components/ui/button";
 import { useToast } from "~/components/ui/toast";
 import { config } from "~/lib/config";
+import ApiKeyManagement from "~/components/dashboard/api-key-management";
 import {
   User,
   Mail,
@@ -591,6 +592,16 @@ export default function AccountPage() {
               )}
             </AnimatePresence>
           </div>
+        </Card>
+      </motion.div>
+
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4, delay: 0.25 }}
+      >
+        <Card>
+          <ApiKeyManagement />
         </Card>
       </motion.div>
 

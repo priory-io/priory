@@ -4,15 +4,24 @@ import { db } from "~/lib/db";
 import { shortlink } from "~/lib/db/schema";
 import { eq, and, desc } from "drizzle-orm";
 import { nanoid } from "nanoid";
+import { authenticateApiKey } from "~/lib/api-auth";
 
 export async function POST(request: NextRequest) {
   try {
+    let userId: string;
+
     const session = await auth.api.getSession({
       headers: request.headers,
     });
 
-    if (!session?.user?.id) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    if (session?.user?.id) {
+      userId = session.user.id;
+    } else {
+      const apiKeyAuth = await authenticateApiKey(request, "shortlinks:create");
+      if (!apiKeyAuth.success || !apiKeyAuth.user) {
+        return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      }
+      userId = apiKeyAuth.user.id;
     }
 
     const body = await request.json();
@@ -45,7 +54,7 @@ export async function POST(request: NextRequest) {
       .insert(shortlink)
       .values({
         id: nanoid(),
-        userId: session.user.id,
+        userId: userId,
         shortCode,
         originalUrl,
         title,
