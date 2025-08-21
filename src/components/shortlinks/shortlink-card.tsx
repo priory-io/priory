@@ -45,7 +45,7 @@ export function ShortlinkCard({
         </div>
       )}
       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-4">
-        <div className="flex-1 min-w-0">
+        <div className={`flex-1 min-w-0 ${selectionMode ? "ml-10" : ""}`}>
           <div className="flex items-center gap-2 mb-3">
             <span className="font-mono text-primary font-medium text-sm sm:text-base">
               /{shortlink.shortCode}
