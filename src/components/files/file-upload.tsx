@@ -210,12 +210,16 @@ export function FileUpload({
   const getStatusIcon = (status: FileUploadProgress["status"]) => {
     switch (status) {
       case "completed":
-        return <CheckCircle className="h-4 w-4 text-green-500" />;
+        return <CheckCircle className="h-5 w-5 text-green-500" />;
       case "error":
-        return <AlertCircle className="h-4 w-4 text-red-500" />;
+        return <AlertCircle className="h-5 w-5 text-red-500" />;
       case "uploading":
         return (
-          <div className="h-4 w-4 animate-spin rounded-full border-2 border-blue-500 border-t-transparent" />
+          <div className="h-5 w-5 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+        );
+      case "pending":
+        return (
+          <div className="h-5 w-5 rounded-full border-2 border-muted-foreground opacity-50" />
         );
       default:
         return null;
