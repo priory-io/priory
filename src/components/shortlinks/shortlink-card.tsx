@@ -1,16 +1,49 @@
 "use client";
 
-import { Copy, Eye, Trash2, Calendar, Lock } from "lucide-react";
+import { Copy, Eye, Trash2, Calendar, Lock, Check } from "lucide-react";
 import Button from "~/components/ui/button";
 import { ShortlinkCardProps } from "~/types/shortlink";
+
+interface ExtendedShortlinkCardProps extends ShortlinkCardProps {
+  isSelected?: boolean;
+  onSelectionChange?: (id: string, selected: boolean) => void;
+  selectionMode?: boolean;
+}
 
 export function ShortlinkCard({
   shortlink,
   onCopy,
   onDelete,
-}: ShortlinkCardProps) {
+  isSelected = false,
+  onSelectionChange,
+  selectionMode = false,
+}: ExtendedShortlinkCardProps) {
+  const handleSelectionChange = () => {
+    if (onSelectionChange) {
+      onSelectionChange(shortlink.id, !isSelected);
+    }
+  };
+
   return (
-    <div className="border border-border/50 rounded-xl p-4 sm:p-6 hover:bg-card/80 transition-colors">
+    <div
+      className={`border border-border/50 rounded-xl p-4 sm:p-6 hover:bg-card/80 transition-colors relative ${
+        isSelected ? "ring-2 ring-primary bg-primary/5" : ""
+      }`}
+    >
+      {selectionMode && (
+        <div className="absolute top-4 left-4 z-10">
+          <button
+            onClick={handleSelectionChange}
+            className={`w-6 h-6 rounded border-2 flex items-center justify-center transition-colors ${
+              isSelected
+                ? "bg-primary border-primary text-primary-foreground"
+                : "bg-background border-muted-foreground hover:border-primary"
+            }`}
+          >
+            {isSelected && <Check className="w-4 h-4" />}
+          </button>
+        </div>
+      )}
       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-4">
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 mb-3">

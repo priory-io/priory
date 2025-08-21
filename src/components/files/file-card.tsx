@@ -15,6 +15,7 @@ import {
   Music,
   Archive,
   FileText,
+  Check,
 } from "lucide-react";
 import Button from "~/components/ui/button";
 import {
@@ -37,9 +38,20 @@ interface FileCardProps {
   onCopy: (url: string) => void;
   onDelete: (id: string) => void;
   onRename: (id: string, newFilename: string) => void;
+  isSelected?: boolean;
+  onSelectionChange?: (id: string, selected: boolean) => void;
+  selectionMode?: boolean;
 }
 
-export function FileCard({ file, onCopy, onDelete, onRename }: FileCardProps) {
+export function FileCard({
+  file,
+  onCopy,
+  onDelete,
+  onRename,
+  isSelected = false,
+  onSelectionChange,
+  selectionMode = false,
+}: FileCardProps) {
   const [showRenameDialog, setShowRenameDialog] = useState(false);
   const [newFilename, setNewFilename] = useState(file.filename);
 
@@ -148,9 +160,33 @@ export function FileCard({ file, onCopy, onDelete, onRename }: FileCardProps) {
     );
   };
 
+  const handleSelectionChange = () => {
+    if (onSelectionChange) {
+      onSelectionChange(file.id, !isSelected);
+    }
+  };
+
   return (
     <>
-      <div className="border border-border/50 rounded-xl overflow-hidden hover:bg-card/80 transition-colors group">
+      <div
+        className={`border border-border/50 rounded-xl overflow-hidden hover:bg-card/80 transition-colors group relative ${
+          isSelected ? "ring-2 ring-primary bg-primary/5" : ""
+        }`}
+      >
+        {selectionMode && (
+          <div className="absolute top-3 left-3 z-10">
+            <button
+              onClick={handleSelectionChange}
+              className={`w-6 h-6 rounded border-2 flex items-center justify-center transition-colors ${
+                isSelected
+                  ? "bg-primary border-primary text-primary-foreground"
+                  : "bg-background border-muted-foreground hover:border-primary"
+              }`}
+            >
+              {isSelected && <Check className="w-4 h-4" />}
+            </button>
+          </div>
+        )}
         {renderPreview()}
 
         <div className="p-4">
