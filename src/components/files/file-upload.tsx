@@ -27,20 +27,27 @@ export function FileUpload({
 
   const handleDragOver = useCallback((e: React.DragEvent) => {
     e.preventDefault();
+    e.stopPropagation();
     setIsDragging(true);
   }, []);
 
   const handleDragLeave = useCallback((e: React.DragEvent) => {
     e.preventDefault();
-    setIsDragging(false);
+    e.stopPropagation();
+    if (!e.currentTarget.contains(e.relatedTarget as Node)) {
+      setIsDragging(false);
+    }
   }, []);
 
   const handleDrop = useCallback(
     (e: React.DragEvent) => {
       e.preventDefault();
+      e.stopPropagation();
       setIsDragging(false);
       const files = Array.from(e.dataTransfer.files);
-      handleFiles(files);
+      if (files.length > 0) {
+        handleFiles(files);
+      }
     },
     [multiple],
   );
@@ -219,20 +226,47 @@ export function FileUpload({
     <div className={cn("space-y-4", className)}>
       <div
         className={cn(
-          "border-2 border-dashed border-border rounded-lg p-6 text-center transition-colors",
-          isDragging && "border-primary bg-primary/5",
-          "hover:border-border/80",
+          "border-2 border-dashed rounded-xl p-8 text-center transition-all duration-200 ease-in-out",
+          "hover:border-primary/50 hover:bg-primary/5",
+          isDragging
+            ? "border-primary bg-primary/10 scale-[1.02] shadow-lg"
+            : "border-border",
         )}
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
         onDrop={handleDrop}
       >
-        <Upload className="mx-auto h-10 w-10 text-muted-foreground mb-3" />
-        <div className="space-y-2">
-          <p className="font-medium text-foreground">
-            Drop files here, or{" "}
-            <label className="text-primary hover:text-primary/80 cursor-pointer">
-              browse
+        <div
+          className={cn(
+            "transition-all duration-200",
+            isDragging && "scale-110",
+          )}
+        >
+          <Upload
+            className={cn(
+              "mx-auto h-12 w-12 mb-4 transition-colors duration-200",
+              isDragging ? "text-primary" : "text-muted-foreground",
+            )}
+          />
+        </div>
+        <div className="space-y-3">
+          <p
+            className={cn(
+              "text-lg font-semibold transition-colors duration-200",
+              isDragging ? "text-primary" : "text-foreground",
+            )}
+          >
+            {isDragging ? "Drop your files here" : "Drag & drop files here"}
+          </p>
+          <p className="text-sm text-muted-foreground">
+            or{" "}
+            <label
+              className={cn(
+                "font-medium cursor-pointer transition-colors duration-200",
+                "text-primary hover:text-primary/80 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 rounded-sm",
+              )}
+            >
+              browse from your device
               <input
                 type="file"
                 className="sr-only"
@@ -242,10 +276,20 @@ export function FileUpload({
               />
             </label>
           </p>
-          <p className="text-sm text-muted-foreground">
-            Support for images, videos, audio, documents, and archives up to{" "}
-            {formatFileSize(MAX_FILE_SIZE)}
-          </p>
+          <div className="flex items-center justify-center gap-4 text-xs text-muted-foreground pt-2">
+            <span className="flex items-center gap-1">
+              <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+              Images, Videos, Audio
+            </span>
+            <span className="flex items-center gap-1">
+              <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+              Documents, Archives
+            </span>
+            <span className="flex items-center gap-1">
+              <div className="w-2 h-2 bg-orange-500 rounded-full"></div>
+              Up to {formatFileSize(MAX_FILE_SIZE)}
+            </span>
+          </div>
         </div>
       </div>
 
