@@ -1,14 +1,15 @@
 "use client";
 
-import { useMemo, useCallback, useRef } from "react";
+import { useMemo, useCallback, useRef, useState } from "react";
 import useSWR, { mutate } from "swr";
 import { authClient } from "~/lib/auth-client";
 import { redirect } from "next/navigation";
 import Button from "~/components/ui/button";
-import { Plus } from "lucide-react";
+import { Plus, CheckSquare } from "lucide-react";
 import { AnalyticsDashboard } from "~/components/dashboard/analytics";
 import { ShortlinkCard } from "~/components/shortlinks/shortlink-card";
 import { CreateShortlinkForm } from "~/components/shortlinks/create-shortlink-form";
+import { BulkOperationsToolbar } from "~/components/ui/bulk-operations-toolbar";
 import { EmptyState } from "~/components/ui/empty-state";
 import { LoadingPage, LoadingSpinner } from "~/components/ui/loading";
 import { useToast } from "~/components/ui/toast";
@@ -35,6 +36,10 @@ export default function ShortlinksPage() {
   const { data: session, isPending } = authClient.useSession();
   const { addToast } = useToast();
   const createDialogRef = useRef<HTMLButtonElement | null>(null);
+  const [selectedShortlinks, setSelectedShortlinks] = useState<Set<string>>(
+    new Set(),
+  );
+  const [selectionMode, setSelectionMode] = useState(false);
 
   const aborter = useRef<AbortController | null>(null);
   const swrKey = session?.user ? "/api/shortlinks" : null;
@@ -59,6 +64,75 @@ export default function ShortlinksPage() {
   const closeCreateDialog = useCallback(() => {
     createDialogRef.current?.click();
   }, []);
+
+  const handleShortlinkSelection = useCallback(
+    (shortlinkId: string, selected: boolean) => {
+      setSelectedShortlinks((prev) => {
+        const newSelection = new Set(prev);
+        if (selected) {
+          newSelection.add(shortlinkId);
+        } else {
+          newSelection.delete(shortlinkId);
+        }
+        return newSelection;
+      });
+    },
+    [],
+  );
+
+  const handleSelectAll = useCallback(() => {
+    setSelectedShortlinks(new Set(shortlinks.map((link) => link.id)));
+  }, [shortlinks]);
+
+  const handleClearSelection = useCallback(() => {
+    setSelectedShortlinks(new Set());
+    setSelectionMode(false);
+  }, []);
+
+  const handleBulkDelete = useCallback(async () => {
+    const shortlinkIds = Array.from(selectedShortlinks);
+    if (shortlinkIds.length === 0) return;
+
+    const confirmMessage = `Are you sure you want to delete ${shortlinkIds.length} shortlink${shortlinkIds.length > 1 ? "s" : ""}?`;
+    if (!confirm(confirmMessage)) return;
+
+    try {
+      const res = await fetch("/api/shortlinks/bulk", {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ shortlinkIds }),
+      });
+
+      if (!res.ok) {
+        throw new Error("Failed to delete shortlinks");
+      }
+
+      const result = await res.json();
+
+      addToast({
+        type: "success",
+        title: "Shortlinks deleted",
+        description: `Successfully deleted ${result.deletedCount} shortlink${result.deletedCount > 1 ? "s" : ""}.`,
+      });
+
+      setSelectedShortlinks(new Set());
+      setSelectionMode(false);
+      await mutate(swrKey);
+    } catch (error) {
+      addToast({
+        type: "error",
+        title: "Failed to delete shortlinks",
+        description: "Please try again.",
+      });
+    }
+  }, [selectedShortlinks, addToast, swrKey]);
+
+  const toggleSelectionMode = useCallback(() => {
+    setSelectionMode(!selectionMode);
+    if (!selectionMode) {
+      setSelectedShortlinks(new Set());
+    }
+  }, [selectionMode]);
 
   const createShortlink = useCallback(
     async (formData: CreateShortlinkData) => {
@@ -175,30 +249,52 @@ export default function ShortlinksPage() {
           </p>
         </div>
 
-        <Dialog>
-          <DialogTrigger asChild>
-            <Button
-              className="w-full sm:w-auto"
-              ref={createDialogRef}
-              aria-label="Create shortlink"
-            >
-              <Plus className="w-4 h-4" />
-              Create Shortlink
-            </Button>
-          </DialogTrigger>
-          <DialogContent className="max-w-6xl max-h-[90vh] overflow-y-auto">
-            <DialogHeader>
-              <DialogTitle>Create New Shortlink</DialogTitle>
-            </DialogHeader>
-            <CreateShortlinkForm
-              onSubmit={createShortlink}
-              onCancel={closeCreateDialog}
-            />
-          </DialogContent>
-        </Dialog>
+        <div className="flex gap-2">
+          <Button
+            variant="outline"
+            onClick={toggleSelectionMode}
+            className="gap-2"
+          >
+            <CheckSquare className="w-4 h-4" />
+            {selectionMode ? "Cancel Selection" : "Select Links"}
+          </Button>
+
+          <Dialog>
+            <DialogTrigger asChild>
+              <Button
+                className="w-full sm:w-auto"
+                ref={createDialogRef}
+                aria-label="Create shortlink"
+              >
+                <Plus className="w-4 h-4" />
+                Create Shortlink
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="max-w-6xl max-h-[90vh] overflow-y-auto">
+              <DialogHeader>
+                <DialogTitle>Create New Shortlink</DialogTitle>
+              </DialogHeader>
+              <CreateShortlinkForm
+                onSubmit={createShortlink}
+                onCancel={closeCreateDialog}
+              />
+            </DialogContent>
+          </Dialog>
+        </div>
       </div>
 
       <AnalyticsDashboard refreshTrigger={shortlinks.length} />
+
+      {selectionMode && (
+        <BulkOperationsToolbar
+          selectedCount={selectedShortlinks.size}
+          totalCount={shortlinks.length}
+          onSelectAll={handleSelectAll}
+          onClearSelection={handleClearSelection}
+          onBulkDelete={handleBulkDelete}
+          type="shortlinks"
+        />
+      )}
 
       <div className="bg-card/50 backdrop-blur-xl border border-border/60 rounded-2xl p-6">
         <h3 className="text-lg font-semibold text-foreground mb-6">
@@ -231,6 +327,9 @@ export default function ShortlinksPage() {
                 shortlink={link}
                 onCopy={copyToClipboard}
                 onDelete={deleteShortlink}
+                isSelected={selectedShortlinks.has(link.id)}
+                onSelectionChange={handleShortlinkSelection}
+                selectionMode={selectionMode}
               />
             ))}
           </div>
