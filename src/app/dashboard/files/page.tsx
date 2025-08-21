@@ -169,6 +169,7 @@ export default function FilesPage() {
       setSelectionMode(false);
       await mutate(swrKey);
     } catch (error) {
+      console.error(`Failed to delete files: ${error}`);
       addToast({
         type: "error",
         title: "Failed to delete files",
@@ -215,6 +216,7 @@ export default function FilesPage() {
         description: `Starting download of ${result.files.length} file${result.files.length > 1 ? "s" : ""}.`,
       });
     } catch (error) {
+      console.error(`Download failed: ${error}`);
       addToast({
         type: "error",
         title: "Download failed",

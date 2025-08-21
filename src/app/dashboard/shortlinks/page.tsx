@@ -119,6 +119,7 @@ export default function ShortlinksPage() {
       setSelectionMode(false);
       await mutate(swrKey);
     } catch (error) {
+      console.error(`Failed to delete shortlinks: ${error}`);
       addToast({
         type: "error",
         title: "Failed to delete shortlinks",
