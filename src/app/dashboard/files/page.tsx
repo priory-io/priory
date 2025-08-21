@@ -115,74 +115,6 @@ export default function FilesPage() {
     [addToast, closeUploadDialog, swrKey],
   );
 
-  const deleteFile = useCallback(
-    async (id: string) => {
-      if (!swrKey) return;
-
-      const prev = data;
-
-      mutate(
-        swrKey,
-        (current: typeof data | undefined) => {
-          if (!current) return current;
-          return {
-            ...current,
-            files: current.files.filter((f) => f.id !== id),
-          };
-        },
-        false,
-      );
-
-      try {
-        const res = await fetch(`/api/files/${id}`, {
-          method: "DELETE",
-        });
-
-        if (!res.ok) {
-          throw new Error("Delete failed");
-        }
-
-        addToast({
-          type: "success",
-          title: "File deleted",
-          description: "The file has been removed.",
-        });
-
-        window.dispatchEvent(new CustomEvent("fileUploaded"));
-
-        await mutate(swrKey);
-      } catch {
-        mutate(swrKey, prev, false);
-        addToast({
-          type: "error",
-          title: "Failed to delete",
-          description: "Please try again.",
-        });
-      }
-    },
-    [addToast, data, swrKey],
-  );
-
-  const copyToClipboard = useCallback(
-    async (url: string) => {
-      try {
-        await navigator.clipboard.writeText(url);
-        addToast({
-          type: "success",
-          title: "Copied",
-          description: "File URL copied to clipboard.",
-        });
-      } catch {
-        addToast({
-          type: "error",
-          title: "Copy failed",
-          description: "Please copy it manually.",
-        });
-      }
-    },
-    [addToast],
-  );
-
   const handleFileSelection = useCallback(
     (fileId: string, selected: boolean) => {
       setSelectedFiles((prev) => {
@@ -297,6 +229,74 @@ export default function FilesPage() {
       setSelectedFiles(new Set());
     }
   }, [selectionMode]);
+
+  const deleteFile = useCallback(
+    async (id: string) => {
+      if (!swrKey) return;
+
+      const prev = data;
+
+      mutate(
+        swrKey,
+        (current: typeof data | undefined) => {
+          if (!current) return current;
+          return {
+            ...current,
+            files: current.files.filter((f) => f.id !== id),
+          };
+        },
+        false,
+      );
+
+      try {
+        const res = await fetch(`/api/files/${id}`, {
+          method: "DELETE",
+        });
+
+        if (!res.ok) {
+          throw new Error("Delete failed");
+        }
+
+        addToast({
+          type: "success",
+          title: "File deleted",
+          description: "The file has been removed.",
+        });
+
+        window.dispatchEvent(new CustomEvent("fileUploaded"));
+
+        await mutate(swrKey);
+      } catch {
+        mutate(swrKey, prev, false);
+        addToast({
+          type: "error",
+          title: "Failed to delete",
+          description: "Please try again.",
+        });
+      }
+    },
+    [addToast, data, swrKey],
+  );
+
+  const copyToClipboard = useCallback(
+    async (url: string) => {
+      try {
+        await navigator.clipboard.writeText(url);
+        addToast({
+          type: "success",
+          title: "Copied",
+          description: "File URL copied to clipboard.",
+        });
+      } catch {
+        addToast({
+          type: "error",
+          title: "Copy failed",
+          description: "Please copy it manually.",
+        });
+      }
+    },
+    [addToast],
+  );
 
   const renameFile = useCallback(
     async (id: string, newFilename: string) => {
@@ -431,6 +431,18 @@ export default function FilesPage() {
         </div>
       </div>
 
+      {selectionMode && (
+        <BulkOperationsToolbar
+          selectedCount={selectedFiles.size}
+          totalCount={filteredFiles.length}
+          onSelectAll={handleSelectAll}
+          onClearSelection={handleClearSelection}
+          onBulkDelete={handleBulkDelete}
+          onBulkDownload={handleBulkDownload}
+          type="files"
+        />
+      )}
+
       <div className="bg-card/50 backdrop-blur-xl border border-border/60 rounded-2xl p-6">
         <h3 className="text-lg font-semibold text-foreground mb-6">
           Your Files
@@ -471,6 +483,9 @@ export default function FilesPage() {
                   onCopy={copyToClipboard}
                   onDelete={deleteFile}
                   onRename={renameFile}
+                  isSelected={selectedFiles.has(file.id)}
+                  onSelectionChange={handleFileSelection}
+                  selectionMode={selectionMode}
                 />
               ))}
             </div>
