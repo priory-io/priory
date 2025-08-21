@@ -10,6 +10,7 @@ import {
   sanitizeFilename,
   MAX_FILE_SIZE,
 } from "~/types/file";
+import sizeOf from "image-size";
 
 export async function POST(request: NextRequest) {
   try {
@@ -52,6 +53,22 @@ export async function POST(request: NextRequest) {
     const arrayBuffer = await uploadedFile.arrayBuffer();
     const fileKey = `${userId}/${fileId}`;
 
+    let width: number | null = null;
+    let height: number | null = null;
+
+    if (uploadedFile.type.startsWith("image/")) {
+      try {
+        const buffer = Buffer.from(arrayBuffer);
+        const dimensions = sizeOf(buffer);
+        if (dimensions.width && dimensions.height) {
+          width = dimensions.width;
+          height = dimensions.height;
+        }
+      } catch (error) {
+        console.warn("Failed to extract image dimensions:", error);
+      }
+    }
+
     const storageProvider = createStorageProvider();
     await storageProvider.uploadFile(
       fileKey,
@@ -68,6 +85,8 @@ export async function POST(request: NextRequest) {
         originalFilename: uploadedFile.name,
         mimeType: uploadedFile.type,
         size: uploadedFile.size,
+        width,
+        height,
       })
       .returning();
 
@@ -79,6 +98,8 @@ export async function POST(request: NextRequest) {
       originalFilename: newFile.originalFilename,
       mimeType: newFile.mimeType,
       size: newFile.size,
+      width: newFile.width,
+      height: newFile.height,
       url: storageProvider.getFileUrl(fileKey),
       createdAt: newFile.createdAt,
     });

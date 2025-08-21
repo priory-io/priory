@@ -111,6 +111,8 @@ export const file = pgTable("file", {
   originalFilename: text("original_filename").notNull(),
   mimeType: text("mime_type").notNull(),
   size: bigint("size", { mode: "number" }).notNull(),
+  width: integer("width"),
+  height: integer("height"),
   isActive: boolean("is_active").notNull().default(true),
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at").notNull().defaultNow(),

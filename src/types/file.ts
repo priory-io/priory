@@ -7,6 +7,8 @@ export interface FileData {
   originalFilename: string;
   mimeType: string;
   size: number;
+  width?: number | null;
+  height?: number | null;
   isActive: boolean;
   createdAt: Date;
   updatedAt: Date;

@@ -112,6 +112,9 @@ export async function GET(
   <meta property="og:type" content="article">
   <meta property="og:image" content="${fileUrl}">
   <meta property="og:image:type" content="${fileData.mimeType}">
+  ${fileData.width ? `<meta property="og:image:width" content="${fileData.width}">` : ""}
+  ${fileData.height ? `<meta property="og:image:height" content="${fileData.height}">` : ""}
+  <meta property="og:image:alt" content="${fileData.filename}">
   `
       : ""
   }
@@ -130,6 +133,21 @@ export async function GET(
   <meta name="twitter:title" content="${fileData.filename}">
   <meta name="twitter:description" content="File shared via Priory">
   ${fileData.mimeType.startsWith("image/") ? `<meta name="twitter:image" content="${fileUrl}">` : ""}
+  ${fileData.mimeType === "image/gif" ? `<meta name="twitter:image:alt" content="${fileData.filename}">` : ""}
+  
+  ${
+    fileData.mimeType === "image/gif"
+      ? `
+  <meta property="og:video" content="${fileUrl}">
+  <meta property="og:video:type" content="image/gif">
+  ${fileData.width ? `<meta property="og:video:width" content="${fileData.width}">` : ""}
+  ${fileData.height ? `<meta property="og:video:height" content="${fileData.height}">` : ""}
+  <meta name="twitter:player" content="${fileUrl}">
+  ${fileData.width ? `<meta name="twitter:player:width" content="${fileData.width}">` : ""}
+  ${fileData.height ? `<meta name="twitter:player:height" content="${fileData.height}">` : ""}
+  `
+      : ""
+  }
   
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
