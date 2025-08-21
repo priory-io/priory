@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev --turbopack",
-    "build": "next build",
+    "build": "next build --turbopack",
     "start": "next start",
     "lint": "oxlint src --fix",
     "format": "prettier src --write",
@@ -52,3 +52,4 @@
     "@tailwindcss/oxide"
   ]
 }
+
