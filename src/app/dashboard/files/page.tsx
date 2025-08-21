@@ -43,6 +43,8 @@ export default function FilesPage() {
   const [page, setPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedFilter, setSelectedFilter] = useState<string>("all");
+  const [selectedFiles, setSelectedFiles] = useState<Set<string>>(new Set());
+  const [selectionMode, setSelectionMode] = useState(false);
 
   const aborter = useRef<AbortController | null>(null);
   const swrKey = session?.user ? `/api/files?page=${page}&limit=20` : null;
