@@ -183,7 +183,117 @@ export default function FilesPage() {
     [addToast],
   );
 
-  const renameFile = useCallback(
+  const handleFileSelection = useCallback((fileId: string, selected: boolean) => {
+    setSelectedFiles(prev => {
+      const newSelection = new Set(prev);
+      if (selected) {
+        newSelection.add(fileId);
+      } else {
+        newSelection.delete(fileId);
+      }
+      return newSelection;
+    });
+  }, []);
+
+  const handleSelectAll = useCallback(() => {
+    setSelectedFiles(new Set(filteredFiles.map(file => file.id)));
+  }, [filteredFiles]);
+
+  const handleClearSelection = useCallback(() => {
+    setSelectedFiles(new Set());
+    setSelectionMode(false);
+  }, []);
+
+  const handleBulkDelete = useCallback(async () => {
+    const fileIds = Array.from(selectedFiles);
+    if (fileIds.length === 0) return;
+
+    const confirmMessage = `Are you sure you want to delete ${fileIds.length} file${fileIds.length > 1 ? 's' : ''}?`;
+    if (!confirm(confirmMessage)) return;
+
+    try {
+      const res = await fetch('/api/files/bulk', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ fileIds }),
+      });
+
+      if (!res.ok) {
+        throw new Error('Failed to delete files');
+      }
+
+      const result = await res.json();
+      
+      addToast({
+        type: 'success',
+        title: 'Files deleted',
+        description: `Successfully deleted ${result.deletedCount} file${result.deletedCount > 1 ? 's' : ''}.`,
+      });
+
+      setSelectedFiles(new Set());
+      setSelectionMode(false);
+      await mutate(swrKey);
+    } catch (error) {
+      addToast({
+        type: 'error',
+        title: 'Failed to delete files',
+        description: 'Please try again.',
+      });
+    }
+  }, [selectedFiles, addToast, swrKey]);
+
+  const handleBulkDownload = useCallback(async () => {
+    const fileIds = Array.from(selectedFiles);
+    if (fileIds.length === 0) return;
+
+    try {
+      const res = await fetch('/api/files/bulk/download', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ fileIds }),
+      });
+
+      if (!res.ok) {
+        throw new Error('Failed to prepare download');
+      }
+
+      const result = await res.json();
+      
+      if (result.files.length === 1) {
+        const file = result.files[0];
+        const link = document.createElement('a');
+        link.href = file.url;
+        link.download = file.filename;
+        link.click();
+      } else {
+        result.files.forEach((file: any) => {
+          const link = document.createElement('a');
+          link.href = file.url;
+          link.download = file.filename;
+          link.click();
+        });
+      }
+
+      addToast({
+        type: 'success',
+        title: 'Download started',
+        description: `Starting download of ${result.files.length} file${result.files.length > 1 ? 's' : ''}.`,
+      });
+    } catch (error) {
+      addToast({
+        type: 'error',
+        title: 'Download failed',
+        description: 'Please try again.',
+      });
+    }
+  }, [selectedFiles, addToast]);
+
+  const toggleSelectionMode = useCallback(() => {
+    setSelectionMode(!selectionMode);
+    if (!selectionMode) {
+      setSelectedFiles(new Set());
+    }
+  }, [selectionMode]);
     async (id: string, newFilename: string) => {
       try {
         const res = await fetch(`/api/files/${id}`, {
@@ -264,6 +374,15 @@ export default function FilesPage() {
         </div>
 
         <div className="flex gap-2">
+          <Button
+            variant="outline"
+            onClick={toggleSelectionMode}
+            className="gap-2"
+          >
+            <CheckSquare className="w-4 h-4" />
+            {selectionMode ? 'Cancel Selection' : 'Select Files'}
+          </Button>
+          
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="outline" className="gap-2">
