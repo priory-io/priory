@@ -4,7 +4,6 @@ import { db } from "~/lib/db";
 import { file } from "~/lib/db/schema";
 import { createStorageProvider } from "~/lib/file-storage";
 import { eq, and, inArray } from "drizzle-orm";
-import JSZip from "jszip";
 
 export async function POST(request: NextRequest) {
   try {
@@ -40,51 +39,20 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "No files found" }, { status: 404 });
     }
 
-    if (filesToDownload.length === 1) {
-      const singleFile = filesToDownload[0];
-      const storageProvider = createStorageProvider();
-      const fileUrl = storageProvider.getFileUrl(
-        `${singleFile.userId}/${singleFile.id}`,
-      );
-
-      return NextResponse.json({
-        type: "single",
-        url: fileUrl,
-        filename: singleFile.filename,
-      });
-    }
-
-    const zip = new JSZip();
     const storageProvider = createStorageProvider();
+    const filesWithUrls = filesToDownload.map((fileRecord) => ({
+      id: fileRecord.id,
+      filename: fileRecord.filename,
+      url: storageProvider.getFileUrl(`${fileRecord.userId}/${fileRecord.id}`),
+    }));
 
-    await Promise.all(
-      filesToDownload.map(async (fileRecord) => {
-        try {
-          const fileKey = `${fileRecord.userId}/${fileRecord.id}`;
-          const fileData = await storageProvider.getFileBuffer(fileKey);
-          zip.file(fileRecord.filename, fileData);
-        } catch (error) {
-          console.error(
-            `Failed to add file ${fileRecord.filename} to zip:`,
-            error,
-          );
-        }
-      }),
-    );
-
-    const zipBuffer = await zip.generateAsync({ type: "nodebuffer" });
-
-    return new NextResponse(zipBuffer, {
-      status: 200,
-      headers: {
-        "Content-Type": "application/zip",
-        "Content-Disposition": `attachment; filename="files-${Date.now()}.zip"`,
-      },
+    return NextResponse.json({
+      files: filesWithUrls,
     });
   } catch (error) {
     console.error("Bulk file download error:", error);
     return NextResponse.json(
-      { error: "Failed to download files" },
+      { error: "Failed to prepare files for download" },
       { status: 500 },
     );
   }
