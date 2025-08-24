@@ -217,7 +217,7 @@ export default function SignInPage() {
                         value={oauthInviteCode}
                         onChange={(e) => setOauthInviteCode(e.target.value)}
                         placeholder="Enter your invite code"
-                        className="w-full pl-10 pr-4 py-2.5 bg-card/50 border border-border/60 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/50 text-foreground placeholder-muted-foreground backdrop-blur-sm"
+                        className="w-full pl-10 pr-4 py-2.5 bg-card/50 border border-border/60 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/50 text-foreground placeholder-muted-foreground"
                         autoFocus
                       />
                     </div>
@@ -275,7 +275,7 @@ export default function SignInPage() {
                       value={name}
                       onChange={(e) => setName(e.target.value)}
                       placeholder="Enter your display name"
-                      className="w-full pl-10 pr-4 py-2.5 bg-card/50 border border-border/60 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/50 text-foreground placeholder-muted-foreground backdrop-blur-sm"
+                      className="w-full pl-10 pr-4 py-2.5 bg-card/50 border border-border/60 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/50 text-foreground placeholder-muted-foreground"
                       required
                     />
                   </div>
@@ -293,7 +293,7 @@ export default function SignInPage() {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="Enter your email"
-                    className="w-full pl-10 pr-4 py-2.5 bg-card/50 border border-border/60 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/50 text-foreground placeholder-muted-foreground backdrop-blur-sm"
+                    className="w-full pl-10 pr-4 py-2.5 bg-card/50 border border-border/60 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/50 text-foreground placeholder-muted-foreground"
                     required
                   />
                 </div>
@@ -310,7 +310,7 @@ export default function SignInPage() {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     placeholder="Enter your password"
-                    className="w-full pl-10 pr-4 py-2.5 bg-card/50 border border-border/60 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/50 text-foreground placeholder-muted-foreground backdrop-blur-sm"
+                    className="w-full pl-10 pr-4 py-2.5 bg-card/50 border border-border/60 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/50 text-foreground placeholder-muted-foreground"
                     required
                   />
                 </div>
@@ -328,7 +328,7 @@ export default function SignInPage() {
                       value={inviteCode}
                       onChange={(e) => setInviteCode(e.target.value)}
                       placeholder="Enter your invite code"
-                      className="w-full pl-10 pr-4 py-2.5 bg-card/50 border border-border/60 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/50 text-foreground placeholder-muted-foreground backdrop-blur-sm"
+                      className="w-full pl-10 pr-4 py-2.5 bg-card/50 border border-border/60 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/50 text-foreground placeholder-muted-foreground"
                       required
                     />
                   </div>
