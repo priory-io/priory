@@ -6,7 +6,6 @@ interface ScrollBehavior {
   scrollY: number;
   scrollDirection: "up" | "down" | null;
   isScrolled: boolean;
-  isVisible: boolean;
 }
 
 export function useScrollBehavior(threshold: number = 10): ScrollBehavior {
@@ -15,7 +14,6 @@ export function useScrollBehavior(threshold: number = 10): ScrollBehavior {
     null,
   );
   const [isScrolled, setIsScrolled] = useState(false);
-  const [isVisible, setIsVisible] = useState(true);
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
@@ -29,13 +27,8 @@ export function useScrollBehavior(threshold: number = 10): ScrollBehavior {
       setScrollY(currentScrollY);
       setIsScrolled(currentScrollY > threshold);
 
-      if (currentScrollY > previousScrollY) {
-        setScrollDirection("down");
-        setIsVisible(currentScrollY < 100);
-      } else {
-        setScrollDirection("up");
-        setIsVisible(true);
-      }
+      const direction = currentScrollY > previousScrollY ? "down" : "up";
+      setScrollDirection(direction);
 
       previousScrollY = currentScrollY;
       ticking = false;
@@ -61,6 +54,5 @@ export function useScrollBehavior(threshold: number = 10): ScrollBehavior {
     scrollY,
     scrollDirection,
     isScrolled: mounted ? isScrolled : false,
-    isVisible,
   };
 }
