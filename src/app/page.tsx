@@ -16,28 +16,12 @@ export default function Home() {
         <div className="absolute inset-0 bg-gradient-to-t from-background/90 via-background/20 to-background/90" />
 
         <motion.div
-          className="absolute top-20 left-10 w-3 h-3 bg-primary rounded-full blur-sm"
+          className="absolute top-32 right-16 w-2 h-2 bg-primary/30 rounded-full blur-sm"
           animate={{
-            y: [-15, 15, -15],
-            opacity: [0.4, 1, 0.4],
+            y: [-10, 10, -10],
+            opacity: [0.2, 0.6, 0.2],
           }}
-          transition={{ duration: 4, repeat: Infinity }}
-        />
-        <motion.div
-          className="absolute top-40 right-20 w-2 h-2 bg-accent rounded-full blur-sm"
-          animate={{
-            y: [15, -15, 15],
-            opacity: [0.6, 1, 0.6],
-          }}
-          transition={{ duration: 3, repeat: Infinity }}
-        />
-        <motion.div
-          className="absolute bottom-40 left-20 w-2.5 h-2.5 bg-primary/80 rounded-full blur-sm"
-          animate={{
-            y: [-10, 20, -10],
-            opacity: [0.3, 0.8, 0.3],
-          }}
-          transition={{ duration: 5, repeat: Infinity }}
+          transition={{ duration: 6, repeat: Infinity }}
         />
 
         <Container maxWidth="2xl">
@@ -49,14 +33,14 @@ export default function Home() {
           >
             <motion.h1
               variants={animationVariants.fadeInUp}
-              className="text-5xl md:text-7xl lg:text-8xl font-semibold mb-6"
+              className="text-5xl md:text-6xl lg:text-7xl font-bold mb-6"
             >
-              <span className="text-primary">{config.site.name}</span>
+              {config.site.name}
             </motion.h1>
 
             <motion.div
               variants={animationVariants.fadeInUp}
-              className="text-lg md:text-xl font-semibold mb-8 text-primary"
+              className="text-lg md:text-xl font-medium mb-6 text-primary"
             >
               by{" "}
               <Link
@@ -70,9 +54,10 @@ export default function Home() {
 
             <motion.p
               variants={animationVariants.fadeInUp}
-              className="text-lg md:text-xl text-muted-foreground mb-12 max-w-3xl mx-auto justify-center"
+              className="text-lg md:text-xl text-muted-foreground mb-12 max-w-2xl mx-auto"
             >
-              Upload files, share links and more with Priory
+              Share files and create short links with ease. <br /> Simple, secure, and
+              private.
             </motion.p>
 
             <motion.div
@@ -80,7 +65,7 @@ export default function Home() {
               className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-16"
             >
               <Button href="/dashboard" size="lg" variant="primary">
-                Get Started
+                Try it out
               </Button>
               <Button
                 href={config.social.github}
@@ -88,7 +73,7 @@ export default function Home() {
                 size="lg"
                 variant="outline"
               >
-                <Github className="w-5 h-5" />
+                <Github className="w-5 h-5 mr-2" />
                 GitHub
               </Button>
             </motion.div>
@@ -106,11 +91,11 @@ export default function Home() {
             viewport={{ once: true }}
           >
             <h2 className="text-3xl md:text-4xl font-semibold mb-4">
-              Everything you need for secure sharing
+              Simple tools for sharing
             </h2>
             <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-              Built with modern technologies and best practices for performance,
-              security, and user experience.
+              Everything you need to share files and links securely, with
+              privacy in mind.
             </p>
           </motion.div>
 
@@ -122,7 +107,7 @@ export default function Home() {
             viewport={{ once: true }}
           >
             <motion.div
-              className="glass rounded-xl p-6 text-center hover:shadow-lg transition-all duration-300"
+              className="glass rounded-xl p-6 -rotate-1 border border-border text-center hover:shadow hover:bg-muted/15 hover:scale-102 hover:rotate-3 hover:-translate-y-2 transition-all duration-300"
               variants={{
                 hidden: { opacity: 0, y: 20 },
                 visible: { opacity: 1, y: 0 },
@@ -131,17 +116,15 @@ export default function Home() {
               <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mx-auto mb-4">
                 <Upload className="w-6 h-6 text-primary" />
               </div>
-              <h3 className="text-xl font-semibold mb-2">
-                Secure File Sharing
-              </h3>
+              <h3 className="text-xl font-semibold mb-2">File Sharing</h3>
               <p className="text-muted-foreground">
-                Upload and share files with end-to-end encryption. Set
-                expiration dates and access controls.
+                Upload and share files securely. Set passwords and expiration
+                dates to keep things private.
               </p>
             </motion.div>
 
             <motion.div
-              className="glass rounded-xl p-6 text-center hover:shadow-lg transition-all duration-300"
+              className="glass rounded-xl p-6 rotate-1 border border-border text-center hover:shadow hover:bg-muted/15 hover:scale-102 hover:-translate-y-2 transition-all duration-300"
               variants={{
                 hidden: { opacity: 0, y: 20 },
                 visible: { opacity: 1, y: 0 },
@@ -150,15 +133,15 @@ export default function Home() {
               <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mx-auto mb-4">
                 <Link2 className="w-6 h-6 text-primary" />
               </div>
-              <h3 className="text-xl font-semibold mb-2">Smart Short Links</h3>
+              <h3 className="text-xl font-semibold mb-2">Short Links</h3>
               <p className="text-muted-foreground">
-                Create branded short URLs with detailed analytics and click
-                tracking capabilities.
+                Create short, clean URLs for easy sharing. Track clicks and
+                manage your links from one place.
               </p>
             </motion.div>
 
             <motion.div
-              className="glass rounded-xl p-6 text-center hover:shadow-lg transition-all duration-300"
+              className="glass rounded-xl p-6 -rotate-1 border border-border text-center hover:shadow hover:bg-muted/15 hover:scale-102 hover:-rotate-3 hover:-translate-y-2 transition-all duration-300"
               variants={{
                 hidden: { opacity: 0, y: 20 },
                 visible: { opacity: 1, y: 0 },
@@ -167,10 +150,10 @@ export default function Home() {
               <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mx-auto mb-4">
                 <Shield className="w-6 h-6 text-primary" />
               </div>
-              <h3 className="text-xl font-semibold mb-2">Privacy First</h3>
+              <h3 className="text-xl font-semibold mb-2">Your Privacy</h3>
               <p className="text-muted-foreground">
-                No tracking, no ads, no data selling. Your privacy is our
-                priority with transparent practices.
+                No ads, no tracking, no selling your data. Just simple, private
+                sharing tools that respect you.
               </p>
             </motion.div>
           </motion.div>
@@ -187,19 +170,15 @@ export default function Home() {
             viewport={{ once: true }}
           >
             <div className="inline-flex items-center gap-2 mb-4 text-muted-foreground">
-              <Zap className="w-5 h-5" />
+              <Heart className="w-5 h-5" />
               <span className="text-sm font-medium">Open Source</span>
             </div>
             <h2 className="text-3xl md:text-4xl font-semibold mb-4">
-              Built with{" "}
-              <span className="inline-flex items-center gap-1 text-destructive">
-                <Heart className="w-8 h-8 translate-y-0.5" />
-              </span>{" "}
-              for the community
+              Made by developers, for developers
             </h2>
             <p className="text-muted-foreground text-lg max-w-2xl mx-auto mb-8">
-              Completely open source and self-hostable. Contribute, customize,
-              or deploy your own instance with full control over your data.
+              Proudly free and open source, host your own instance or contribute to make
+              it even better.
             </p>
             <Button
               href={config.social.github}
@@ -207,7 +186,7 @@ export default function Home() {
               variant="outline"
               size="lg"
             >
-              <Github className="w-5 h-5" />
+              <Github className="w-5 h-5 mr-2" />
               View on GitHub
             </Button>
           </motion.div>
