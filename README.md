@@ -2,7 +2,7 @@
 
 ## Status
 
-Under development
+Closed Beta
 
 ## Getting Started
 
