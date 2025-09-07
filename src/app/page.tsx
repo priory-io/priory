@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Heart, Github, Upload, Link2, Shield, Zap } from "lucide-react";
+import { Heart, Github, Upload, Link2, Shield } from "lucide-react";
 import { config } from "~/lib/config";
 import Container from "~/components/ui/container";
 import { animationVariants } from "~/lib/animations";
@@ -56,8 +56,8 @@ export default function Home() {
               variants={animationVariants.fadeInUp}
               className="text-lg md:text-xl text-muted-foreground mb-12 max-w-2xl mx-auto"
             >
-              Share files and create short links with ease. <br /> Simple, secure, and
-              private.
+              Share files and create short links with ease. <br /> Simple,
+              secure, and private.
             </motion.p>
 
             <motion.div
@@ -177,8 +177,8 @@ export default function Home() {
               Made by developers, for developers
             </h2>
             <p className="text-muted-foreground text-lg max-w-2xl mx-auto mb-8">
-              Proudly free and open source, host your own instance or contribute to make
-              it even better.
+              Proudly free and open source, host your own instance or contribute
+              to make it even better.
             </p>
             <Button
               href={config.social.github}

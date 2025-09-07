@@ -9,6 +9,7 @@ import Button from "~/components/ui/button";
 import { useToast } from "~/components/ui/toast";
 import { config } from "~/lib/config";
 import ApiKeyManagement from "~/components/dashboard/api-key-management";
+import AvatarUpload from "~/components/dashboard/avatar-upload";
 import {
   User,
   Mail,
@@ -32,10 +33,12 @@ export default function AccountPage() {
   const [showCurrentPassword, setShowCurrentPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [userAvatarUrl, setUserAvatarUrl] = useState<string>("");
 
   const [profileForm, setProfileForm] = useState({
     name: "",
     email: "",
+    avatarUrl: "",
   });
 
   const [passwordForm, setPasswordForm] = useState({
@@ -61,7 +64,9 @@ export default function AccountPage() {
         setProfileForm({
           name: userData.name || "",
           email: userData.email || "",
+          avatarUrl: userData.avatarUrl || "",
         });
+        setUserAvatarUrl(userData.avatarUrl || "");
         return userData;
       }
     } catch (error) {
@@ -107,6 +112,7 @@ export default function AccountPage() {
     setProfileForm({
       name: user.name || "",
       email: user.email || "",
+      avatarUrl: userAvatarUrl,
     });
     setIsEditingProfile(true);
   };
@@ -146,7 +152,7 @@ export default function AccountPage() {
 
   const handleCancelEdit = () => {
     setIsEditingProfile(false);
-    setProfileForm({ name: "", email: "" });
+    setProfileForm({ name: "", email: "", avatarUrl: "" });
   };
 
   const handleChangePassword = async () => {
@@ -275,6 +281,13 @@ export default function AccountPage() {
     }
   };
 
+  const handleAvatarUpdate = async (avatarUrl: string) => {
+    setUserAvatarUrl(avatarUrl);
+    await loadUserData();
+
+    window.location.reload();
+  };
+
   return (
     <div className="space-y-8">
       <motion.div
@@ -330,6 +343,18 @@ export default function AccountPage() {
                 </motion.div>
               )}
             </AnimatePresence>
+          </div>
+
+          <div className="mb-6">
+            <AvatarUpload
+              user={{
+                id: user.id,
+                name: user.name,
+                image: user.image,
+                avatarUrl: userAvatarUrl,
+              }}
+              onAvatarUpdate={handleAvatarUpdate}
+            />
           </div>
 
           <AnimatePresence mode="wait">

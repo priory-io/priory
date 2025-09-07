@@ -21,6 +21,7 @@ export async function GET(req: NextRequest) {
         email: user.email,
         isAdmin: user.isAdmin,
         emailVerified: user.emailVerified,
+        avatarUrl: user.avatarUrl,
         createdAt: user.createdAt,
       })
       .from(user)

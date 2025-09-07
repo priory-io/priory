@@ -3,13 +3,13 @@
 import { useState, useEffect } from "react";
 
 interface ScrollBehavior {
-  scrollY: number;
+  // scrollY: number;
   scrollDirection: "up" | "down" | null;
   isScrolled: boolean;
 }
 
 export function useScrollBehavior(threshold: number = 10): ScrollBehavior {
-  const [scrollY, setScrollY] = useState(0);
+  const [_scrollY, setScrollY] = useState(0);
   const [scrollDirection, setScrollDirection] = useState<"up" | "down" | null>(
     null,
   );
@@ -51,7 +51,6 @@ export function useScrollBehavior(threshold: number = 10): ScrollBehavior {
   }, [threshold]);
 
   return {
-    scrollY,
     scrollDirection,
     isScrolled: mounted ? isScrolled : false,
   };

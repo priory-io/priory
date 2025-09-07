@@ -26,6 +26,7 @@ export const user = pgTable("user", {
   emailVerified: boolean("email_verified").notNull().default(false),
   name: text("name").notNull(),
   image: text("image"),
+  avatarUrl: text("avatar_url"),
   isAdmin: boolean("is_admin").notNull().default(false),
   inviteCodeId: text("invite_code_id").references(() => inviteCode.id),
   createdAt: timestamp("created_at").notNull().defaultNow(),
