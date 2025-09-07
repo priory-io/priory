@@ -1,16 +1,10 @@
-# Priory.io
+# Priory
 
 ## Status
 
 Closed Beta
 
 ## Getting Started
-
-### Prerequisites
-
-- Node.js
-- NPM (or other)
-- Git
 
 ### Installation
 
@@ -35,7 +29,12 @@ Closed Beta
    vim .env
    ```
 
-5. Start the development server:
+5. Push the schema into the database
+   ```bash
+   bun run db:push
+   ```
+
+6. Start the development server:
    ```bash
    bun dev
    ```
