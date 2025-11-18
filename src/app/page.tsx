@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Heart, Github } from "lucide-react";
+import { Heart, Github, AlertCircle } from "lucide-react";
 import { config } from "~/lib/config";
 import Container from "~/components/ui/container";
 import { animationVariants } from "~/lib/animations";
@@ -49,6 +49,18 @@ export default function Home() {
             initial="initial"
             animate="animate"
           >
+            {config.features.maintenanceMode && (
+              <motion.div
+                variants={animationVariants.fadeInUp}
+                className="inline-flex items-center gap-3 mb-6 px-4 py-2 rounded-full bg-yellow-500/10 border border-yellow-500/20"
+              >
+                <AlertCircle className="w-5 h-5 text-yellow-500" />
+                <span className="text-sm font-medium text-yellow-500">
+                  Under Construction
+                </span>
+              </motion.div>
+            )}
+
             <motion.h1
               variants={animationVariants.fadeInUp}
               className="text-5xl md:text-6xl lg:text-7xl font-bold mb-6"
@@ -82,9 +94,18 @@ export default function Home() {
               variants={animationVariants.fadeInUp}
               className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-16"
             >
-              <Button href="/dashboard" size="lg" variant="primary">
-                Try it out
-              </Button>
+              {config.features.maintenanceMode ? (
+                <button
+                  disabled
+                  className="inline-flex items-center justify-center font-semibold transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-background disabled:opacity-50 disabled:cursor-not-allowed select-none whitespace-nowrap cursor-not-allowed px-6 py-3 text-lg rounded-xl h-12 gap-2 leading-none bg-primary text-primary-foreground hover:bg-primary/90 focus:ring-primary"
+                >
+                  Try it out
+                </button>
+              ) : (
+                <Button href="/dashboard" size="lg" variant="primary">
+                  Try it out
+                </Button>
+              )}
               <Button
                 href={config.social.github}
                 target="_blank"
@@ -141,9 +162,18 @@ export default function Home() {
                 <Github className="w-5 h-5 mr-2" />
                 View on GitHub
               </Button>
-              <Button href="/dashboard" variant="outline" size="lg">
-                Get Started
-              </Button>
+              {config.features.maintenanceMode ? (
+                <button
+                  disabled
+                  className="inline-flex items-center justify-center font-semibold transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-background disabled:opacity-50 disabled:cursor-not-allowed select-none whitespace-nowrap cursor-not-allowed px-6 py-3 text-lg rounded-xl h-12 gap-2 leading-none border border-border bg-card/50 backdrop-blur-sm text-foreground hover:bg-card/70 focus:ring-primary"
+                >
+                  Get Started
+                </button>
+              ) : (
+                <Button href="/dashboard" variant="outline" size="lg">
+                  Get Started
+                </Button>
+              )}
             </motion.div>
           </motion.div>
         </Container>

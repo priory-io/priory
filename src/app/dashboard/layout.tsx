@@ -4,6 +4,7 @@ import { ReactNode } from "react";
 import { authClient } from "~/lib/auth-client";
 import { redirect } from "next/navigation";
 import { DashboardLayout } from "~/components/dashboard/layout";
+import { config } from "~/lib/config";
 
 interface DashboardRootLayoutProps {
   children: ReactNode;
@@ -12,6 +13,10 @@ interface DashboardRootLayoutProps {
 export default function DashboardRootLayout({
   children,
 }: DashboardRootLayoutProps) {
+  if (config.features.maintenanceMode) {
+    redirect("/");
+  }
+
   const { data: session, isPending } = authClient.useSession();
 
   if (isPending) {
