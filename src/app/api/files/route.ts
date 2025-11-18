@@ -11,9 +11,30 @@ import {
   MAX_FILE_SIZE,
 } from "~/types/file";
 import sizeOf from "image-size";
+import {
+  withRateLimit,
+  getClientIp,
+  defaultRateLimitConfigs,
+} from "~/lib/rate-limit";
+import { checkRequestSize } from "~/lib/request-size-limit";
+import { getPaginationParams } from "~/lib/input-validation";
 
 export async function POST(request: NextRequest) {
   try {
+    const rateLimitCheck = await withRateLimit(
+      request,
+      defaultRateLimitConfigs.fileUpload,
+      getClientIp(request),
+    );
+    if (rateLimitCheck) return rateLimitCheck;
+
+    const sizeCheck = checkRequestSize(request, {
+      maxFileSize: MAX_FILE_SIZE,
+    });
+    if (!sizeCheck.allowed) {
+      return NextResponse.json({ error: sizeCheck.error }, { status: 413 });
+    }
+
     let userId: string;
 
     const session = await auth.api.getSession({
@@ -114,6 +135,13 @@ export async function POST(request: NextRequest) {
 
 export async function GET(request: NextRequest) {
   try {
+    const rateLimitCheck = await withRateLimit(
+      request,
+      defaultRateLimitConfigs.api,
+      getClientIp(request),
+    );
+    if (rateLimitCheck) return rateLimitCheck;
+
     const session = await auth.api.getSession({
       headers: request.headers,
     });
@@ -123,9 +151,7 @@ export async function GET(request: NextRequest) {
     }
 
     const url = new URL(request.url);
-    const page = parseInt(url.searchParams.get("page") || "1");
-    const limit = parseInt(url.searchParams.get("limit") || "20");
-    const offset = (page - 1) * limit;
+    const { page, limit, offset } = getPaginationParams(url, 100);
 
     const userFiles = await db.query.file.findMany({
       where: (files, { eq, and }) =>

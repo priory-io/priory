@@ -3,9 +3,22 @@ import { auth } from "~/lib/auth";
 import { db } from "~/lib/db";
 import { shortlink, shortlinkClick } from "~/lib/db/schema";
 import { eq, desc, sql, and, gte } from "drizzle-orm";
+import {
+  withRateLimit,
+  getClientIp,
+  defaultRateLimitConfigs,
+} from "~/lib/rate-limit";
+import { getQueryParam } from "~/lib/input-validation";
 
 export async function GET(request: NextRequest) {
   try {
+    const rateLimitCheck = await withRateLimit(
+      request,
+      defaultRateLimitConfigs.analytics,
+      getClientIp(request),
+    );
+    if (rateLimitCheck) return rateLimitCheck;
+
     const session = await auth.api.getSession({
       headers: request.headers,
     });
@@ -14,9 +27,20 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const { searchParams } = new URL(request.url);
-    const shortlinkId = searchParams.get("shortlinkId");
-    const days = parseInt(searchParams.get("days") || "30");
+    const shortlinkId = getQueryParam(new URL(request.url), "shortlinkId", {
+      type: "string",
+      max: 50,
+    }) as string | null;
+    const days = Math.min(
+      90,
+      Math.max(
+        1,
+        (getQueryParam(new URL(request.url), "days", {
+          type: "number",
+          default: 30,
+        }) as number) || 30,
+      ),
+    );
 
     const dateFilter = new Date();
     dateFilter.setDate(dateFilter.getDate() - days);

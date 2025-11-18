@@ -3,10 +3,31 @@ import { db } from "~/lib/db";
 import { inviteCode } from "~/lib/db/schema";
 import { eq, and } from "drizzle-orm";
 import { config } from "~/lib/config";
+import {
+  withRateLimit,
+  getClientIp,
+  defaultRateLimitConfigs,
+} from "~/lib/rate-limit";
+import { checkRequestSize } from "~/lib/request-size-limit";
+import { inviteValidationSchema } from "~/lib/input-validation";
 
 export async function POST(req: NextRequest) {
   try {
-    const { inviteCode: code } = await req.json();
+    const rateLimitCheck = await withRateLimit(
+      req,
+      defaultRateLimitConfigs.inviteValidation,
+      getClientIp(req),
+    );
+    if (rateLimitCheck) return rateLimitCheck;
+
+    const sizeCheck = checkRequestSize(req, { maxJsonSize: 5 * 1024 });
+    if (!sizeCheck.allowed) {
+      return NextResponse.json({ error: sizeCheck.error }, { status: 413 });
+    }
+
+    const body = await req.json();
+    const validatedData = inviteValidationSchema.parse(body);
+    const { inviteCode: code } = validatedData;
 
     if (config.features.bypassInvitesInDev) {
       return NextResponse.json({
@@ -68,7 +89,13 @@ export async function POST(req: NextRequest) {
       inviteId: inviteData.id,
       description: inviteData.description,
     });
-  } catch {
+  } catch (error) {
+    if (
+      error instanceof Error &&
+      error.message.startsWith("Validation error:")
+    ) {
+      return NextResponse.json({ error: error.message }, { status: 400 });
+    }
     return NextResponse.json(
       { error: "Internal server error" },
       { status: 500 },

@@ -3,9 +3,23 @@ import { db } from "~/lib/db";
 import { user } from "~/lib/db/schema";
 import { auth } from "~/lib/auth";
 import { eq } from "drizzle-orm";
+import {
+  withRateLimit,
+  getClientIp,
+  defaultRateLimitConfigs,
+} from "~/lib/rate-limit";
+import { checkRequestSize } from "~/lib/request-size-limit";
+import { accountUpdateSchema } from "~/lib/input-validation";
 
 export async function GET(req: NextRequest) {
   try {
+    const rateLimitCheck = await withRateLimit(
+      req,
+      defaultRateLimitConfigs.api,
+      getClientIp(req),
+    );
+    if (rateLimitCheck) return rateLimitCheck;
+
     const session = await auth.api.getSession({
       headers: req.headers,
     });
@@ -45,6 +59,18 @@ export async function GET(req: NextRequest) {
 
 export async function PATCH(req: NextRequest) {
   try {
+    const rateLimitCheck = await withRateLimit(
+      req,
+      defaultRateLimitConfigs.api,
+      getClientIp(req),
+    );
+    if (rateLimitCheck) return rateLimitCheck;
+
+    const sizeCheck = checkRequestSize(req, { maxJsonSize: 5 * 1024 });
+    if (!sizeCheck.allowed) {
+      return NextResponse.json({ error: sizeCheck.error }, { status: 413 });
+    }
+
     const session = await auth.api.getSession({
       headers: req.headers,
     });
@@ -54,7 +80,8 @@ export async function PATCH(req: NextRequest) {
     }
 
     const body = await req.json();
-    const { name, email } = body;
+    const validatedData = accountUpdateSchema.parse(body);
+    const { name, email } = validatedData;
 
     if (!name && !email) {
       return NextResponse.json(
@@ -79,6 +106,12 @@ export async function PATCH(req: NextRequest) {
         { error: "Email already exists" },
         { status: 409 },
       );
+    }
+    if (
+      error instanceof Error &&
+      error.message.startsWith("Validation error:")
+    ) {
+      return NextResponse.json({ error: error.message }, { status: 400 });
     }
     return NextResponse.json(
       { error: "Internal server error" },

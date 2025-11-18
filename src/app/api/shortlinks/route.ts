@@ -5,9 +5,30 @@ import { shortlink } from "~/lib/db/schema";
 import { eq, and, desc } from "drizzle-orm";
 import { nanoid } from "nanoid";
 import { authenticateApiKey } from "~/lib/api-auth";
+import {
+  withRateLimit,
+  getClientIp,
+  defaultRateLimitConfigs,
+} from "~/lib/rate-limit";
+import { checkRequestSize } from "~/lib/request-size-limit";
+import { shortlinkCreateSchema } from "~/lib/input-validation";
 
 export async function POST(request: NextRequest) {
   try {
+    const rateLimitCheck = await withRateLimit(
+      request,
+      defaultRateLimitConfigs.shortlinkCreate,
+      getClientIp(request),
+    );
+    if (rateLimitCheck) return rateLimitCheck;
+
+    const sizeCheck = checkRequestSize(request, {
+      maxJsonSize: 10 * 1024,
+    });
+    if (!sizeCheck.allowed) {
+      return NextResponse.json({ error: sizeCheck.error }, { status: 413 });
+    }
+
     let userId: string;
 
     const session = await auth.api.getSession({
@@ -25,15 +46,9 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json();
+    const validatedData = shortlinkCreateSchema.parse(body);
     const { originalUrl, customCode, title, description, password, expiresAt } =
-      body;
-
-    if (!originalUrl) {
-      return NextResponse.json(
-        { error: "Original URL is required" },
-        { status: 400 },
-      );
-    }
+      validatedData;
 
     const shortCode = customCode || nanoid(6);
 
@@ -69,6 +84,12 @@ export async function POST(request: NextRequest) {
       shortUrl: `${process.env["NEXT_PUBLIC_BASE_URL"] || "http://localhost:3000"}/${shortCode}`,
     });
   } catch (error) {
+    if (
+      error instanceof Error &&
+      error.message.startsWith("Validation error:")
+    ) {
+      return NextResponse.json({ error: error.message }, { status: 400 });
+    }
     console.error("Error creating shortlink:", error);
     return NextResponse.json(
       { error: "Internal server error" },
@@ -79,6 +100,13 @@ export async function POST(request: NextRequest) {
 
 export async function GET(request: NextRequest) {
   try {
+    const rateLimitCheck = await withRateLimit(
+      request,
+      defaultRateLimitConfigs.analytics,
+      getClientIp(request),
+    );
+    if (rateLimitCheck) return rateLimitCheck;
+
     const session = await auth.api.getSession({
       headers: request.headers,
     });
@@ -105,6 +133,13 @@ export async function GET(request: NextRequest) {
 
 export async function DELETE(request: NextRequest) {
   try {
+    const rateLimitCheck = await withRateLimit(
+      request,
+      defaultRateLimitConfigs.api,
+      getClientIp(request),
+    );
+    if (rateLimitCheck) return rateLimitCheck;
+
     const session = await auth.api.getSession({
       headers: request.headers,
     });
