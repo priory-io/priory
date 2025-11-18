@@ -93,32 +93,32 @@ export default function DashboardOverviewPage() {
           value: (stats.filesCount ?? 0).toString(),
           change: stats.filesChange ?? "No change",
           icon: FolderOpen,
-          colorClass: "text-chart-1",
-          bgClass: "bg-chart-1/10",
+          colorClass: "text-primary",
+          bgClass: "bg-primary/10",
         },
         {
           title: "Shortlinks Created",
           value: (stats.shortlinksCount ?? 0).toString(),
           change: stats.shortlinksChange ?? "No change",
           icon: LinkIcon,
-          colorClass: "text-chart-2",
-          bgClass: "bg-chart-2/10",
+          colorClass: "text-primary",
+          bgClass: "bg-primary/10",
         },
         {
           title: "Total Views",
           value: (stats.totalViews ?? 0).toLocaleString(),
           change: stats.viewsChange ?? "No change",
           icon: TrendingUp,
-          colorClass: "text-chart-3",
-          bgClass: "bg-chart-3/10",
+          colorClass: "text-primary",
+          bgClass: "bg-primary/10",
         },
         {
           title: "Active Links",
           value: (stats.activeLinks ?? 0).toString(),
           change: `${stats.activePercentage ?? 0}% active`,
           icon: Activity,
-          colorClass: "text-chart-4",
-          bgClass: "bg-chart-4/10",
+          colorClass: "text-primary",
+          bgClass: "bg-primary/10",
         },
       ]
     : [];
@@ -253,7 +253,7 @@ export default function DashboardOverviewPage() {
           >
             <Card>
               <div className="flex items-center gap-3 mb-6">
-                <div className="w-10 h-10 rounded-lg bg-accent/10 flex items-center justify-center">
+                <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
                   <Zap className="w-5 h-5 text-accent-foreground" />
                 </div>
                 <div>
@@ -308,8 +308,8 @@ export default function DashboardOverviewPage() {
               <Card>
                 <div className="flex items-center justify-between mb-6">
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-lg bg-chart-1/10 flex items-center justify-center">
-                      <FolderOpen className="w-5 h-5 text-chart-1" />
+                    <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
+                      <FolderOpen className="w-5 h-5 text-primary" />
                     </div>
                     <div>
                       <h3 className="text-lg font-semibold text-foreground">

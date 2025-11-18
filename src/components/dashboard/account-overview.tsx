@@ -26,7 +26,7 @@ export function AccountOverview({ user }: AccountOverviewProps) {
     >
       <Card className="bg-card/50 backdrop-blur-xl border-border/60">
         <div className="flex items-start gap-6">
-          <div className="w-24 h-24 rounded-xl bg-gradient-to-br from-primary to-accent flex items-center justify-center">
+          <div className="w-24 h-24 rounded-xl bg-primary flex items-center justify-center">
             {user.image ? (
               <img
                 src={user.image}

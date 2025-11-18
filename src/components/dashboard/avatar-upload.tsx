@@ -136,54 +136,56 @@ export default function AvatarUpload({
   };
 
   return (
-    <div className="flex flex-col items-center space-y-3">
-      <div className="relative group">
-        <UserAvatar
-          user={{
-            ...user,
-            avatarUrl: currentAvatarUrl,
-          }}
-          size={80}
-          className="border-2 border-border"
-        />
+    <div className="flex flex-col space-y-4">
+      <div className="flex items-center gap-6">
+        <div className="relative group">
+          <UserAvatar
+            user={{
+              ...user,
+              avatarUrl: currentAvatarUrl,
+            }}
+            size={80}
+            className="border-2 border-border"
+          />
 
-        <div
-          className={`absolute inset-0 rounded-full bg-black/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200 cursor-pointer ${
-            isUploading ? "opacity-100" : ""
-          }`}
-          onClick={openFileDialog}
-        >
-          {isUploading ? (
-            <div className="animate-spin rounded-full h-6 w-6 border-2 border-white border-t-transparent" />
-          ) : (
-            <Camera className="w-6 h-6 text-white" />
-          )}
+          <div
+            className={`absolute inset-0 rounded-full bg-black/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200 cursor-pointer ${
+              isUploading ? "opacity-100" : ""
+            }`}
+            onClick={openFileDialog}
+          >
+            {isUploading ? (
+              <div className="animate-spin rounded-full h-6 w-6 border-2 border-white border-t-transparent" />
+            ) : (
+              <Camera className="w-6 h-6 text-white" />
+            )}
+          </div>
         </div>
-      </div>
 
-      <div className="flex gap-2">
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={openFileDialog}
-          disabled={isUploading}
-        >
-          <Upload className="w-4 h-4" />
-          {currentAvatarUrl ? "Change" : "Upload"}
-        </Button>
-
-        {currentAvatarUrl && (
+        <div className="flex flex-col gap-2">
           <Button
             variant="outline"
             size="sm"
-            onClick={removeAvatar}
+            onClick={openFileDialog}
             disabled={isUploading}
-            className="text-destructive hover:text-destructive"
           >
-            <X className="w-4 h-4" />
-            Remove
+            <Upload className="w-4 h-4 mr-2" />
+            {currentAvatarUrl ? "Change" : "Upload"}
           </Button>
-        )}
+
+          {currentAvatarUrl && (
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={removeAvatar}
+              disabled={isUploading}
+              className="text-destructive hover:text-destructive"
+            >
+              <X className="w-4 h-4 mr-2" />
+              Remove
+            </Button>
+          )}
+        </div>
       </div>
 
       <input

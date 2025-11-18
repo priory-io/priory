@@ -142,11 +142,11 @@ export function AnalyticsDashboard({
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-muted-foreground">Total Clicks</p>
-                  <p className="text-2xl font-bold text-chart-3">
+                  <p className="text-2xl font-bold text-primary">
                     {totalClicks}
                   </p>
                 </div>
-                <Eye className="w-8 h-8 text-chart-3" />
+                <Eye className="w-8 h-8 text-primary" />
               </div>
             </div>
 
@@ -154,11 +154,11 @@ export function AnalyticsDashboard({
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-muted-foreground">Active Links</p>
-                  <p className="text-2xl font-bold text-chart-2">
+                  <p className="text-2xl font-bold text-primary">
                     {totalLinks}
                   </p>
                 </div>
-                <TrendingUp className="w-8 h-8 text-chart-2" />
+                <TrendingUp className="w-8 h-8 text-primary" />
               </div>
             </div>
 
@@ -166,11 +166,11 @@ export function AnalyticsDashboard({
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-muted-foreground">Avg per Link</p>
-                  <p className="text-2xl font-bold text-chart-1">
+                  <p className="text-2xl font-bold text-primary">
                     {avgClicksPerLink}
                   </p>
                 </div>
-                <Calendar className="w-8 h-8 text-chart-1" />
+                <Calendar className="w-8 h-8 text-primary" />
               </div>
             </div>
           </div>
