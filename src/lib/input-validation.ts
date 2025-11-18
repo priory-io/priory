@@ -89,7 +89,7 @@ export function sanitizeString(
 ): string {
   return input
     .slice(0, maxLength)
-    .replace(/[<>\"']/g, (char) => {
+    .replace(/[<>"']/g, (char) => {
       const escapeMap: Record<string, string> = {
         "<": "&lt;",
         ">": "&gt;",

@@ -69,7 +69,6 @@ export function useSectionSnap() {
       const sections = document.querySelectorAll("[data-section]");
       if (sections.length === 0) return;
 
-      const currentScrollY = window.scrollY;
       const direction = e.deltaY > 0 ? "down" : "up";
 
       let targetSection: Element | null = null;
