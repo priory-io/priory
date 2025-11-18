@@ -13,16 +13,11 @@ const nextConfig: NextConfig = {
     removeConsole: isProd ? { exclude: ["error", "warn"] } : false,
   },
 
-  eslint: {
-    ignoreDuringBuilds: true,
-  },
-
   typescript: {
     ignoreBuildErrors: true,
   },
 
   experimental: {
-    reactCompiler: true,
     cssChunking: "strict",
     optimizePackageImports: ["lucide-react", "framer-motion"],
   },
