@@ -8,6 +8,7 @@ import { Mail, Lock, User, Github, Key } from "lucide-react";
 import Button from "~/components/ui/button";
 import Typography from "~/components/ui/typography";
 import { authClient } from "~/lib/auth-client";
+import { config } from "~/lib/config";
 
 export default function SignInPage() {
   const [isEmailLoading, setIsEmailLoading] = useState(false);
@@ -21,6 +22,44 @@ export default function SignInPage() {
   const [name, setName] = useState("");
   const [error, setError] = useState("");
   const router = useRouter();
+
+  if (config.features.maintenanceMode) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center py-12 px-4">
+        <motion.div
+          className="w-full max-w-md"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4 }}
+        >
+          <div className="bg-card/50 backdrop-blur-xl border border-border/60 rounded-2xl p-8 space-y-6">
+            <div className="text-center space-y-4">
+              <Typography
+                variant="h2"
+                className="text-2xl font-bold text-foreground"
+              >
+                Under Construction
+              </Typography>
+              <Typography
+                variant="muted"
+                className="text-sm text-muted-foreground"
+              >
+                The authentication system is temporarily unavailable. Please
+                check back soon.
+              </Typography>
+            </div>
+
+            <Link
+              href="/"
+              className="block text-center text-sm text-primary hover:text-primary/80 transition-colors"
+            >
+              ← Back to home
+            </Link>
+          </div>
+        </motion.div>
+      </div>
+    );
+  }
 
   const handleEmailAuth = async (e: React.FormEvent) => {
     e.preventDefault();

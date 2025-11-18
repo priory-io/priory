@@ -3,6 +3,7 @@
 import { LogIn } from "lucide-react";
 import { UserAvatarDropdown } from "~/components/navbar/user-avatar-dropdown";
 import Link from "next/link";
+import { config } from "~/lib/config";
 
 interface AuthSectionProps {
   session: any;
@@ -11,6 +12,10 @@ interface AuthSectionProps {
 export function AuthSection({ session }: AuthSectionProps) {
   if (session?.user) {
     return <UserAvatarDropdown user={session.user} />;
+  }
+
+  if (config.features.maintenanceMode) {
+    return null;
   }
 
   return (
