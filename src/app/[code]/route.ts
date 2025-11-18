@@ -286,8 +286,8 @@ export async function GET(
   </style>
 </head>
 <body class="min-h-screen -mt-4">
-  <div class="min-h-screen bg-background/80 backdrop-blur-sm">
-    <div class="container mx-auto px-4 py-12 max-w-4xl">
+  <div class="min-h-screen bg-background/80 backdrop-blur-sm flex items-center justify-center">
+    <div class="container mx-auto px-4 py-12 max-w-4xl w-full">
       <div class="space-y-8">
         <div class="text-center space-y-4">
           <h1 class="text-3xl sm:text-4xl font-bold bg-gradient-to-br from-foreground to-muted-foreground bg-clip-text text-transparent">
@@ -302,7 +302,7 @@ export async function GET(
           </div>
         </div>
 
-        <div class="space-y-6">
+        <div class="space-y-6 flex flex-col items-center">
           ${renderPreview()}
 
           <div class="flex flex-col sm:flex-row gap-4 justify-center">
