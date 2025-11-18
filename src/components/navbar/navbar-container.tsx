@@ -24,7 +24,7 @@ export function NavbarContainer({ children }: NavbarContainerProps) {
         ease: [0.25, 0.46, 0.45, 0.94],
       }}
     >
-      <div className="max-w-6xl mx-auto p-4">
+      <div className="max-w-6xl mx-auto p-4 pt-2 mt-2">
         <motion.div
           className="rounded-xl mx-auto"
           animate={{
