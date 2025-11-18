@@ -1,5 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "~/lib/auth";
+import { db } from "~/lib/db";
+import { user } from "~/lib/db/schema";
+import { eq } from "drizzle-orm";
 
 export async function PATCH(req: NextRequest) {
   try {
@@ -35,6 +38,14 @@ export async function PATCH(req: NextRequest) {
         },
         headers: req.headers,
       });
+
+      await db
+        .update(user)
+        .set({
+          passwordChangedAt: new Date(),
+          updatedAt: new Date(),
+        })
+        .where(eq(user.id, session.user.id));
 
       return NextResponse.json({ success: true });
     } catch (authError) {

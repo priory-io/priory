@@ -8,6 +8,13 @@
       "when": 1757215307624,
       "tag": "0000_sharp_colleen_wing",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1763460689825,
+      "tag": "0001_add_password_changed_at",
+      "breakpoints": true
     }
   ]
 }

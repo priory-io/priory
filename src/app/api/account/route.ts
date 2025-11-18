@@ -22,6 +22,7 @@ export async function GET(req: NextRequest) {
         isAdmin: user.isAdmin,
         emailVerified: user.emailVerified,
         avatarUrl: user.avatarUrl,
+        passwordChangedAt: user.passwordChangedAt,
         createdAt: user.createdAt,
       })
       .from(user)

@@ -34,6 +34,7 @@ export default function AccountPage() {
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [userAvatarUrl, setUserAvatarUrl] = useState<string>("");
+  const [passwordChangedAt, setPasswordChangedAt] = useState<Date | null>(null);
 
   const [profileForm, setProfileForm] = useState({
     name: "",
@@ -67,6 +68,11 @@ export default function AccountPage() {
           avatarUrl: userData.avatarUrl || "",
         });
         setUserAvatarUrl(userData.avatarUrl || "");
+        setPasswordChangedAt(
+          userData.passwordChangedAt
+            ? new Date(userData.passwordChangedAt)
+            : null,
+        );
         return userData;
       }
     } catch (error) {
@@ -202,6 +208,8 @@ export default function AccountPage() {
         confirmPassword: "",
       });
       setIsChangingPassword(false);
+      setPasswordChangedAt(new Date());
+      await loadUserData();
     } catch (error) {
       addToast({
         type: "error",
@@ -476,7 +484,9 @@ export default function AccountPage() {
                 <div>
                   <p className="font-medium text-foreground">Password</p>
                   <p className="text-sm text-muted-foreground">
-                    Last updated 30 days ago
+                    {passwordChangedAt
+                      ? `Last updated ${new Date(passwordChangedAt).toLocaleDateString()}`
+                      : "Never updated"}
                   </p>
                 </div>
               </div>
