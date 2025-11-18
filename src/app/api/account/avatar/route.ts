@@ -71,6 +71,7 @@ export async function POST(request: NextRequest) {
       .update(user)
       .set({
         avatarUrl: avatarUrl,
+        image: avatarUrl,
         updatedAt: new Date(),
       })
       .where(eq(user.id, session.user.id));
@@ -119,6 +120,7 @@ export async function DELETE(request: NextRequest) {
       .update(user)
       .set({
         avatarUrl: null,
+        image: null,
         updatedAt: new Date(),
       })
       .where(eq(user.id, session.user.id));
