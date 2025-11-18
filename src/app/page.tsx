@@ -12,6 +12,18 @@ export default function Home() {
   return (
     <>
       <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-background">
+        <video
+          autoPlay
+          muted
+          loop
+          className="absolute inset-0 w-full h-full object-cover opacity-30 blur-sm"
+        >
+          <source
+            src="https://r2.fuckven.co.uk/assets/SteinsGate%20Animated%20Wallpaper.mp4"
+            type="video/mp4"
+          />
+        </video>
+
         <div className="absolute inset-0 gradient-mesh" />
         <div className="absolute inset-0 bg-gradient-to-t from-background/90 via-background/20 to-background/90" />
 
@@ -26,7 +38,7 @@ export default function Home() {
 
         <Container maxWidth="2xl">
           <motion.div
-            className="relative z-10 text-center mt-[25vh]"
+            className="relative z-10 text-center"
             variants={animationVariants.staggerContainer}
             initial="initial"
             animate="animate"
