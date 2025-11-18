@@ -2,7 +2,7 @@
 
 ## Status
 
-Closed Beta
+Soon
 
 ## Getting Started
 
@@ -10,7 +10,7 @@ Closed Beta
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/priory-io/priory.git
+   git clone https://github.com/priory-io/priory
    cd priory
    ```
 
@@ -19,22 +19,18 @@ Closed Beta
    bun install # or npm
    ```
 
-3. Copy environment variables:
+3. Edit environment variables:
    ```bash
    cp .env.example .env
-   ```
-
-4. Edit the variables
-   ```bash
    vim .env
    ```
 
-5. Push the schema into the database
+4. Push the schema into the database
    ```bash
    bun run db:push
    ```
 
-6. Start the development server:
+5. Start the development server:
    ```bash
    bun dev
    ```
