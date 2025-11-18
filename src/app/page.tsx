@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Heart, Github, Upload, Link2, Shield } from "lucide-react";
+import { Heart, Github } from "lucide-react";
 import { config } from "~/lib/config";
 import Container from "~/components/ui/container";
 import { animationVariants } from "~/lib/animations";
@@ -94,90 +94,6 @@ export default function Home() {
                 <Github className="w-5 h-5 mr-2" />
                 GitHub
               </Button>
-            </motion.div>
-          </motion.div>
-        </Container>
-      </section>
-
-      <section
-        data-section
-        className="py-24 relative overflow-hidden bg-background min-h-screen flex items-center"
-      >
-        <div className="absolute inset-0 gradient-mesh" />
-        <div className="absolute inset-0 bg-gradient-to-b from-background/50 via-background/20 to-background/90" />
-
-        <Container maxWidth="2xl">
-          <motion.div
-            className="relative z-10"
-            initial={{ opacity: 0, y: 40 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-            viewport={{ once: true }}
-          >
-            <motion.div
-              className="text-center mb-16"
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6 }}
-              viewport={{ once: true }}
-            >
-              <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6">
-                Simple tools for sharing
-              </h2>
-              <p className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto">
-                Everything you need to share files and links securely, with
-                privacy in mind. No ads, no tracking, no compromises.
-              </p>
-            </motion.div>
-
-            <motion.div
-              className="grid grid-cols-1 md:grid-cols-3 gap-8"
-              initial={{ opacity: 0, y: 40 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8 }}
-              viewport={{ once: true }}
-            >
-              <motion.div
-                className="glass rounded-2xl p-8 border border-border/50 text-center hover:shadow-lg hover:bg-muted/20 hover:scale-105 transition-all duration-300 group"
-                whileHover={{ y: -8 }}
-              >
-                <div className="w-16 h-16 bg-gradient-to-br from-primary/20 to-primary/10 rounded-xl flex items-center justify-center mx-auto mb-6 group-hover:from-primary/30 group-hover:to-primary/20 transition-all">
-                  <Upload className="w-8 h-8 text-primary" />
-                </div>
-                <h3 className="text-2xl font-semibold mb-3">File Sharing</h3>
-                <p className="text-muted-foreground text-base">
-                  Upload and share files securely. Set passwords and expiration
-                  dates to keep things private.
-                </p>
-              </motion.div>
-
-              <motion.div
-                className="glass rounded-2xl p-8 border border-border/50 text-center hover:shadow-lg hover:bg-muted/20 hover:scale-105 transition-all duration-300 group"
-                whileHover={{ y: -8 }}
-              >
-                <div className="w-16 h-16 bg-gradient-to-br from-primary/20 to-primary/10 rounded-xl flex items-center justify-center mx-auto mb-6 group-hover:from-primary/30 group-hover:to-primary/20 transition-all">
-                  <Link2 className="w-8 h-8 text-primary" />
-                </div>
-                <h3 className="text-2xl font-semibold mb-3">Short Links</h3>
-                <p className="text-muted-foreground text-base">
-                  Create short, clean URLs for easy sharing. Track clicks and
-                  manage your links from one place.
-                </p>
-              </motion.div>
-
-              <motion.div
-                className="glass rounded-2xl p-8 border border-border/50 text-center hover:shadow-lg hover:bg-muted/20 hover:scale-105 transition-all duration-300 group"
-                whileHover={{ y: -8 }}
-              >
-                <div className="w-16 h-16 bg-gradient-to-br from-primary/20 to-primary/10 rounded-xl flex items-center justify-center mx-auto mb-6 group-hover:from-primary/30 group-hover:to-primary/20 transition-all">
-                  <Shield className="w-8 h-8 text-primary" />
-                </div>
-                <h3 className="text-2xl font-semibold mb-3">Your Privacy</h3>
-                <p className="text-muted-foreground text-base">
-                  No ads, no tracking, no selling your data. Just simple,
-                  private sharing tools that respect you.
-                </p>
-              </motion.div>
             </motion.div>
           </motion.div>
         </Container>
