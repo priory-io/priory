@@ -7,11 +7,17 @@ import Container from "~/components/ui/container";
 import { animationVariants } from "~/lib/animations";
 import Link from "next/link";
 import Button from "~/components/ui/button";
+import { useSectionSnap } from "~/hooks/useScrollBehavior";
 
 export default function Home() {
+  useSectionSnap();
+
   return (
     <>
-      <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-background">
+      <section
+        data-section
+        className="relative min-h-screen flex items-center justify-center overflow-hidden bg-background"
+      >
         <video
           autoPlay
           muted
@@ -93,114 +99,136 @@ export default function Home() {
         </Container>
       </section>
 
-      <section className="py-20 relative overflow-hidden bg-background">
+      <section
+        data-section
+        className="py-24 relative overflow-hidden bg-background min-h-screen flex items-center"
+      >
+        <div className="absolute inset-0 gradient-mesh" />
+        <div className="absolute inset-0 bg-gradient-to-b from-background/50 via-background/20 to-background/90" />
+
         <Container maxWidth="2xl">
           <motion.div
-            className="text-center mb-16"
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            viewport={{ once: true }}
-          >
-            <h2 className="text-3xl md:text-4xl font-semibold mb-4">
-              Simple tools for sharing
-            </h2>
-            <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-              Everything you need to share files and links securely, with
-              privacy in mind.
-            </p>
-          </motion.div>
-
-          <motion.div
-            className="grid grid-cols-1 md:grid-cols-3 gap-8"
+            className="relative z-10"
             initial={{ opacity: 0, y: 40 }}
             whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, staggerChildren: 0.1 }}
+            transition={{ duration: 0.8 }}
             viewport={{ once: true }}
           >
             <motion.div
-              className="glass rounded-xl p-6 -rotate-1 border border-border text-center hover:shadow hover:bg-muted/15 hover:scale-102 hover:rotate-3 hover:-translate-y-2 transition-all duration-300"
-              variants={{
-                hidden: { opacity: 0, y: 20 },
-                visible: { opacity: 1, y: 0 },
-              }}
+              className="text-center mb-16"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6 }}
+              viewport={{ once: true }}
             >
-              <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mx-auto mb-4">
-                <Upload className="w-6 h-6 text-primary" />
-              </div>
-              <h3 className="text-xl font-semibold mb-2">File Sharing</h3>
-              <p className="text-muted-foreground">
-                Upload and share files securely. Set passwords and expiration
-                dates to keep things private.
+              <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6">
+                Simple tools for sharing
+              </h2>
+              <p className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto">
+                Everything you need to share files and links securely, with
+                privacy in mind. No ads, no tracking, no compromises.
               </p>
             </motion.div>
 
             <motion.div
-              className="glass rounded-xl p-6 rotate-1 border border-border text-center hover:shadow hover:bg-muted/15 hover:scale-102 hover:-translate-y-2 transition-all duration-300"
-              variants={{
-                hidden: { opacity: 0, y: 20 },
-                visible: { opacity: 1, y: 0 },
-              }}
+              className="grid grid-cols-1 md:grid-cols-3 gap-8"
+              initial={{ opacity: 0, y: 40 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8 }}
+              viewport={{ once: true }}
             >
-              <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mx-auto mb-4">
-                <Link2 className="w-6 h-6 text-primary" />
-              </div>
-              <h3 className="text-xl font-semibold mb-2">Short Links</h3>
-              <p className="text-muted-foreground">
-                Create short, clean URLs for easy sharing. Track clicks and
-                manage your links from one place.
-              </p>
-            </motion.div>
+              <motion.div
+                className="glass rounded-2xl p-8 border border-border/50 text-center hover:shadow-lg hover:bg-muted/20 hover:scale-105 transition-all duration-300 group"
+                whileHover={{ y: -8 }}
+              >
+                <div className="w-16 h-16 bg-gradient-to-br from-primary/20 to-primary/10 rounded-xl flex items-center justify-center mx-auto mb-6 group-hover:from-primary/30 group-hover:to-primary/20 transition-all">
+                  <Upload className="w-8 h-8 text-primary" />
+                </div>
+                <h3 className="text-2xl font-semibold mb-3">File Sharing</h3>
+                <p className="text-muted-foreground text-base">
+                  Upload and share files securely. Set passwords and expiration
+                  dates to keep things private.
+                </p>
+              </motion.div>
 
-            <motion.div
-              className="glass rounded-xl p-6 -rotate-1 border border-border text-center hover:shadow hover:bg-muted/15 hover:scale-102 hover:-rotate-3 hover:-translate-y-2 transition-all duration-300"
-              variants={{
-                hidden: { opacity: 0, y: 20 },
-                visible: { opacity: 1, y: 0 },
-              }}
-            >
-              <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mx-auto mb-4">
-                <Shield className="w-6 h-6 text-primary" />
-              </div>
-              <h3 className="text-xl font-semibold mb-2">Your Privacy</h3>
-              <p className="text-muted-foreground">
-                No ads, no tracking, no selling your data. Just simple, private
-                sharing tools that respect you.
-              </p>
+              <motion.div
+                className="glass rounded-2xl p-8 border border-border/50 text-center hover:shadow-lg hover:bg-muted/20 hover:scale-105 transition-all duration-300 group"
+                whileHover={{ y: -8 }}
+              >
+                <div className="w-16 h-16 bg-gradient-to-br from-primary/20 to-primary/10 rounded-xl flex items-center justify-center mx-auto mb-6 group-hover:from-primary/30 group-hover:to-primary/20 transition-all">
+                  <Link2 className="w-8 h-8 text-primary" />
+                </div>
+                <h3 className="text-2xl font-semibold mb-3">Short Links</h3>
+                <p className="text-muted-foreground text-base">
+                  Create short, clean URLs for easy sharing. Track clicks and
+                  manage your links from one place.
+                </p>
+              </motion.div>
+
+              <motion.div
+                className="glass rounded-2xl p-8 border border-border/50 text-center hover:shadow-lg hover:bg-muted/20 hover:scale-105 transition-all duration-300 group"
+                whileHover={{ y: -8 }}
+              >
+                <div className="w-16 h-16 bg-gradient-to-br from-primary/20 to-primary/10 rounded-xl flex items-center justify-center mx-auto mb-6 group-hover:from-primary/30 group-hover:to-primary/20 transition-all">
+                  <Shield className="w-8 h-8 text-primary" />
+                </div>
+                <h3 className="text-2xl font-semibold mb-3">Your Privacy</h3>
+                <p className="text-muted-foreground text-base">
+                  No ads, no tracking, no selling your data. Just simple,
+                  private sharing tools that respect you.
+                </p>
+              </motion.div>
             </motion.div>
           </motion.div>
         </Container>
       </section>
 
-      <section className="py-20 bg-background">
+      <section
+        data-section
+        className="py-24 relative overflow-hidden bg-background min-h-screen flex items-center"
+      >
+        <div className="absolute inset-0 gradient-mesh" />
+        <div className="absolute inset-0 bg-gradient-to-t from-background/80 via-background/30 to-background/60" />
+
         <Container maxWidth="2xl">
           <motion.div
-            className="text-center"
-            initial={{ opacity: 0, y: 20 }}
+            className="relative z-10 text-center max-w-2xl mx-auto"
+            initial={{ opacity: 0, y: 40 }}
             whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
+            transition={{ duration: 0.8 }}
             viewport={{ once: true }}
           >
-            <div className="inline-flex items-center gap-2 mb-4 text-muted-foreground">
-              <Heart className="w-5 h-5" />
+            <div className="inline-flex items-center gap-3 mb-6 px-4 py-2 rounded-full bg-primary/10 border border-primary/20">
+              <Heart className="w-5 h-5 text-primary" />
               <span className="text-sm font-medium">Open Source</span>
             </div>
-            <h2 className="text-3xl md:text-4xl font-semibold mb-4">
+            <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6">
               Made by developers, for developers
             </h2>
-            <p className="text-muted-foreground text-lg max-w-2xl mx-auto mb-8">
-              Proudly free and open source, host your own instance or contribute
-              to make it even better.
+            <p className="text-lg md:text-xl text-muted-foreground mb-10">
+              Proudly free and open source. Host your own instance, contribute
+              to make it better, or just use it as-is. No strings attached.
             </p>
-            <Button
-              href={config.social.github}
-              target="_blank"
-              variant="outline"
-              size="lg"
+            <motion.div
+              className="flex flex-col sm:flex-row gap-4 justify-center items-center"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.2 }}
+              viewport={{ once: true }}
             >
-              <Github className="w-5 h-5 mr-2" />
-              View on GitHub
-            </Button>
+              <Button
+                href={config.social.github}
+                target="_blank"
+                variant="primary"
+                size="lg"
+              >
+                <Github className="w-5 h-5 mr-2" />
+                View on GitHub
+              </Button>
+              <Button href="/dashboard" variant="outline" size="lg">
+                Get Started
+              </Button>
+            </motion.div>
           </motion.div>
         </Container>
       </section>
