@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { QRCodeSVG } from "qrcode.react";
 import { Copy, Check, Smartphone } from "lucide-react";
 import Button from "~/components/ui/button";
@@ -89,7 +90,12 @@ export function QRUploadModal({
       <DialogContent className="max-w-2xl overflow-x-hidden">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            <Smartphone className="w-5 h-5 text-primary" />
+            <motion.div
+              animate={{ rotate: [0, 10, -10, 0] }}
+              transition={{ duration: 2, repeat: Infinity }}
+            >
+              <Smartphone className="w-5 h-5 text-primary" />
+            </motion.div>
             Upload via Phone
           </DialogTitle>
           <DialogDescription>
@@ -98,55 +104,142 @@ export function QRUploadModal({
         </DialogHeader>
 
         {error ? (
-          <div className="bg-destructive/10 border border-destructive/20 text-destructive px-4 py-3 rounded-xl text-sm">
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="bg-destructive/10 border border-destructive/20 text-destructive px-4 py-3 rounded-xl text-sm"
+          >
             {error}
-          </div>
+          </motion.div>
         ) : isLoading ? (
-          <div className="flex items-center justify-center py-16">
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="flex items-center justify-center py-16"
+          >
             <div className="animate-spin rounded-full h-8 w-8 border-2 border-primary border-t-transparent"></div>
-          </div>
+          </motion.div>
         ) : (
-          <div className="space-y-6">
-            <div className="flex justify-center p-4">
-              <div className="w-64 h-64 flex items-center justify-center bg-white/10 rounded-xl">
+          <motion.div
+            className="space-y-6"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ staggerChildren: 0.1, delayChildren: 0.1 }}
+          >
+            <motion.div
+              className="flex justify-center p-4"
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ type: "spring", stiffness: 200, damping: 20 }}
+            >
+              <motion.div
+                className="w-64 h-64 flex items-center justify-center bg-white/10 rounded-xl"
+                whileHover={{ scale: 1.05 }}
+                animate={{
+                  scale: 1,
+                  boxShadow: [
+                    "0 0 0 0 rgba(59, 130, 246, 0.1)",
+                    "0 0 0 20px rgba(59, 130, 246, 0)",
+                  ],
+                }}
+                transition={{
+                  boxShadow: {
+                    duration: 2,
+                    repeat: Infinity,
+                    repeatType: "loop",
+                  },
+                  scale: { type: "spring", stiffness: 300, damping: 10 },
+                }}
+              >
                 <QRCodeSVG value={qrValue} size={240} level="H" />
-              </div>
-            </div>
+              </motion.div>
+            </motion.div>
 
-            <div className="text-center space-y-2">
+            <motion.div
+              className="text-center space-y-2"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.2 }}
+            >
               <p className="text-sm text-muted-foreground">
                 Session expires in 30 minutes
               </p>
-            </div>
+            </motion.div>
 
-            <div className="space-y-3 px-2">
-              <div className="flex gap-2 items-center bg-card/50 border border-border/50 rounded-lg p-3 w-full">
+            <motion.div
+              className="space-y-3 px-2"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.3 }}
+            >
+              <motion.div
+                className="flex gap-2 items-center bg-card/50 border border-border/50 rounded-lg p-3 w-full"
+                whileHover={{
+                  backgroundColor: "rgba(59, 130, 246, 0.05)",
+                  borderColor: "rgba(59, 130, 246, 0.3)",
+                  scale: 1.02,
+                }}
+                transition={{ type: "spring", stiffness: 300, damping: 20 }}
+              >
                 <div className="flex-1 min-w-0 text-center">
-                  <p className="text-xs font-mono text-muted-foreground break-words">
+                  <motion.p
+                    className="text-xs font-mono text-muted-foreground break-words"
+                    animate={{ opacity: [1, 0.8, 1] }}
+                    transition={{ duration: 3, repeat: Infinity }}
+                  >
                     {qrValue}
-                  </p>
+                  </motion.p>
                 </div>
-                <button
+                <motion.button
                   onClick={handleCopy}
                   className="flex-shrink-0 p-1.5 hover:bg-primary/10 rounded transition-colors"
+                  whileHover={{ scale: 1.15 }}
+                  whileTap={{ scale: 0.9 }}
                 >
-                  {copied ? (
-                    <Check className="w-4 h-4 text-green-500" />
-                  ) : (
-                    <Copy className="w-4 h-4 text-muted-foreground" />
-                  )}
-                </button>
-              </div>
+                  <AnimatePresence mode="wait">
+                    {copied ? (
+                      <motion.div
+                        key="check"
+                        initial={{ opacity: 0, scale: 0 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        exit={{ opacity: 0, scale: 0 }}
+                      >
+                        <Check className="w-4 h-4 text-green-500" />
+                      </motion.div>
+                    ) : (
+                      <motion.div
+                        key="copy"
+                        initial={{ opacity: 0, scale: 0 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        exit={{ opacity: 0, scale: 0 }}
+                      >
+                        <Copy className="w-4 h-4 text-muted-foreground" />
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </motion.button>
+              </motion.div>
 
-              <p className="text-xs text-muted-foreground text-center px-2">
+              <motion.p
+                className="text-xs text-muted-foreground text-center px-2"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.4 }}
+              >
                 Or share this link directly
-              </p>
-            </div>
+              </motion.p>
+            </motion.div>
 
-            <Button onClick={onClose} variant="outline" className="w-full">
-              Close
-            </Button>
-          </div>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.5 }}
+            >
+              <Button onClick={onClose} variant="outline" className="w-full">
+                Close
+              </Button>
+            </motion.div>
+          </motion.div>
         )}
       </DialogContent>
     </Dialog>

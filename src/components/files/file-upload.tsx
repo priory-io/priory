@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useCallback } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { Upload, X, CheckCircle, AlertCircle, QrCode } from "lucide-react";
 import Button from "~/components/ui/button";
 import { cn } from "~/lib/utils";
@@ -230,7 +231,7 @@ export function FileUpload({
 
   return (
     <div className={cn("space-y-4", className)}>
-      <div
+      <motion.div
         className={cn(
           "border-2 border-dashed rounded-xl p-8 text-center transition-all duration-200 ease-in-out",
           "hover:border-primary/50 hover:bg-primary/5",
@@ -241,29 +242,45 @@ export function FileUpload({
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
         onDrop={handleDrop}
+        animate={{
+          scale: isDragging ? 1.02 : 1,
+          borderColor: isDragging
+            ? "hsl(var(--primary))"
+            : "hsl(var(--border))",
+        }}
+        transition={{ type: "spring", stiffness: 300, damping: 20 }}
       >
-        <div
+        <motion.div
           className={cn(
             "transition-all duration-200",
             isDragging && "scale-110",
           )}
+          animate={{ scale: isDragging ? 1.1 : 1 }}
+          transition={{ type: "spring", stiffness: 300, damping: 20 }}
         >
-          <Upload
-            className={cn(
-              "mx-auto h-12 w-12 mb-4 transition-colors duration-200",
-              isDragging ? "text-primary" : "text-muted-foreground",
-            )}
-          />
-        </div>
+          <motion.div
+            animate={{ y: isDragging ? -5 : 0 }}
+            transition={{ type: "spring", stiffness: 200, damping: 20 }}
+          >
+            <Upload
+              className={cn(
+                "mx-auto h-12 w-12 mb-4 transition-colors duration-200",
+                isDragging ? "text-primary" : "text-muted-foreground",
+              )}
+            />
+          </motion.div>
+        </motion.div>
         <div className="space-y-3">
-          <p
+          <motion.p
             className={cn(
               "text-lg font-semibold transition-colors duration-200",
               isDragging ? "text-primary" : "text-foreground",
             )}
+            animate={{ scale: isDragging ? 1.05 : 1 }}
+            transition={{ type: "spring", stiffness: 300, damping: 20 }}
           >
             {isDragging ? "Drop your files here" : "Drag & drop files here"}
-          </p>
+          </motion.p>
           <p className="text-sm text-muted-foreground">
             or{" "}
             <label
@@ -283,23 +300,40 @@ export function FileUpload({
             </label>
           </p>
         </div>
-      </div>
+      </motion.div>
 
-      <div className="flex gap-2 justify-center">
-        <Button
-          type="button"
-          variant="outline"
-          size="sm"
-          onClick={() => setIsQRModalOpen(true)}
-          className="text-xs flex items-center gap-2"
-        >
-          <QrCode className="w-4 h-4" />
-          Upload via Phone
-        </Button>
-      </div>
+      <motion.div
+        className="flex gap-2 justify-center"
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ type: "spring", stiffness: 300, damping: 25 }}
+      >
+        <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={() => setIsQRModalOpen(true)}
+            className="text-xs flex items-center gap-2"
+          >
+            <motion.div
+              animate={{ rotate: [0, 10, -10, 0] }}
+              transition={{ duration: 3, repeat: Infinity }}
+            >
+              <QrCode className="w-4 h-4" />
+            </motion.div>
+            Upload via Phone
+          </Button>
+        </motion.div>
+      </motion.div>
 
       {uploads.length > 0 && (
-        <div className="space-y-3">
+        <motion.div
+          className="space-y-3"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ type: "spring", stiffness: 200, damping: 20 }}
+        >
           <div className="flex items-center justify-between">
             <h4 className="text-sm font-medium text-foreground">
               Uploads ({uploads.length})
@@ -315,57 +349,70 @@ export function FileUpload({
           </div>
 
           <div className="space-y-2 max-h-48 overflow-y-auto">
-            {uploads.map((upload, index) => (
-              <div
-                key={index}
-                className="flex items-center gap-3 p-3 bg-card/50 border border-border/50 rounded-lg"
-              >
-                <div className="flex-shrink-0">
-                  {getStatusIcon(upload.status)}
-                </div>
-
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center justify-between">
-                    <p className="text-sm font-medium text-foreground truncate">
-                      {upload.file.name}
-                    </p>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => removeUpload(index)}
-                      className="h-6 w-6 p-0"
-                    >
-                      <X className="h-3 w-3" />
-                    </Button>
+            <AnimatePresence>
+              {uploads.map((upload, index) => (
+                <motion.div
+                  key={index}
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: 20 }}
+                  transition={{ type: "spring", stiffness: 200, damping: 20 }}
+                  className="flex items-center gap-3 p-3 bg-card/50 border border-border/50 rounded-lg"
+                >
+                  <div className="flex-shrink-0">
+                    {getStatusIcon(upload.status)}
                   </div>
 
-                  <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                    <span>{formatFileSize(upload.file.size)}</span>
-                    <span>•</span>
-                    <span className="capitalize">
-                      {getFileCategory(upload.file.type)}
-                    </span>
-                    {upload.error && (
-                      <>
-                        <span>•</span>
-                        <span className="text-destructive">{upload.error}</span>
-                      </>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center justify-between">
+                      <p className="text-sm font-medium text-foreground truncate">
+                        {upload.file.name}
+                      </p>
+                      <motion.div
+                        whileHover={{ scale: 1.1 }}
+                        whileTap={{ scale: 0.95 }}
+                      >
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => removeUpload(index)}
+                          className="h-6 w-6 p-0"
+                        >
+                          <X className="h-3 w-3" />
+                        </Button>
+                      </motion.div>
+                    </div>
+
+                    <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                      <span>{formatFileSize(upload.file.size)}</span>
+                      <span>•</span>
+                      <span className="capitalize">
+                        {getFileCategory(upload.file.type)}
+                      </span>
+                      {upload.error && (
+                        <>
+                          <span>•</span>
+                          <span className="text-destructive">
+                            {upload.error}
+                          </span>
+                        </>
+                      )}
+                    </div>
+
+                    {upload.status === "uploading" && (
+                      <div className="w-full bg-border rounded-full h-1 mt-2">
+                        <div
+                          className="bg-primary h-1 rounded-full transition-all duration-300"
+                          style={{ width: `${upload.progress}%` }}
+                        />
+                      </div>
                     )}
                   </div>
-
-                  {upload.status === "uploading" && (
-                    <div className="w-full bg-border rounded-full h-1 mt-2">
-                      <div
-                        className="bg-primary h-1 rounded-full transition-all duration-300"
-                        style={{ width: `${upload.progress}%` }}
-                      />
-                    </div>
-                  )}
-                </div>
-              </div>
-            ))}
+                </motion.div>
+              ))}
+            </AnimatePresence>
           </div>
-        </div>
+        </motion.div>
       )}
 
       <QRUploadModal
