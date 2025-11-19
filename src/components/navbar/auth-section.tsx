@@ -2,6 +2,7 @@
 
 import { LogIn } from "lucide-react";
 import { UserAvatarDropdown } from "~/components/navbar/user-avatar-dropdown";
+import { KeyboardShortcutsModal } from "~/components/keyboard-shortcuts-modal";
 import Link from "next/link";
 import { config } from "~/lib/config";
 
@@ -11,7 +12,12 @@ interface AuthSectionProps {
 
 export function AuthSection({ session }: AuthSectionProps) {
   if (session?.user) {
-    return <UserAvatarDropdown user={session.user} />;
+    return (
+      <div className="flex items-center gap-2">
+        <KeyboardShortcutsModal />
+        <UserAvatarDropdown user={session.user} />
+      </div>
+    );
   }
 
   if (config.features.maintenanceMode) {

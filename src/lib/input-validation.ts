@@ -1,22 +1,15 @@
 import { z } from "zod";
 
-/**
- * Input validation schemas and utilities for API endpoints
- */
-
-// URL validation
 export const urlSchema = z
   .string()
   .url("Invalid URL")
   .max(2048, "URL too long");
 
-// Email validation
 export const emailSchema = z
   .string()
   .email("Invalid email")
   .max(254, "Email too long");
 
-// String with length constraints
 export const shortCodeSchema = z
   .string()
   .min(1, "Short code is required")
@@ -26,27 +19,23 @@ export const shortCodeSchema = z
     "Short code can only contain alphanumeric characters, hyphens, and underscores",
   );
 
-// Title/description
 export const titleSchema = z.string().max(200, "Title too long").optional();
 export const descriptionSchema = z
   .string()
   .max(1000, "Description too long")
   .optional();
 
-// Password for shortlinks
 export const passwordSchema = z
   .string()
   .min(1, "Password is required")
   .max(128, "Password too long")
   .optional();
 
-// Filename validation
 export const filenameSchema = z
   .string()
   .min(1, "Filename is required")
   .max(255, "Filename too long");
 
-// JSON body validation
 export const shortlinkCreateSchema = z.object({
   originalUrl: urlSchema,
   customCode: shortCodeSchema.optional(),
@@ -80,9 +69,6 @@ export const inviteConsumeSchema = z.object({
   userId: z.string().min(1, "User ID is required"),
 });
 
-/**
- * Sanitize string input to prevent XSS
- */
 export function sanitizeString(
   input: string,
   maxLength: number = 1000,
@@ -101,9 +87,6 @@ export function sanitizeString(
     .trim();
 }
 
-/**
- * Validate and parse JSON body
- */
 export async function parseJsonBody<T>(
   request: Request,
   schema: z.ZodSchema<T>,
@@ -121,9 +104,6 @@ export async function parseJsonBody<T>(
   }
 }
 
-/**
- * Validate query parameters
- */
 export function getQueryParam(
   url: URL,
   param: string,
@@ -158,7 +138,6 @@ export function getQueryParam(
     return value === "true" || value === "1";
   }
 
-  // String type (default)
   if (options?.max !== undefined && value.length > options.max) {
     return options?.default ?? null;
   }
@@ -166,9 +145,6 @@ export function getQueryParam(
   return value;
 }
 
-/**
- * Validate pagination parameters
- */
 export function getPaginationParams(url: URL, maxLimit: number = 100) {
   const page = Math.max(
     1,
@@ -188,9 +164,6 @@ export function getPaginationParams(url: URL, maxLimit: number = 100) {
   return { page, limit, offset: (page - 1) * limit };
 }
 
-/**
- * Validate file metadata
- */
 export function validateFileMetadata(
   filename: string,
   size: number,
@@ -220,16 +193,13 @@ export function validateFileMetadata(
   return { valid: true };
 }
 
-/**
- * Sanitize filename to prevent path traversal
- */
 export function sanitizeFilename(filename: string): string {
   return (
     filename
-      .replace(/\.\./g, "") // Remove parent directory references
-      .replace(/[/\\]/g, "") // Remove path separators
-      .replace(/^\.+/, "") // Remove leading dots
-      .slice(0, 255) // Limit length
+      .replace(/\.\./g, "")
+      .replace(/[/\\]/g, "")
+      .replace(/^\.+/, "")
+      .slice(0, 255)
       .trim() || "file"
   );
 }

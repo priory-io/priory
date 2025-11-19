@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useCallback, useRef, useState } from "react";
+import { useMemo, useCallback, useRef, useState, useEffect } from "react";
 import useSWR, { mutate } from "swr";
 import { authClient } from "~/lib/auth-client";
 import { redirect } from "next/navigation";
@@ -26,6 +26,11 @@ import {
   DropdownMenuTrigger,
 } from "~/components/ui/dropdown-menu";
 import { FileData, getFileCategory } from "~/types/file";
+import {
+  useKeyboardShortcuts,
+  type KeyboardShortcut,
+} from "~/hooks/useKeyboardShortcuts";
+import { useKeyboardShortcutsContext } from "~/components/keyboard-shortcuts-provider";
 
 const fetcher = (url: string, signal?: AbortSignal) =>
   fetch(url, signal ? { signal } : {}).then(async (r) => {
@@ -46,6 +51,7 @@ export default function FilesPage() {
   const [selectedFilter, setSelectedFilter] = useState<string>("all");
   const [selectedFiles, setSelectedFiles] = useState<Set<string>>(new Set());
   const [selectionMode, setSelectionMode] = useState(false);
+  const { registerShortcuts } = useKeyboardShortcutsContext();
 
   const aborter = useRef<AbortController | null>(null);
   const swrKey = session?.user ? `/api/files?page=${page}&limit=20` : null;
@@ -138,6 +144,56 @@ export default function FilesPage() {
     setSelectedFiles(new Set());
     setSelectionMode(false);
   }, []);
+
+  useEffect(() => {
+    const shortcuts: KeyboardShortcut[] = [
+      {
+        key: "u",
+        ctrlKey: true,
+        metaKey: true,
+        callback: () => uploadDialogRef.current?.click(),
+        description: "Upload files",
+        category: "actions",
+      },
+      {
+        key: "s",
+        ctrlKey: true,
+        metaKey: true,
+        callback: () => {
+          if (!selectionMode) {
+            setSelectionMode(true);
+          }
+        },
+        description: "Toggle selection mode",
+        category: "selection",
+      },
+      {
+        key: "a",
+        ctrlKey: true,
+        metaKey: true,
+        callback: () => {
+          if (selectionMode) {
+            setSelectedFiles(new Set(filteredFiles.map((file) => file.id)));
+          }
+        },
+        description: "Select all files",
+        category: "selection",
+      },
+      {
+        key: "Escape",
+        callback: () => {
+          if (selectionMode) {
+            handleClearSelection();
+          }
+          setSearchQuery("");
+        },
+        description: "Clear selection and filters",
+        category: "general",
+      },
+    ];
+
+    registerShortcuts(shortcuts);
+  }, [registerShortcuts, selectionMode, filteredFiles, handleClearSelection]);
 
   const handleBulkDelete = useCallback(async () => {
     const fileIds = Array.from(selectedFiles);

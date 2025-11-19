@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useCallback, useRef, useState } from "react";
+import { useMemo, useCallback, useRef, useState, useEffect } from "react";
 import useSWR, { mutate } from "swr";
 import { authClient } from "~/lib/auth-client";
 import { redirect } from "next/navigation";
@@ -21,6 +21,11 @@ import {
   DialogTrigger,
 } from "~/components/ui/dialog";
 import { Shortlink, CreateShortlinkData } from "~/types/shortlink";
+import {
+  useKeyboardShortcuts,
+  type KeyboardShortcut,
+} from "~/hooks/useKeyboardShortcuts";
+import { useKeyboardShortcutsContext } from "~/components/keyboard-shortcuts-provider";
 
 const fetcher = (url: string, signal?: AbortSignal) =>
   fetch(url, signal ? { signal } : {}).then(async (r) => {
@@ -40,6 +45,7 @@ export default function ShortlinksPage() {
     new Set(),
   );
   const [selectionMode, setSelectionMode] = useState(false);
+  const { registerShortcuts } = useKeyboardShortcutsContext();
 
   const aborter = useRef<AbortController | null>(null);
   const swrKey = session?.user ? "/api/shortlinks" : null;
@@ -88,6 +94,55 @@ export default function ShortlinksPage() {
     setSelectedShortlinks(new Set());
     setSelectionMode(false);
   }, []);
+
+  useEffect(() => {
+    const shortcuts: KeyboardShortcut[] = [
+      {
+        key: "n",
+        ctrlKey: true,
+        metaKey: true,
+        callback: () => createDialogRef.current?.click(),
+        description: "Create new shortlink",
+        category: "actions",
+      },
+      {
+        key: "s",
+        ctrlKey: true,
+        metaKey: true,
+        callback: () => {
+          if (!selectionMode) {
+            setSelectionMode(true);
+          }
+        },
+        description: "Toggle selection mode",
+        category: "selection",
+      },
+      {
+        key: "a",
+        ctrlKey: true,
+        metaKey: true,
+        callback: () => {
+          if (selectionMode) {
+            setSelectedShortlinks(new Set(shortlinks.map((link) => link.id)));
+          }
+        },
+        description: "Select all shortlinks",
+        category: "selection",
+      },
+      {
+        key: "Escape",
+        callback: () => {
+          if (selectionMode) {
+            handleClearSelection();
+          }
+        },
+        description: "Clear selection",
+        category: "general",
+      },
+    ];
+
+    registerShortcuts(shortcuts);
+  }, [registerShortcuts, selectionMode, shortlinks, handleClearSelection]);
 
   const handleBulkDelete = useCallback(async () => {
     const shortlinkIds = Array.from(selectedShortlinks);
