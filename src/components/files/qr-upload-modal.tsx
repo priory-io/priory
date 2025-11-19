@@ -93,16 +93,16 @@ export function QRUploadModal({
         onClick={onClose}
       >
         <motion.div
-          className="bg-card/95 backdrop-blur-xl border border-border/60 rounded-2xl p-8 w-full max-w-md max-h-[90vh] overflow-y-auto shadow-2xl flex flex-col"
+          className="bg-card/95 backdrop-blur-xl border border-border/60 rounded-2xl p-8 w-full max-w-2xl max-h-[90vh] overflow-y-auto shadow-2xl flex flex-col"
           initial={{ scale: 0.95, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           exit={{ scale: 0.95, opacity: 0 }}
           onClick={(e) => e.stopPropagation()}
         >
-          <div className="flex items-center justify-between mb-6">
+          <div className="flex items-center justify-between mb-8">
             <div className="flex items-center gap-3">
-              <Smartphone className="w-5 h-5 text-primary" />
-              <h2 className="text-xl font-bold text-foreground">
+              <Smartphone className="w-6 h-6 text-primary" />
+              <h2 className="text-2xl font-bold text-foreground">
                 Upload via Phone
               </h2>
             </div>
@@ -110,7 +110,7 @@ export function QRUploadModal({
               onClick={onClose}
               className="p-1 hover:bg-primary/10 rounded-lg transition-colors"
             >
-              <X className="w-5 h-5 text-muted-foreground" />
+              <X className="w-6 h-6 text-muted-foreground" />
             </button>
           </div>
 
@@ -123,48 +123,48 @@ export function QRUploadModal({
               <div className="animate-spin rounded-full h-8 w-8 border-2 border-primary border-t-transparent"></div>
             </div>
           ) : (
-            <div className="space-y-6">
-              <div className="space-y-4">
-                <div className="flex justify-center p-6 bg-white/10 rounded-xl">
+            <div className="space-y-8">
+              <div className="space-y-6">
+                <div className="flex justify-center p-8 bg-white/10 rounded-xl">
                   <QRCodeSVG
                     value={qrValue}
-                    size={256}
+                    size={356}
                     level="H"
                     includeMargin
-                    className="w-full h-full max-w-xs"
+                    className="w-full h-full max-w-sm"
                   />
                 </div>
 
-                <div className="text-center space-y-2">
-                  <p className="text-sm text-muted-foreground">
+                <div className="text-center space-y-3">
+                  <p className="text-base text-muted-foreground">
                     Scan this QR code with your phone to upload files
                   </p>
-                  <p className="text-xs text-muted-foreground/60">
+                  <p className="text-sm text-muted-foreground/60">
                     Session expires in 30 minutes
                   </p>
                 </div>
               </div>
 
-              <div className="space-y-3">
-                <div className="flex gap-2 items-center bg-card/50 border border-border/50 rounded-lg p-3">
+              <div className="space-y-4">
+                <div className="flex gap-2 items-center bg-card/50 border border-border/50 rounded-lg p-4">
                   <div className="flex-1 overflow-hidden">
-                    <p className="text-xs font-mono text-muted-foreground truncate">
+                    <p className="text-sm font-mono text-muted-foreground truncate">
                       {qrValue}
                     </p>
                   </div>
                   <button
                     onClick={handleCopy}
-                    className="flex-shrink-0 p-1.5 hover:bg-primary/10 rounded transition-colors"
+                    className="flex-shrink-0 p-2 hover:bg-primary/10 rounded transition-colors"
                   >
                     {copied ? (
-                      <Check className="w-4 h-4 text-green-500" />
+                      <Check className="w-5 h-5 text-green-500" />
                     ) : (
-                      <Copy className="w-4 h-4 text-muted-foreground" />
+                      <Copy className="w-5 h-5 text-muted-foreground" />
                     )}
                   </button>
                 </div>
 
-                <p className="text-xs text-muted-foreground text-center">
+                <p className="text-sm text-muted-foreground text-center">
                   Or share this link directly
                 </p>
               </div>
