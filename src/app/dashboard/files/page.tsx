@@ -240,20 +240,16 @@ export default function FilesPage() {
 
       const result = await res.json();
 
-      if (result.files.length === 1) {
-        const file = result.files[0];
-        const link = document.createElement("a");
-        link.href = file.url;
-        link.download = file.filename;
-        link.click();
-      } else {
-        result.files.forEach((file: any) => {
+      result.files.forEach((file: any, index: number) => {
+        setTimeout(() => {
           const link = document.createElement("a");
-          link.href = file.url;
-          link.download = file.filename;
+          link.href = file.downloadUrl;
+          link.download = file.originalFilename;
+          document.body.appendChild(link);
           link.click();
-        });
-      }
+          document.body.removeChild(link);
+        }, index * 200);
+      });
 
       addToast({
         type: "success",

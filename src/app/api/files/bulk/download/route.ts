@@ -2,7 +2,6 @@ import { NextRequest, NextResponse } from "next/server";
 import { auth } from "~/lib/auth";
 import { db } from "~/lib/db";
 import { file } from "~/lib/db/schema";
-import { createStorageProvider } from "~/lib/file-storage";
 import { eq, and, inArray } from "drizzle-orm";
 
 export async function POST(request: NextRequest) {
@@ -39,11 +38,11 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "No files found" }, { status: 404 });
     }
 
-    const storageProvider = createStorageProvider();
     const filesWithUrls = filesToDownload.map((fileRecord) => ({
       id: fileRecord.id,
       filename: fileRecord.filename,
-      url: storageProvider.getFileUrl(`${fileRecord.userId}/${fileRecord.id}`),
+      originalFilename: fileRecord.originalFilename,
+      downloadUrl: `/api/files/${fileRecord.id}/download`,
     }));
 
     return NextResponse.json({
