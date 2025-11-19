@@ -2,6 +2,12 @@
 
 import { Download, Trash2, X, CheckSquare } from "lucide-react";
 import Button from "./button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "./dropdown-menu";
 
 interface BulkOperationsToolbarProps {
   selectedCount: number;
@@ -9,7 +15,7 @@ interface BulkOperationsToolbarProps {
   onSelectAll: () => void;
   onClearSelection: () => void;
   onBulkDelete: () => void;
-  onBulkDownload?: () => void;
+  onBulkDownload?: (format?: "individual" | "zip" | "tar") => void;
   type: "files" | "shortlinks";
 }
 
@@ -48,15 +54,25 @@ export function BulkOperationsToolbar({
 
         <div className="flex items-center gap-2">
           {type === "files" && onBulkDownload && (
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={onBulkDownload}
-              className="gap-2"
-            >
-              <Download className="w-4 h-4" />
-              Download Selected
-            </Button>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" size="sm" className="gap-2">
+                  <Download className="w-4 h-4" />
+                  Download Selected
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem onClick={() => onBulkDownload("individual")}>
+                  Download as individual files
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => onBulkDownload("zip")}>
+                  Download as ZIP archive
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => onBulkDownload("tar")}>
+                  Download as TAR archive
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           )}
 
           <Button

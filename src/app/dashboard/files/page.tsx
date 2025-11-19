@@ -223,48 +223,82 @@ export default function FilesPage() {
     }
   }, [selectedFiles, addToast, swrKey]);
 
-  const handleBulkDownload = useCallback(async () => {
-    const fileIds = Array.from(selectedFiles);
-    if (fileIds.length === 0) return;
+  const handleBulkDownload = useCallback(
+    async (format: "individual" | "zip" | "tar" = "individual") => {
+      const fileIds = Array.from(selectedFiles);
+      if (fileIds.length === 0) return;
 
-    try {
-      const res = await fetch("/api/files/bulk/download", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ fileIds }),
-      });
+      try {
+        if (format === "individual") {
+          const res = await fetch("/api/files/bulk/download", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ fileIds }),
+          });
 
-      if (!res.ok) {
-        throw new Error("Failed to prepare download");
-      }
+          if (!res.ok) {
+            throw new Error("Failed to prepare download");
+          }
 
-      const result = await res.json();
+          const result = await res.json();
 
-      result.files.forEach((file: any, index: number) => {
-        setTimeout(() => {
+          result.files.forEach((file: any, index: number) => {
+            setTimeout(() => {
+              const link = document.createElement("a");
+              link.href = file.downloadUrl;
+              link.download = file.originalFilename;
+              document.body.appendChild(link);
+              link.click();
+              document.body.removeChild(link);
+            }, index * 200);
+          });
+
+          addToast({
+            type: "success",
+            title: "Download started",
+            description: `Starting download of ${result.files.length} file${result.files.length > 1 ? "s" : ""}.`,
+          });
+        } else {
+          const res = await fetch("/api/files/bulk/download-archive", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ fileIds, format }),
+          });
+
+          if (!res.ok) {
+            throw new Error("Failed to create archive");
+          }
+
+          const blob = await res.blob();
+          const fileExtension = format === "tar" ? "tar" : "zip";
+          const timestamp = new Date().toISOString().split("T")[0];
+          const filename = `files-${timestamp}.${fileExtension}`;
+
           const link = document.createElement("a");
-          link.href = file.downloadUrl;
-          link.download = file.originalFilename;
+          link.href = URL.createObjectURL(blob);
+          link.download = filename;
           document.body.appendChild(link);
           link.click();
           document.body.removeChild(link);
-        }, index * 200);
-      });
+          URL.revokeObjectURL(link.href);
 
-      addToast({
-        type: "success",
-        title: "Download started",
-        description: `Starting download of ${result.files.length} file${result.files.length > 1 ? "s" : ""}.`,
-      });
-    } catch (error) {
-      console.error(`Download failed: ${error}`);
-      addToast({
-        type: "error",
-        title: "Download failed",
-        description: "Please try again.",
-      });
-    }
-  }, [selectedFiles, addToast]);
+          addToast({
+            type: "success",
+            title: "Download started",
+            description: `Downloading ${fileIds.length} file${fileIds.length > 1 ? "s" : ""} as ${format.toUpperCase()} archive.`,
+          });
+        }
+      } catch (error) {
+        console.error(`Download failed: ${error}`);
+        addToast({
+          type: "error",
+          title: "Download failed",
+          description: "Please try again.",
+        });
+      }
+    },
+    [selectedFiles, addToast],
+  );
 
   const toggleSelectionMode = useCallback(() => {
     setSelectionMode(!selectionMode);
