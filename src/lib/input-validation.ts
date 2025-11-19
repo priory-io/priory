@@ -36,14 +36,30 @@ export const filenameSchema = z
   .min(1, "Filename is required")
   .max(255, "Filename too long");
 
-export const shortlinkCreateSchema = z.object({
-  originalUrl: urlSchema,
-  customCode: shortCodeSchema.optional(),
-  title: titleSchema,
-  description: descriptionSchema,
-  password: passwordSchema,
-  expiresAt: z.string().optional(),
-});
+export const shortlinkCreateSchema = z.preprocess(
+  (data) => {
+    if (typeof data === "object" && data !== null) {
+      const obj = data as Record<string, unknown>;
+      return {
+        ...obj,
+        customCode: obj["customCode"] === "" ? undefined : obj["customCode"],
+        password: obj["password"] === "" ? undefined : obj["password"],
+        title: obj["title"] === "" ? undefined : obj["title"],
+        description: obj["description"] === "" ? undefined : obj["description"],
+        expiresAt: obj["expiresAt"] === "" ? undefined : obj["expiresAt"],
+      };
+    }
+    return data;
+  },
+  z.object({
+    originalUrl: urlSchema,
+    customCode: shortCodeSchema.optional(),
+    title: titleSchema,
+    description: descriptionSchema,
+    password: passwordSchema.optional(),
+    expiresAt: z.string().optional(),
+  }),
+);
 
 export const accountUpdateSchema = z.object({
   name: z
