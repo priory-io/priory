@@ -93,7 +93,7 @@ export function QRUploadModal({
         onClick={onClose}
       >
         <motion.div
-          className="bg-card/95 backdrop-blur-xl border border-border/60 rounded-2xl p-8 w-full max-w-2xl max-h-[90vh] overflow-y-auto shadow-2xl flex flex-col"
+          className="bg-card/95 backdrop-blur-xl border border-border/60 rounded-2xl p-8 w-full h-full max-w-2xl max-h-[95vh] shadow-2xl flex flex-col"
           initial={{ scale: 0.95, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           exit={{ scale: 0.95, opacity: 0 }}
@@ -123,7 +123,7 @@ export function QRUploadModal({
               <div className="animate-spin rounded-full h-8 w-8 border-2 border-primary border-t-transparent"></div>
             </div>
           ) : (
-            <div className="space-y-8">
+            <div className="space-y-8 flex flex-col flex-1 justify-center">
               <div className="space-y-6">
                 <div className="flex justify-center p-8 bg-white/10 rounded-xl">
                   <QRCodeSVG
