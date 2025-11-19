@@ -28,7 +28,6 @@ function QRUploadContent() {
     expiresAt: string;
   } | null>(null);
 
-  // Validate session on mount
   useEffect(() => {
     const validateSession = async () => {
       if (!sessionToken) {
@@ -208,7 +207,6 @@ function QRUploadContent() {
 
     try {
       await Promise.allSettled(uploadPromises);
-      // Update session info to show new upload count
       if (sessionToken) {
         const response = await fetch(`/api/files/qr-session/${sessionToken}`);
         if (response.ok) {

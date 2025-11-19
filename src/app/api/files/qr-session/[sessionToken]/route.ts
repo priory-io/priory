@@ -17,7 +17,6 @@ import { checkRequestSize } from "~/lib/request-size-limit";
 import { nanoid } from "nanoid";
 import { eq } from "drizzle-orm";
 
-// Validates QR session and uploads file
 export async function POST(
   request: NextRequest,
   { params }: { params: Promise<{ sessionToken: string }> },
@@ -39,7 +38,6 @@ export async function POST(
       return NextResponse.json({ error: sizeCheck.error }, { status: 413 });
     }
 
-    // Find and validate QR session
     const qrSessions = await db.query.qrUploadSession.findMany({
       where: (sessions, { eq, and, gt }) =>
         and(
@@ -136,7 +134,6 @@ export async function POST(
       );
     }
 
-    // Update upload count
     if (session) {
       await db
         .update(qrUploadSession)
@@ -164,7 +161,6 @@ export async function POST(
   }
 }
 
-// Retrieves QR session status
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ sessionToken: string }> },
