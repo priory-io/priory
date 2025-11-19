@@ -24,6 +24,8 @@ export async function GET(req: NextRequest) {
         isAdmin: user.isAdmin,
         emailVerified: user.emailVerified,
         createdAt: user.createdAt,
+        uploadLimitBytes: user.uploadLimitBytes,
+        totalUploadedBytes: user.totalUploadedBytes,
       })
       .from(user)
       .orderBy(user.createdAt);

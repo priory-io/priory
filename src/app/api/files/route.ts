@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { nanoid } from "nanoid";
 import { auth } from "~/lib/auth";
 import { db } from "~/lib/db";
-import { file } from "~/lib/db/schema";
+import { file, user } from "~/lib/db/schema";
 import { createStorageProvider } from "~/lib/file-storage";
 import { authenticateApiKey } from "~/lib/api-auth";
 import {
@@ -18,6 +18,7 @@ import {
 } from "~/lib/rate-limit";
 import { checkRequestSize } from "~/lib/request-size-limit";
 import { getPaginationParams } from "~/lib/input-validation";
+import { eq } from "drizzle-orm";
 
 export async function POST(request: NextRequest) {
   try {
@@ -69,6 +70,37 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    const userData = await db
+      .select({
+        uploadLimitBytes: user.uploadLimitBytes,
+        totalUploadedBytes: user.totalUploadedBytes,
+      })
+      .from(user)
+      .where(eq(user.id, userId))
+      .limit(1);
+
+    if (userData.length === 0) {
+      return NextResponse.json({ error: "User not found" }, { status: 404 });
+    }
+
+    const userUploadData = userData[0]!;
+
+    if (userUploadData.uploadLimitBytes !== null) {
+      const newTotalUploaded =
+        (userUploadData.totalUploadedBytes || 0) + uploadedFile.size;
+      if (newTotalUploaded > userUploadData.uploadLimitBytes) {
+        return NextResponse.json(
+          {
+            error: "Upload limit exceeded",
+            limit: userUploadData.uploadLimitBytes,
+            current: userUploadData.totalUploadedBytes || 0,
+            requestSize: uploadedFile.size,
+          },
+          { status: 413 },
+        );
+      }
+    }
+
     const fileId = nanoid(8);
     const sanitizedFilename = sanitizeFilename(uploadedFile.name);
     const arrayBuffer = await uploadedFile.arrayBuffer();
@@ -112,6 +144,14 @@ export async function POST(request: NextRequest) {
       .returning();
 
     const newFile = newFiles[0]!;
+
+    await db
+      .update(user)
+      .set({
+        totalUploadedBytes:
+          (userUploadData.totalUploadedBytes || 0) + uploadedFile.size,
+      })
+      .where(eq(user.id, userId));
 
     return NextResponse.json({
       id: newFile.id,

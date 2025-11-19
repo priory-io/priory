@@ -30,6 +30,10 @@ export const user = pgTable("user", {
   isAdmin: boolean("is_admin").notNull().default(false),
   inviteCodeId: text("invite_code_id").references(() => inviteCode.id),
   passwordChangedAt: timestamp("password_changed_at"),
+  uploadLimitBytes: bigint("upload_limit_bytes", { mode: "number" }),
+  totalUploadedBytes: bigint("total_uploaded_bytes", { mode: "number" })
+    .notNull()
+    .default(0),
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
 });
