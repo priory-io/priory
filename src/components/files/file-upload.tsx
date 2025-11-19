@@ -1,9 +1,10 @@
 "use client";
 
 import { useState, useCallback } from "react";
-import { Upload, X, CheckCircle, AlertCircle } from "lucide-react";
+import { Upload, X, CheckCircle, AlertCircle, QrCode } from "lucide-react";
 import Button from "~/components/ui/button";
 import { cn } from "~/lib/utils";
+import { QRUploadModal } from "./qr-upload-modal";
 import {
   FileUploadProgress,
   isAllowedMimeType,
@@ -24,6 +25,7 @@ export function FileUpload({
 }: FileUploadProps) {
   const [isDragging, setIsDragging] = useState(false);
   const [uploads, setUploads] = useState<FileUploadProgress[]>([]);
+  const [isQRModalOpen, setIsQRModalOpen] = useState(false);
 
   const handleDragOver = useCallback((e: React.DragEvent) => {
     e.preventDefault();
@@ -283,6 +285,19 @@ export function FileUpload({
         </div>
       </div>
 
+      <div className="flex gap-2 justify-center">
+        <Button
+          type="button"
+          variant="outline"
+          size="sm"
+          onClick={() => setIsQRModalOpen(true)}
+          className="text-xs flex items-center gap-2"
+        >
+          <QrCode className="w-4 h-4" />
+          Upload via Phone
+        </Button>
+      </div>
+
       {uploads.length > 0 && (
         <div className="space-y-3">
           <div className="flex items-center justify-between">
@@ -352,6 +367,11 @@ export function FileUpload({
           </div>
         </div>
       )}
+
+      <QRUploadModal
+        isOpen={isQRModalOpen}
+        onClose={() => setIsQRModalOpen(false)}
+      />
     </div>
   );
 }
