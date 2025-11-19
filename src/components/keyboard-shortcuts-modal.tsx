@@ -6,19 +6,13 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "~/components/ui/dialog";
 import { useKeyboardShortcutsContext } from "./keyboard-shortcuts-provider";
 import { KeyboardShortcut } from "~/hooks/useKeyboardShortcuts";
 
 export function KeyboardShortcutsModal() {
-  const {
-    shortcuts,
-    showHelpModal,
-    hideHelpModal,
-    isHelpModalOpen,
-    formatShortcut,
-  } = useKeyboardShortcutsContext();
+  const { shortcuts, hideHelpModal, isHelpModalOpen, formatShortcut } =
+    useKeyboardShortcutsContext();
 
   const categorizedShortcuts = shortcuts.reduce(
     (acc, shortcut) => {
