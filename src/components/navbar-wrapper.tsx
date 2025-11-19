@@ -10,8 +10,9 @@ export function NavbarWrapper() {
     pathname === "/dashboard" || pathname.startsWith("/dashboard/");
   const isProtected = pathname.startsWith("/protected/");
   const isAuth = pathname.startsWith("/auth/");
+  const isQRUpload = pathname === "/qr-upload";
 
-  if (isDashboard || isProtected || isAuth) {
+  if (isDashboard || isProtected || isAuth || isQRUpload) {
     return null;
   }
 
