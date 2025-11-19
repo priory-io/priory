@@ -26,10 +26,7 @@ import {
   DropdownMenuTrigger,
 } from "~/components/ui/dropdown-menu";
 import { FileData, getFileCategory } from "~/types/file";
-import {
-  useKeyboardShortcuts,
-  type KeyboardShortcut,
-} from "~/hooks/useKeyboardShortcuts";
+import { type KeyboardShortcut } from "~/hooks/useKeyboardShortcuts";
 import { useKeyboardShortcutsContext } from "~/components/keyboard-shortcuts-provider";
 
 const fetcher = (url: string, signal?: AbortSignal) =>
@@ -159,11 +156,7 @@ export default function FilesPage() {
         key: "s",
         ctrlKey: true,
         metaKey: true,
-        callback: () => {
-          if (!selectionMode) {
-            setSelectionMode(true);
-          }
-        },
+        callback: () => setSelectionMode((prev) => !prev),
         description: "Toggle selection mode",
         category: "selection",
       },
@@ -172,9 +165,7 @@ export default function FilesPage() {
         ctrlKey: true,
         metaKey: true,
         callback: () => {
-          if (selectionMode) {
-            setSelectedFiles(new Set(filteredFiles.map((file) => file.id)));
-          }
+          setSelectedFiles(new Set(filteredFiles.map((file) => file.id)));
         },
         description: "Select all files",
         category: "selection",
@@ -182,9 +173,7 @@ export default function FilesPage() {
       {
         key: "Escape",
         callback: () => {
-          if (selectionMode) {
-            handleClearSelection();
-          }
+          handleClearSelection();
           setSearchQuery("");
         },
         description: "Clear selection and filters",
@@ -193,7 +182,7 @@ export default function FilesPage() {
     ];
 
     registerShortcuts(shortcuts);
-  }, [registerShortcuts, selectionMode, filteredFiles, handleClearSelection]);
+  }, [registerShortcuts, filteredFiles, handleClearSelection]);
 
   const handleBulkDelete = useCallback(async () => {
     const fileIds = Array.from(selectedFiles);

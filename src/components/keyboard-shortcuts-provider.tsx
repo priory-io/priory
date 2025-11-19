@@ -1,10 +1,13 @@
 "use client";
 
-import React, { createContext, useContext, useState, useCallback } from "react";
-import {
-  KeyboardShortcut,
-  useKeyboardShortcuts,
-} from "~/hooks/useKeyboardShortcuts";
+import React, {
+  createContext,
+  useContext,
+  useState,
+  useCallback,
+  useEffect,
+} from "react";
+import { KeyboardShortcut } from "~/hooks/useKeyboardShortcuts";
 
 interface KeyboardShortcutsContextType {
   shortcuts: KeyboardShortcut[];
@@ -27,7 +30,15 @@ export function KeyboardShortcutsProvider({
 }) {
   const [shortcuts, setShortcuts] = useState<KeyboardShortcut[]>([]);
   const [isHelpModalOpen, setIsHelpModalOpen] = useState(false);
-  const { formatShortcut } = useKeyboardShortcuts(shortcuts);
+
+  const formatShortcut = useCallback((shortcut: KeyboardShortcut): string => {
+    const parts: string[] = [];
+    if (shortcut.ctrlKey) parts.push("Ctrl");
+    if (shortcut.shiftKey) parts.push("Shift");
+    if (shortcut.altKey) parts.push("Alt");
+    parts.push(shortcut.key.toUpperCase());
+    return parts.join(" + ");
+  }, []);
 
   const registerShortcuts = useCallback((newShortcuts: KeyboardShortcut[]) => {
     setShortcuts((prev) => {
@@ -56,6 +67,55 @@ export function KeyboardShortcutsProvider({
   const hideHelpModal = useCallback(() => {
     setIsHelpModalOpen(false);
   }, []);
+
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      const target = event.target as HTMLElement;
+      const isInputElement =
+        target.tagName === "INPUT" ||
+        target.tagName === "TEXTAREA" ||
+        target.contentEditable === "true";
+
+      if (
+        isInputElement &&
+        !event.ctrlKey &&
+        !event.metaKey &&
+        !event.altKey &&
+        !event.shiftKey
+      ) {
+        return;
+      }
+
+      if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === "k") {
+        event.preventDefault();
+        showHelpModal();
+        return;
+      }
+
+      for (const shortcut of shortcuts) {
+        const keyLower = event.key.toLowerCase();
+        const shortcutKeyLower = shortcut.key.toLowerCase();
+
+        if (keyLower !== shortcutKeyLower) continue;
+
+        const needsCtrl = shortcut.ctrlKey || shortcut.metaKey;
+        const hasCtrl = event.ctrlKey || event.metaKey;
+
+        if (needsCtrl !== hasCtrl) continue;
+        if ((shortcut.shiftKey ?? false) !== event.shiftKey) continue;
+        if ((shortcut.altKey ?? false) !== event.altKey) continue;
+
+        event.preventDefault();
+        shortcut.callback();
+        break;
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [shortcuts, showHelpModal]);
 
   return (
     <KeyboardShortcutsContext.Provider

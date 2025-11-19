@@ -21,10 +21,7 @@ import {
   DialogTrigger,
 } from "~/components/ui/dialog";
 import { Shortlink, CreateShortlinkData } from "~/types/shortlink";
-import {
-  useKeyboardShortcuts,
-  type KeyboardShortcut,
-} from "~/hooks/useKeyboardShortcuts";
+import { type KeyboardShortcut } from "~/hooks/useKeyboardShortcuts";
 import { useKeyboardShortcutsContext } from "~/components/keyboard-shortcuts-provider";
 
 const fetcher = (url: string, signal?: AbortSignal) =>
@@ -109,11 +106,7 @@ export default function ShortlinksPage() {
         key: "s",
         ctrlKey: true,
         metaKey: true,
-        callback: () => {
-          if (!selectionMode) {
-            setSelectionMode(true);
-          }
-        },
+        callback: () => setSelectionMode((prev) => !prev),
         description: "Toggle selection mode",
         category: "selection",
       },
@@ -122,9 +115,7 @@ export default function ShortlinksPage() {
         ctrlKey: true,
         metaKey: true,
         callback: () => {
-          if (selectionMode) {
-            setSelectedShortlinks(new Set(shortlinks.map((link) => link.id)));
-          }
+          setSelectedShortlinks(new Set(shortlinks.map((link) => link.id)));
         },
         description: "Select all shortlinks",
         category: "selection",
@@ -132,9 +123,7 @@ export default function ShortlinksPage() {
       {
         key: "Escape",
         callback: () => {
-          if (selectionMode) {
-            handleClearSelection();
-          }
+          handleClearSelection();
         },
         description: "Clear selection",
         category: "general",
@@ -142,7 +131,7 @@ export default function ShortlinksPage() {
     ];
 
     registerShortcuts(shortcuts);
-  }, [registerShortcuts, selectionMode, shortlinks, handleClearSelection]);
+  }, [registerShortcuts, shortlinks, handleClearSelection]);
 
   const handleBulkDelete = useCallback(async () => {
     const shortlinkIds = Array.from(selectedShortlinks);

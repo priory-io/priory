@@ -8,11 +8,13 @@ import {
   Link as LinkIcon,
   Shield,
   FolderOpen,
+  HelpCircle,
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { authClient } from "~/lib/auth-client";
 import { useSidebar } from "./sidebar-context";
+import { useKeyboardShortcutsContext } from "../keyboard-shortcuts-provider";
 
 const navigationItems = [
   {
@@ -40,6 +42,7 @@ const navigationItems = [
 export function DashboardSidebar() {
   const pathname = usePathname();
   const { shouldAnimate, isAdmin } = useSidebar();
+  const { showHelpModal } = useKeyboardShortcutsContext();
 
   const handleSignOut = () => {
     authClient.signOut();
@@ -107,6 +110,13 @@ export function DashboardSidebar() {
         </nav>
 
         <div className="mt-6 pt-6 border-t border-border/60">
+          <button
+            onClick={showHelpModal}
+            className="flex items-center gap-3 px-4 pb-2 pt-2.5 rounded-xl transition-all duration-200 text-muted-foreground hover:text-foreground hover:bg-primary/5 w-full cursor-pointer mb-2"
+          >
+            <HelpCircle className="w-4 h-4" />
+            <span className="font-medium">Shortcuts</span>
+          </button>
           <button
             onClick={handleSignOut}
             className="flex items-center gap-3 px-4 pb-2 pt-2.5 rounded-xl transition-all duration-200 text-muted-foreground hover:text-foreground hover:bg-destructive/5 w-full cursor-pointer"

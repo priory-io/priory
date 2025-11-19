@@ -1,6 +1,5 @@
 "use client";
 
-import { useEffect } from "react";
 import { HelpCircle } from "lucide-react";
 import {
   Dialog,
@@ -20,17 +19,6 @@ export function KeyboardShortcutsModal() {
     isHelpModalOpen,
     formatShortcut,
   } = useKeyboardShortcutsContext();
-
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "?" && !isHelpModalOpen) {
-        showHelpModal();
-      }
-    };
-
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [isHelpModalOpen, showHelpModal]);
 
   const categorizedShortcuts = shortcuts.reduce(
     (acc, shortcut) => {
@@ -52,16 +40,12 @@ export function KeyboardShortcutsModal() {
   };
 
   return (
-    <Dialog open={isHelpModalOpen} onOpenChange={hideHelpModal}>
-      <DialogTrigger asChild>
-        <button
-          className="p-2 hover:bg-secondary rounded-lg transition-colors"
-          title="Keyboard Shortcuts (press ?)"
-          aria-label="Show keyboard shortcuts"
-        >
-          <HelpCircle className="w-5 h-5" />
-        </button>
-      </DialogTrigger>
+    <Dialog
+      open={isHelpModalOpen}
+      onOpenChange={(open) => {
+        if (!open) hideHelpModal();
+      }}
+    >
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
@@ -111,7 +95,7 @@ export function KeyboardShortcutsModal() {
           <p className="text-xs text-muted-foreground">
             Press{" "}
             <kbd className="inline px-1 py-0.5 bg-secondary rounded text-foreground font-semibold">
-              ?
+              Ctrl + K
             </kbd>{" "}
             to open this dialog anytime
           </p>

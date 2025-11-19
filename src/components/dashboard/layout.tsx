@@ -3,6 +3,7 @@
 import { ReactNode } from "react";
 import { motion } from "framer-motion";
 import { DashboardSidebar } from "./sidebar";
+import { KeyboardShortcutsModal } from "../keyboard-shortcuts-modal";
 
 interface DashboardLayoutProps {
   children: ReactNode;
@@ -11,6 +12,7 @@ interface DashboardLayoutProps {
 export function DashboardLayout({ children }: DashboardLayoutProps) {
   return (
     <div className="min-h-screen bg-background text-foreground">
+      <KeyboardShortcutsModal />
       <div className="flex h-dvh">
         <DashboardSidebar />
         <main className="flex-1 overflow-y-auto">
