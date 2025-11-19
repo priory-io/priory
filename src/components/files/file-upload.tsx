@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Upload, X, CheckCircle, AlertCircle, QrCode } from "lucide-react";
 import Button from "~/components/ui/button";
@@ -27,6 +27,7 @@ export function FileUpload({
   const [isDragging, setIsDragging] = useState(false);
   const [uploads, setUploads] = useState<FileUploadProgress[]>([]);
   const [isQRModalOpen, setIsQRModalOpen] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleDragOver = useCallback((e: React.DragEvent) => {
     e.preventDefault();
@@ -233,7 +234,7 @@ export function FileUpload({
     <div className={cn("space-y-4", className)}>
       <motion.div
         className={cn(
-          "border-2 border-dashed rounded-xl p-8 text-center transition-all duration-200 ease-in-out",
+          "border-2 border-dashed rounded-xl p-8 text-center transition-all duration-200 ease-in-out cursor-pointer",
           "hover:border-primary/50 hover:bg-primary/5",
           isDragging
             ? "border-primary bg-primary/10 scale-[1.02] shadow-lg"
@@ -242,6 +243,7 @@ export function FileUpload({
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
         onDrop={handleDrop}
+        onClick={() => fileInputRef.current?.click()}
         animate={{
           scale: isDragging ? 1.02 : 1,
           borderColor: isDragging
@@ -282,25 +284,19 @@ export function FileUpload({
             {isDragging ? "Drop your files here" : "Drag & drop files here"}
           </motion.p>
           <p className="text-sm text-muted-foreground">
-            or{" "}
-            <label
-              className={cn(
-                "font-medium cursor-pointer transition-colors duration-200",
-                "text-primary hover:text-primary/80 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 rounded-sm",
-              )}
-            >
-              browse from your device
-              <input
-                type="file"
-                className="sr-only"
-                multiple={multiple}
-                onChange={handleFileSelect}
-                accept="image/*,video/*,audio/*,application/*,.zip,.rar,.7z,.tar,.gz"
-              />
-            </label>
+            or click to browse from your device
           </p>
         </div>
       </motion.div>
+
+      <input
+        ref={fileInputRef}
+        type="file"
+        className="sr-only"
+        multiple={multiple}
+        onChange={handleFileSelect}
+        accept="image/*,video/*,audio/*,application/*,.zip,.rar,.7z,.tar,.gz"
+      />
 
       <motion.div
         className="flex gap-2 justify-center"
