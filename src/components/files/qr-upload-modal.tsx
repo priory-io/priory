@@ -93,7 +93,7 @@ export function QRUploadModal({
         onClick={onClose}
       >
         <motion.div
-          className="bg-card/95 backdrop-blur-xl border border-border/60 rounded-2xl p-8 max-w-md w-full shadow-2xl"
+          className="bg-card/95 backdrop-blur-xl border border-border/60 rounded-2xl p-8 w-full max-w-md max-h-[90vh] overflow-y-auto shadow-2xl flex flex-col"
           initial={{ scale: 0.95, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           exit={{ scale: 0.95, opacity: 0 }}
