@@ -9,7 +9,6 @@ import {
   defaultRateLimitConfigs,
 } from "~/lib/rate-limit";
 
-// Generates a new QR upload session
 export async function POST(request: NextRequest) {
   try {
     const rateLimitCheck = await withRateLimit(
@@ -27,9 +26,26 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    // Generate unique session token
+    const existingSession = await db.query.qrUploadSession.findFirst({
+      where: (sessions, { eq, and, gt }) =>
+        and(
+          eq(sessions.userId, session.user.id),
+          eq(sessions.isActive, true),
+          gt(sessions.expiresAt, new Date()),
+        ),
+      orderBy: (sessions, { desc }) => [desc(sessions.createdAt)],
+    });
+
+    if (existingSession) {
+      return NextResponse.json({
+        id: existingSession.id,
+        sessionToken: existingSession.sessionToken,
+        expiresAt: existingSession.expiresAt,
+      });
+    }
+
     const sessionToken = nanoid(32);
-    const expiresAt = new Date(Date.now() + 30 * 60 * 1000); // 30 minutes
+    const expiresAt = new Date(Date.now() + 30 * 60 * 1000);
 
     const newSession = await db
       .insert(qrUploadSession)
@@ -64,7 +80,6 @@ export async function POST(request: NextRequest) {
   }
 }
 
-// Retrieves active QR sessions for the user
 export async function GET(request: NextRequest) {
   try {
     const rateLimitCheck = await withRateLimit(
