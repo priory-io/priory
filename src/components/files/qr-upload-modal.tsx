@@ -29,7 +29,6 @@ export function QRUploadModal({
   onSessionCreated,
 }: QRUploadModalProps) {
   const [sessionToken, setSessionToken] = useState(initialSessionToken || "");
-  const [sessionId, setSessionId] = useState(initialSessionId || "");
   const [isLoading, setIsLoading] = useState(!initialSessionToken);
   const [error, setError] = useState("");
   const [copied, setCopied] = useState(false);
@@ -39,7 +38,6 @@ export function QRUploadModal({
 
     if (initialSessionToken && initialSessionId) {
       setSessionToken(initialSessionToken);
-      setSessionId(initialSessionId);
       setIsLoading(false);
       return;
     }
@@ -62,7 +60,6 @@ export function QRUploadModal({
 
         const data = await response.json();
         setSessionToken(data.sessionToken);
-        setSessionId(data.id);
         onSessionCreated?.(data.sessionToken, data.id);
       } catch (err) {
         setError("Failed to create QR session");
@@ -112,12 +109,7 @@ export function QRUploadModal({
           <div className="space-y-6">
             <div className="flex justify-center p-4">
               <div className="w-64 h-64 flex items-center justify-center bg-white/10 rounded-xl">
-                <QRCodeSVG
-                  value={qrValue}
-                  size={240}
-                  level="H"
-                  includeMargin={false}
-                />
+                <QRCodeSVG value={qrValue} size={240} level="H" />
               </div>
             </div>
 
