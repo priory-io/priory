@@ -3,10 +3,11 @@ import { auth } from "~/lib/auth";
 import { db } from "~/lib/db";
 import { apiKey } from "~/lib/db/schema";
 import { eq, and } from "drizzle-orm";
+import { z } from "zod";
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { keyId: string } },
+  { params }: { params: Promise<{ keyId: string }> },
 ) {
   try {
     const session = await auth.api.getSession({
@@ -17,7 +18,7 @@ export async function DELETE(
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const { keyId } = params;
+    const { keyId } = await params;
 
     const deletedKey = await db
       .delete(apiKey)
@@ -40,7 +41,7 @@ export async function DELETE(
 
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: { keyId: string } },
+  { params }: { params: Promise<{ keyId: string }> },
 ) {
   try {
     const session = await auth.api.getSession({
@@ -51,9 +52,15 @@ export async function PATCH(
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const { keyId } = params;
+    const { keyId } = await params;
     const body = await request.json();
-    const { isActive } = body;
+
+    const updateSchema = z.object({
+      isActive: z.boolean(),
+    });
+
+    const validatedData = updateSchema.parse(body);
+    const { isActive } = validatedData;
 
     const [updatedKey] = await db
       .update(apiKey)
@@ -75,6 +82,12 @@ export async function PATCH(
       updatedAt: updatedKey.updatedAt,
     });
   } catch (error) {
+    if (error instanceof z.ZodError) {
+      return NextResponse.json(
+        { error: "Invalid request data" },
+        { status: 400 },
+      );
+    }
     console.error("Failed to update API key:", error);
     return NextResponse.json(
       { error: "Failed to update API key" },
