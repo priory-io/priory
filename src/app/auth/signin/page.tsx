@@ -9,6 +9,41 @@ import Button from "~/components/ui/button";
 import Typography from "~/components/ui/typography";
 import { authClient } from "~/lib/auth-client";
 import { config } from "~/lib/config";
+import {
+  emailSchema,
+  nameSchema,
+  authPasswordSchema,
+} from "~/lib/input-validation";
+
+function formatAuthErrorMessage(message: string): string {
+  const normalized = message.toLowerCase();
+
+  if (
+    normalized.includes("email") &&
+    normalized.includes("already") &&
+    normalized.includes("exist")
+  ) {
+    return "An account with this email already exists. Try signing in instead.";
+  }
+
+  if (normalized.includes("invalid credentials")) {
+    return "Incorrect email or password. Please try again.";
+  }
+
+  if (normalized.includes("password") && normalized.includes("too short")) {
+    return "Password must be at least 8 characters.";
+  }
+
+  if (normalized.includes("password") && normalized.includes("too long")) {
+    return "Password is too long. Use at most 128 characters.";
+  }
+
+  if (normalized.includes("email") && normalized.includes("not verified")) {
+    return "Please verify your email address before signing in.";
+  }
+
+  return "An unexpected error occurred. Please try again.";
+}
 
 export default function SignInPage() {
   const [isEmailLoading, setIsEmailLoading] = useState(false);
@@ -63,20 +98,57 @@ export default function SignInPage() {
 
   const handleEmailAuth = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsEmailLoading(true);
     setError("");
+
+    const trimmedEmail = email.trim();
+    const trimmedName = name.trim();
+    const trimmedInviteCode = inviteCode.trim();
+
+    if (isSignUp) {
+      const nameResult = nameSchema.safeParse(trimmedName);
+
+      if (!nameResult.success) {
+        const firstIssue = nameResult.error.issues[0];
+
+        setError(firstIssue?.message || "Invalid name");
+        return;
+      }
+
+      if (!trimmedInviteCode) {
+        setError("Invite code is required for signup");
+        return;
+      }
+    }
+
+    const emailResult = emailSchema.safeParse(trimmedEmail);
+
+    if (!emailResult.success) {
+      const firstIssue = emailResult.error.issues[0];
+
+      setError(firstIssue?.message || "Invalid email");
+      return;
+    }
+
+    const passwordResult = authPasswordSchema.safeParse(password);
+
+    if (!passwordResult.success) {
+      const firstIssue = passwordResult.error.issues[0];
+
+      setError(
+        firstIssue?.message ||
+          "Invalid password. Password must be between 8 and 128 characters.",
+      );
+      return;
+    }
+
+    setIsEmailLoading(true);
 
     try {
       if (isSignUp) {
-        if (!inviteCode.trim()) {
-          setError("Invite code is required for signup");
-          return;
-        }
-
         const validateResponse = await fetch("/api/auth/validate-invite", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ inviteCode: inviteCode.trim() }),
+          body: JSON.stringify({ inviteCode: trimmedInviteCode }),
         });
 
         if (!validateResponse.ok) {
@@ -86,13 +158,17 @@ export default function SignInPage() {
         }
 
         const { data, error } = await authClient.signUp.email({
-          email,
+          email: trimmedEmail,
           password,
-          name,
+          name: trimmedName,
         });
 
         if (error) {
-          setError(error.message || "An unexpected error occurred");
+          setError(
+            error.message
+              ? formatAuthErrorMessage(error.message)
+              : "An unexpected error occurred. Please try again.",
+          );
           return;
         }
 
@@ -101,7 +177,7 @@ export default function SignInPage() {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
-              inviteCode: inviteCode.trim(),
+              inviteCode: trimmedInviteCode,
               userId: data.user.id,
             }),
           });
@@ -110,12 +186,16 @@ export default function SignInPage() {
         }
       } else {
         const { data, error } = await authClient.signIn.email({
-          email,
+          email: trimmedEmail,
           password,
         });
 
         if (error) {
-          setError(error.message || "An unexpected error occurred");
+          setError(
+            error.message
+              ? formatAuthErrorMessage(error.message)
+              : "An unexpected error occurred. Please try again.",
+          );
           return;
         }
 
@@ -125,7 +205,7 @@ export default function SignInPage() {
       }
     } catch (err) {
       console.error(`Auth error: ${err}`);
-      setError("An unexpected error occurred");
+      setError("An unexpected error occurred. Please try again.");
     } finally {
       setIsEmailLoading(false);
     }
@@ -258,6 +338,7 @@ export default function SignInPage() {
                         placeholder="Enter your invite code"
                         className="w-full pl-10 pr-4 py-2.5 bg-card/50 border border-border/60 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/50 text-foreground placeholder-muted-foreground"
                         autoFocus
+                        maxLength={50}
                       />
                     </div>
                     <button
@@ -351,7 +432,12 @@ export default function SignInPage() {
                     placeholder="Enter your password"
                     className="w-full pl-10 pr-4 py-2.5 bg-card/50 border border-border/60 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/50 text-foreground placeholder-muted-foreground"
                     required
+                    minLength={8}
+                    maxLength={128}
                   />
+                  <p className="mt-1 text-xs text-muted-foreground">
+                    Use 8-128 characters for a strong password.
+                  </p>
                 </div>
               </div>
 

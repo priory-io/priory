@@ -10,6 +10,15 @@ export const emailSchema = z
   .email("Invalid email")
   .max(254, "Email too long");
 
+export const nameSchema = z
+  .string()
+  .min(1, "Name is required")
+  .max(50, "Name must be at most 50 characters")
+  .regex(
+    /^[a-zA-Z0-9 _.-]+$/,
+    "Name can only contain letters, numbers, spaces, and _ . -",
+  );
+
 export const shortCodeSchema = z
   .string()
   .min(1, "Short code is required")
@@ -30,6 +39,11 @@ export const passwordSchema = z
   .min(1, "Password is required")
   .max(128, "Password too long")
   .optional();
+
+export const authPasswordSchema = z
+  .string()
+  .min(8, "Password must be at least 8 characters")
+  .max(128, "Password too long");
 
 export const filenameSchema = z
   .string()
@@ -62,11 +76,7 @@ export const shortlinkCreateSchema = z.preprocess(
 );
 
 export const accountUpdateSchema = z.object({
-  name: z
-    .string()
-    .min(1, "Name is required")
-    .max(100, "Name too long")
-    .optional(),
+  name: nameSchema.optional(),
   email: emailSchema.optional(),
 });
 
