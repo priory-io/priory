@@ -166,25 +166,34 @@ export function FileCard({
     }
   };
 
+  const handleCardClick = (e: React.MouseEvent) => {
+    if (selectionMode) {
+      const target = e.target as HTMLElement;
+      if (
+        target.closest('[role="button"]') ||
+        target.closest("[data-radix-popper-content-wrapper]")
+      ) {
+        return;
+      }
+      handleSelectionChange();
+    }
+  };
+
   return (
     <>
       <div
-        className={`border border-border/50 rounded-xl overflow-hidden hover:bg-card/80 transition-colors group relative ${
-          isSelected ? "ring-2 ring-primary bg-primary/5" : ""
-        }`}
+        onClick={handleCardClick}
+        className={`border rounded-xl overflow-hidden transition-all group relative ${selectionMode ? "cursor-pointer" : ""
+          } ${isSelected
+            ? "ring-2 ring-primary bg-primary/10 border-primary shadow-lg shadow-primary/20"
+            : "border-border/50 hover:bg-card/80"
+          }`}
       >
-        {selectionMode && (
-          <div className="absolute top-3 left-3 z-10">
-            <button
-              onClick={handleSelectionChange}
-              className={`w-6 h-6 rounded border-2 flex items-center justify-center transition-colors ${
-                isSelected
-                  ? "bg-primary border-primary text-primary-foreground"
-                  : "bg-background border-muted-foreground hover:border-primary"
-              }`}
-            >
-              {isSelected && <Check className="w-4 h-4" />}
-            </button>
+        {isSelected && selectionMode && (
+          <div className="absolute top-3 right-3 z-10">
+            <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center shadow-lg">
+              <Check className="w-5 h-5 text-primary-foreground" />
+            </div>
           </div>
         )}
         {renderPreview()}
