@@ -2,7 +2,14 @@
 
 import { useState, useCallback, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Upload, X, CheckCircle, AlertCircle, QrCode } from "lucide-react";
+import {
+  Upload,
+  X,
+  CheckCircle,
+  AlertCircle,
+  QrCode,
+  RotateCcw,
+} from "lucide-react";
 import Button from "~/components/ui/button";
 import { cn } from "~/lib/utils";
 import { QRUploadModal } from "./qr-upload-modal";
@@ -13,10 +20,35 @@ import {
   getFileCategory,
 } from "~/types/file";
 
+const UPLOAD_CONFIG = {
+  maxRetries: 5,
+  baseDelayMs: 1000,
+  maxDelayMs: 30000,
+  timeoutMs: 60 * 60 * 1000,
+  concurrentUploads: 3,
+};
+
 interface FileUploadProps {
   onUploadComplete?: (files: any[]) => void;
   multiple?: boolean;
   className?: string;
+}
+
+interface ExtendedFileUploadProgress extends FileUploadProgress {
+  retryCount?: number;
+}
+
+function getRetryDelay(retryCount: number): number {
+  const exponentialDelay = Math.min(
+    UPLOAD_CONFIG.baseDelayMs * Math.pow(2, retryCount),
+    UPLOAD_CONFIG.maxDelayMs,
+  );
+  const jitter = exponentialDelay * Math.random() * 0.25;
+  return exponentialDelay + jitter;
+}
+
+function sleep(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
 export function FileUpload({
@@ -25,9 +57,13 @@ export function FileUpload({
   className,
 }: FileUploadProps) {
   const [isDragging, setIsDragging] = useState(false);
-  const [uploads, setUploads] = useState<FileUploadProgress[]>([]);
+  const [uploads, setUploads] = useState<ExtendedFileUploadProgress[]>([]);
   const [isQRModalOpen, setIsQRModalOpen] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const activeUploadsRef = useRef<number>(0);
+  const uploadQueueRef = useRef<File[]>([]);
+  const successfulUploadsRef = useRef<any[]>([]);
+  const abortControllersRef = useRef<Map<File, AbortController>>(new Map());
 
   const handleDragOver = useCallback((e: React.DragEvent) => {
     e.preventDefault();
@@ -65,10 +101,218 @@ export function FileUpload({
     [multiple],
   );
 
+  const uploadSingleFile = useCallback(
+    async (file: File, retryCount = 0): Promise<any> => {
+      const abortController = new AbortController();
+      abortControllersRef.current.set(file, abortController);
+
+      return new Promise((resolve, reject) => {
+        const formData = new FormData();
+        formData.append("file", file);
+
+        const xhr = new XMLHttpRequest();
+        let timeoutId: ReturnType<typeof setTimeout>;
+
+        timeoutId = setTimeout(() => {
+          xhr.abort();
+          reject(new Error("Upload timeout"));
+        }, UPLOAD_CONFIG.timeoutMs);
+
+        abortController.signal.addEventListener("abort", () => {
+          clearTimeout(timeoutId);
+          xhr.abort();
+          reject(new Error("Upload cancelled"));
+        });
+
+        xhr.upload.addEventListener("progress", (event) => {
+          if (event.lengthComputable) {
+            const progress = Math.round((event.loaded / event.total) * 100);
+            setUploads((prev) =>
+              prev.map((upload) =>
+                upload.file === file ? { ...upload, progress } : upload,
+              ),
+            );
+          }
+        });
+
+        xhr.addEventListener("load", () => {
+          clearTimeout(timeoutId);
+          abortControllersRef.current.delete(file);
+
+          if (xhr.status >= 200 && xhr.status < 300) {
+            try {
+              const result = JSON.parse(xhr.responseText);
+              resolve(result);
+            } catch {
+              reject(new Error("Invalid response"));
+            }
+          } else if (xhr.status === 429) {
+            const retryAfter = xhr.getResponseHeader("Retry-After");
+            const delay = retryAfter
+              ? parseInt(retryAfter, 10) * 1000
+              : getRetryDelay(retryCount);
+            reject(new Error(`Rate limited:${delay}`));
+          } else {
+            reject(new Error(`Upload failed: ${xhr.status}`));
+          }
+        });
+
+        xhr.addEventListener("error", () => {
+          clearTimeout(timeoutId);
+          abortControllersRef.current.delete(file);
+          reject(new Error("Network error"));
+        });
+
+        xhr.addEventListener("abort", () => {
+          clearTimeout(timeoutId);
+          abortControllersRef.current.delete(file);
+          reject(new Error("Upload aborted"));
+        });
+
+        xhr.open("POST", "/api/files");
+        xhr.send(formData);
+      });
+    },
+    [],
+  );
+
+  const uploadWithRetry = useCallback(
+    async (file: File): Promise<any> => {
+      let lastError: Error | null = null;
+
+      for (
+        let retryCount = 0;
+        retryCount <= UPLOAD_CONFIG.maxRetries;
+        retryCount++
+      ) {
+        try {
+          if (retryCount > 0) {
+            setUploads((prev) =>
+              prev.map((upload) =>
+                upload.file === file
+                  ? {
+                    ...upload,
+                    status: "uploading" as const,
+                    progress: 0,
+                    retryCount,
+                    error: `Retrying (${retryCount}/${UPLOAD_CONFIG.maxRetries})...`,
+                  }
+                  : upload,
+              ),
+            );
+            const delay = getRetryDelay(retryCount - 1);
+            await sleep(delay);
+          }
+
+          const result = await uploadSingleFile(file, retryCount);
+
+          setUploads((prev) =>
+            prev.map((upload) => {
+              if (upload.file === file) {
+                const { error: _, ...rest } = upload;
+                return {
+                  ...rest,
+                  status: "completed" as const,
+                  progress: 100,
+                };
+              }
+              return upload;
+            }),
+          );
+
+          return result;
+        } catch (error) {
+          lastError = error as Error;
+          const errorMessage = lastError.message;
+
+          if (errorMessage.startsWith("Rate limited:")) {
+            const customDelay = parseInt(errorMessage.split(":")[1] || "0", 10);
+            if (!isNaN(customDelay) && customDelay > 0) {
+              await sleep(customDelay);
+              retryCount--;
+              continue;
+            }
+          }
+
+          if (
+            errorMessage === "Upload cancelled" ||
+            errorMessage === "Upload aborted"
+          ) {
+            break;
+          }
+
+          console.warn(
+            `Upload attempt ${retryCount + 1} failed for ${file.name}:`,
+            errorMessage,
+          );
+        }
+      }
+
+      setUploads((prev) =>
+        prev.map((upload) =>
+          upload.file === file
+            ? {
+              ...upload,
+              status: "error" as const,
+              error: lastError?.message || "Upload failed after retries",
+            }
+            : upload,
+        ),
+      );
+
+      throw lastError || new Error("Upload failed");
+    },
+    [uploadSingleFile],
+  );
+
+  const processQueue = useCallback(async () => {
+    while (
+      uploadQueueRef.current.length > 0 &&
+      activeUploadsRef.current < UPLOAD_CONFIG.concurrentUploads
+    ) {
+      const file = uploadQueueRef.current.shift();
+      if (!file) break;
+
+      activeUploadsRef.current++;
+
+      setUploads((prev) =>
+        prev.map((upload) =>
+          upload.file === file
+            ? { ...upload, status: "uploading" as const, progress: 0 }
+            : upload,
+        ),
+      );
+
+      uploadWithRetry(file)
+        .then((result) => {
+          successfulUploadsRef.current.push(result);
+        })
+        .catch((error) => {
+          console.error(`Failed to upload ${file.name}:`, error);
+        })
+        .finally(() => {
+          activeUploadsRef.current--;
+
+          processQueue();
+
+          if (
+            activeUploadsRef.current === 0 &&
+            uploadQueueRef.current.length === 0
+          ) {
+            if (successfulUploadsRef.current.length > 0) {
+              onUploadComplete?.([...successfulUploadsRef.current]);
+              window.dispatchEvent(new CustomEvent("fileUploaded"));
+              successfulUploadsRef.current = [];
+            }
+          }
+        });
+    }
+  }, [uploadWithRetry, onUploadComplete]);
+
   const handleFiles = useCallback(
     (files: File[]) => {
       const validFiles: File[] = [];
-      const newUploads: FileUploadProgress[] = [];
+      const newUploads: ExtendedFileUploadProgress[] = [];
 
       for (const file of files) {
         if (file.size > MAX_FILE_SIZE) {
@@ -96,112 +340,58 @@ export function FileUpload({
           file,
           progress: 0,
           status: "pending",
+          retryCount: 0,
         });
 
         if (!multiple) break;
       }
 
       setUploads((prev) => [...prev, ...newUploads]);
-      uploadFiles(validFiles);
+
+      uploadQueueRef.current.push(...validFiles);
+      processQueue();
     },
-    [multiple],
+    [multiple, processQueue],
   );
 
-  const uploadFiles = async (files: File[]) => {
-    const uploadPromises = files.map(async (file) => {
-      try {
-        setUploads((prev) =>
-          prev.map((upload) =>
-            upload.file === file
-              ? { ...upload, status: "uploading", progress: 0 }
-              : upload,
-          ),
-        );
+  const retryUpload = useCallback(
+    (file: File) => {
+      setUploads((prev) =>
+        prev.map((upload) => {
+          if (upload.file === file) {
+            const { error: _, ...rest } = upload;
+            return {
+              ...rest,
+              status: "pending" as const,
+              progress: 0,
+            };
+          }
+          return upload;
+        }),
+      );
 
-        const formData = new FormData();
-        formData.append("file", file);
+      uploadQueueRef.current.push(file);
+      processQueue();
+    },
+    [processQueue],
+  );
 
-        const xhr = new XMLHttpRequest();
-
-        return new Promise<any>((resolve, reject) => {
-          xhr.upload.addEventListener("progress", (event) => {
-            if (event.lengthComputable) {
-              const progress = Math.round((event.loaded / event.total) * 100);
-              setUploads((prev) =>
-                prev.map((upload) =>
-                  upload.file === file ? { ...upload, progress } : upload,
-                ),
-              );
-            }
-          });
-
-          xhr.addEventListener("load", () => {
-            if (xhr.status >= 200 && xhr.status < 300) {
-              try {
-                const result = JSON.parse(xhr.responseText);
-                setUploads((prev) =>
-                  prev.map((upload) =>
-                    upload.file === file
-                      ? { ...upload, status: "completed", progress: 100 }
-                      : upload,
-                  ),
-                );
-                resolve(result);
-              } catch {
-                reject(new Error("Invalid response"));
-              }
-            } else {
-              reject(new Error("Upload failed"));
-            }
-          });
-
-          xhr.addEventListener("error", () => {
-            reject(new Error("Upload failed"));
-          });
-
-          xhr.open("POST", "/api/files");
-          xhr.send(formData);
-        });
-      } catch (error) {
-        setUploads((prev) =>
-          prev.map((upload) =>
-            upload.file === file
-              ? {
-                  ...upload,
-                  status: "error",
-                  error: "Upload failed",
-                }
-              : upload,
-          ),
-        );
-        throw error;
-      }
-    });
-
-    try {
-      const results = await Promise.allSettled(uploadPromises);
-      const successfulUploads = results
-        .filter((result) => result.status === "fulfilled")
-        .map((result) => (result as PromiseFulfilledResult<any>).value);
-
-      if (successfulUploads.length > 0) {
-        onUploadComplete?.(successfulUploads);
-        window.dispatchEvent(new CustomEvent("fileUploaded"));
-      }
-    } catch (error) {
-      console.error("Upload error:", error);
+  const removeUpload = useCallback((file: File) => {
+    const controller = abortControllersRef.current.get(file);
+    if (controller) {
+      controller.abort();
     }
-  };
 
-  const removeUpload = (index: number) => {
-    setUploads((prev) => prev.filter((_, i) => i !== index));
-  };
+    uploadQueueRef.current = uploadQueueRef.current.filter((f) => f !== file);
 
-  const clearCompleted = () => {
+    setUploads((prev) => prev.filter((upload) => upload.file !== file));
+  }, []);
+
+  const clearCompleted = useCallback(() => {
     setUploads((prev) =>
       prev.filter((upload) => upload.status !== "completed"),
     );
-  };
+  }, []);
 
   const formatFileSize = (bytes: number) => {
     if (bytes === 0) return "0 Bytes";
@@ -211,8 +401,8 @@ export function FileUpload({
     return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i];
   };
 
-  const getStatusIcon = (status: FileUploadProgress["status"]) => {
-    switch (status) {
+  const getStatusIcon = (upload: ExtendedFileUploadProgress) => {
+    switch (upload.status) {
       case "completed":
         return <CheckCircle className="h-5 w-5 text-green-500" />;
       case "error":
@@ -309,7 +499,10 @@ export function FileUpload({
             type="button"
             variant="outline"
             size="sm"
-            onClick={() => setIsQRModalOpen(true)}
+            onClick={(e) => {
+              e?.stopPropagation();
+              setIsQRModalOpen(true);
+            }}
             className="text-xs flex items-center gap-2"
           >
             <motion.div
@@ -348,46 +541,71 @@ export function FileUpload({
             <AnimatePresence>
               {uploads.map((upload, index) => (
                 <motion.div
-                  key={index}
+                  key={`${upload.file.name}-${index}`}
                   initial={{ opacity: 0, x: -20 }}
                   animate={{ opacity: 1, x: 0 }}
                   exit={{ opacity: 0, x: 20 }}
                   transition={{ type: "spring", stiffness: 200, damping: 20 }}
                   className="flex items-center gap-3 p-3 bg-card/50 border border-border/50 rounded-lg"
                 >
-                  <div className="flex-shrink-0">
-                    {getStatusIcon(upload.status)}
-                  </div>
+                  <div className="flex-shrink-0">{getStatusIcon(upload)}</div>
 
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center justify-between">
                       <p className="text-sm font-medium text-foreground truncate">
                         {upload.file.name}
                       </p>
-                      <motion.div
-                        whileHover={{ scale: 1.1 }}
-                        whileTap={{ scale: 0.95 }}
-                      >
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => removeUpload(index)}
-                          className="h-6 w-6 p-0"
+                      <div className="flex items-center gap-1">
+                        {upload.status === "error" && (
+                          <motion.div
+                            whileHover={{ scale: 1.1 }}
+                            whileTap={{ scale: 0.95 }}
+                          >
+                            <button
+                              type="button"
+                              onClick={() => retryUpload(upload.file)}
+                              className="h-6 w-6 p-0 inline-flex items-center justify-center text-foreground hover:bg-primary/5 rounded-lg transition-colors"
+                              aria-label="Retry upload"
+                            >
+                              <RotateCcw className="h-3 w-3" />
+                            </button>
+                          </motion.div>
+                        )}
+                        <motion.div
+                          whileHover={{ scale: 1.1 }}
+                          whileTap={{ scale: 0.95 }}
                         >
-                          <X className="h-3 w-3" />
-                        </Button>
-                      </motion.div>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => removeUpload(upload.file)}
+                            className="h-6 w-6 p-0"
+                          >
+                            <X className="h-3 w-3" />
+                          </Button>
+                        </motion.div>
+                      </div>
                     </div>
 
                     <div className="flex items-center gap-2 text-xs text-muted-foreground">
                       <span>{formatFileSize(upload.file.size)}</span>
-                      <span>•</span>
+                      <span>-</span>
                       <span className="capitalize">
                         {getFileCategory(upload.file.type)}
                       </span>
-                      {upload.error && (
+                      {upload.retryCount !== undefined &&
+                        upload.retryCount > 0 && (
+                          <>
+                            <span>-</span>
+                            <span className="text-yellow-500">
+                              Retry {upload.retryCount}/
+                              {UPLOAD_CONFIG.maxRetries}
+                            </span>
+                          </>
+                        )}
+                      {upload.error && !upload.error.startsWith("Retrying") && (
                         <>
-                          <span>•</span>
+                          <span>-</span>
                           <span className="text-destructive">
                             {upload.error}
                           </span>

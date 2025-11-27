@@ -34,8 +34,8 @@ export const defaultRateLimitConfigs = {
   },
   fileUpload: {
     windowMs: 60 * 1000,
-    maxRequests: 10,
-    blockDurationMs: 5 * 60 * 1000,
+    maxRequests: 60,
+    blockDurationMs: 60 * 1000,
   },
   api: {
     windowMs: 60 * 1000,
