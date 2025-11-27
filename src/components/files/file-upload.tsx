@@ -191,12 +191,12 @@ export function FileUpload({
               prev.map((upload) =>
                 upload.file === file
                   ? {
-                    ...upload,
-                    status: "uploading" as const,
-                    progress: 0,
-                    retryCount,
-                    error: `Retrying (${retryCount}/${UPLOAD_CONFIG.maxRetries})...`,
-                  }
+                      ...upload,
+                      status: "uploading" as const,
+                      progress: 0,
+                      retryCount,
+                      error: `Retrying (${retryCount}/${UPLOAD_CONFIG.maxRetries})...`,
+                    }
                   : upload,
               ),
             );
@@ -252,10 +252,10 @@ export function FileUpload({
         prev.map((upload) =>
           upload.file === file
             ? {
-              ...upload,
-              status: "error" as const,
-              error: lastError?.message || "Upload failed after retries",
-            }
+                ...upload,
+                status: "error" as const,
+                error: lastError?.message || "Upload failed after retries",
+              }
             : upload,
         ),
       );

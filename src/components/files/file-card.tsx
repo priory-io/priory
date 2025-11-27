@@ -183,11 +183,13 @@ export function FileCard({
     <>
       <div
         onClick={handleCardClick}
-        className={`border rounded-xl overflow-hidden transition-all group relative ${selectionMode ? "cursor-pointer" : ""
-          } ${isSelected
+        className={`border rounded-xl overflow-hidden transition-all group relative ${
+          selectionMode ? "cursor-pointer" : ""
+        } ${
+          isSelected
             ? "ring-2 ring-primary bg-primary/10 border-primary shadow-lg shadow-primary/20"
             : "border-border/50 hover:bg-card/80"
-          }`}
+        }`}
       >
         {isSelected && selectionMode && (
           <div className="absolute top-3 right-3 z-10">
