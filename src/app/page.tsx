@@ -74,7 +74,7 @@ export default function Home() {
             >
               by{" "}
               <Link
-                href="https://github.com/keircn"
+                href="https://github.com/keyage"
                 target="_blank"
                 className="text-foreground hover:text-muted-foreground transition-all duration-150"
               >
